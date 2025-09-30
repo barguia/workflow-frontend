@@ -1,5 +1,7 @@
 import { createMemoryHistory, createRouter } from 'vue-router'
 import UserPage from "@/components/pages/aplicacao/UserPage.vue";
+// import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
+import ProjetosPage from "@/components/pages/Projetos/ProjetosPage.vue";
 const routes = [
     {
         path: '/user',
@@ -7,6 +9,13 @@ const routes = [
         component: UserPage,
         icon: "mdi-home",
         page_id: '#home',
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: ProjetosPage,
+        icon: "mdi-home",
+        page_id: '#login',
     },
 ];
 

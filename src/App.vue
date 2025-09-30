@@ -1,31 +1,7 @@
 <template>
   <app-component>
-    <v-app-bar app color="blue-darken-4" dark elevate-on-scroll flat>
 
-      <v-toolbar-title class="nav-links mx-4">
-        <RouterLink to="/" class="nav-link font-weight-bold">
-          <span v-if="!isMobile"> AuriWeb</span>
-          <span v-else> AuriWeb</span>
-        </RouterLink>
-      </v-toolbar-title>
-
-      <div class="nav-links mx-4" v-if="!isMobile">
-        <a
-            :href="item.path"
-            v-for="item in getMenus"
-            :key="item.name"
-            class="nav-link"
-        >
-          {{ item.name }}
-        </a>
-      </div>
-
-      <!-- Ícone de menu hambúrguer para telas pequenas -->
-      <v-btn icon v-else @click="drawer = !drawer">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+    <menu-component :menus="getMenus"/>
     <!-- Drawer de navegação para telas menores -->
     <v-navigation-drawer v-model="drawer" app temporary>
       <v-list>
@@ -41,15 +17,19 @@
     </v-navigation-drawer>
 
     <v-main class="main-content main-content-fluid" fluid>
-      <v-container fluid class="flex-grow-1 pa-0">
+      <container-component fluid class="flex-grow-1 pa-0">
         <v-row class="justify-center">
           <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
-            <RouterView />
+            <div class="content-container">
+              <RouterView />
+            </div>
           </v-col>
         </v-row>
-      </v-container>
+      </container-component>
+
       <footer-component :menus="getMenus"/>
     </v-main>
+
     <!-- Overlay para o loading css, com z-index elevado -->
     <v-overlay
         :model-value="isLoading()"
@@ -71,9 +51,13 @@ import router from '@/router';
 import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
 import { useLoading } from '@/composables/useLoading';
 import AppComponent from "@/components/comuns/layout/AppComponent.vue";
+import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
+import MenuComponent from "@/components/comuns/layout/menu/MenuComponent.vue";
 
 export default {
   components: {
+    MenuComponent,
+    ContainerComponent,
     FooterComponent,
     AppComponent,
   },
