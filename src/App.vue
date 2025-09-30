@@ -1,7 +1,8 @@
 <template>
   <app-component>
 
-    <menu-component :menus="getMenus"/>
+<!--    <menu-component :menus="getMenus"/>-->
+    <menu-component2/>
     <!-- Drawer de navegação para telas menores -->
     <v-navigation-drawer v-model="drawer" app temporary>
       <v-list>
@@ -53,9 +54,11 @@ import { useLoading } from '@/composables/useLoading';
 import AppComponent from "@/components/comuns/layout/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import MenuComponent from "@/components/comuns/layout/menu/MenuComponent.vue";
+import MenuComponent2 from "@/components/comuns/layout/menu/MenuComponent2.vue";
 
 export default {
   components: {
+    MenuComponent2,
     MenuComponent,
     ContainerComponent,
     FooterComponent,
