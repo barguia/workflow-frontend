@@ -1,0 +1,141 @@
+<template>
+  <app-component>
+    <v-app-bar app color="blue-darken-4" dark elevate-on-scroll flat>
+
+      <v-toolbar-title class="nav-links mx-4">
+        <RouterLink to="/" class="nav-link font-weight-bold">
+          <span v-if="!isMobile"> AuriWeb</span>
+          <span v-else> AuriWeb</span>
+        </RouterLink>
+      </v-toolbar-title>
+
+      <div class="nav-links mx-4" v-if="!isMobile">
+        <a
+            :href="item.path"
+            v-for="item in getMenus"
+            :key="item.name"
+            class="nav-link"
+        >
+          {{ item.name }}
+        </a>
+      </div>
+
+      <!-- Ícone de menu hambúrguer para telas pequenas -->
+      <v-btn icon v-else @click="drawer = !drawer">
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <!-- Drawer de navegação para telas menores -->
+    <v-navigation-drawer v-model="drawer" app temporary>
+      <v-list>
+        <v-list-item
+            v-for="item in getMenus"
+            :key="item.name"
+            :to="item.path"
+            link
+        >
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main class="main-content main-content-fluid" fluid>
+      <v-container fluid class="flex-grow-1 pa-0">
+        <v-row class="justify-center">
+          <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
+            <RouterView />
+          </v-col>
+        </v-row>
+      </v-container>
+      <footer-component :menus="getMenus"/>
+    </v-main>
+    <!-- Overlay para o loading css, com z-index elevado -->
+    <v-overlay
+        :model-value="isLoading()"
+        scrim="#000"
+        opacity="0.5"
+        z-index="9999"
+        persistent
+        class="d-flex align-center justify-center">
+      <v-progress-circular indeterminate size="64" color="primary" />
+      <p class="mt-4 text-white">Carregando...</p>
+    </v-overlay>
+  </app-component>
+
+</template>
+
+<script>
+import { useTheme } from 'vuetify';
+import router from '@/router';
+import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
+import { useLoading } from '@/composables/useLoading';
+import AppComponent from "@/components/comuns/layout/AppComponent.vue";
+
+export default {
+  components: {
+    FooterComponent,
+    AppComponent,
+  },
+  data() {
+    return {
+      selectedTheme: localStorage.getItem('theme') || 'light',
+      todas_rotas: router.options.routes,
+      isMobile: false,
+      drawer: false,
+    };
+  },
+  setup() {
+    const theme = useTheme();
+    const { isLoading } = useLoading();
+
+    return {
+      theme,
+      isLoading,
+    };
+  },
+  created() {
+    this.theme.change(this.selectedTheme)
+    this.checkScreenSize();
+    window.addEventListener('resize', this.checkScreenSize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.checkScreenSize);
+  },
+  methods: {
+    checkScreenSize() {
+      this.isMobile = window.innerWidth <= 768;
+    },
+  },
+  computed: {
+    getMenus() {
+      return this.todas_rotas.filter(r => {
+        if (r.meta?.hidden === true) return false
+        const n = typeof r.name === 'string' ? r.name.trim().toLowerCase() : ''
+        const isWildcard404 = r.path.includes(':pathMatch')
+        return n !== 'not-found' && !isWildcard404 && !!n
+      })
+    }
+  },
+};
+</script>
+
+<style scoped>
+
+.v-overlay {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+</style>
