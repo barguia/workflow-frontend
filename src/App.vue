@@ -1,26 +1,8 @@
 <template>
   <app-component>
 
-<!--    <menu-component :menus="getMenus"/>-->
-    <menu-component2/>
-    <!-- Drawer de navegação para telas menores -->
+    <menu-component/>
 
-
-    <v-main class="main-content main-content-fluid" fluid>
-      <container-component fluid class="flex-grow-1 pa-0">
-        <v-row class="justify-center">
-          <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
-            <div class="content-container">
-              <RouterView />
-            </div>
-          </v-col>
-        </v-row>
-      </container-component>
-
-      <footer-component :menus="getMenus"/>
-    </v-main>
-
-    <!-- Overlay para o loading css, com z-index elevado -->
     <v-overlay
         :model-value="isLoading()"
         scrim="#000"
@@ -46,7 +28,6 @@ import MenuComponent from "@/components/comuns/layout/menu/MenuComponent.vue";
 
 export default {
   components: {
-    MenuComponent2: MenuComponent,
     MenuComponent,
     ContainerComponent,
     FooterComponent,

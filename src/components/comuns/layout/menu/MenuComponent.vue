@@ -7,7 +7,7 @@
       <v-text-field
           v-model="search"
           prepend-inner-icon="mdi-magnify"
-          variant="solo"
+          variant="underlined"
           placeholder="Search"
           single-line
           hide-details
@@ -21,7 +21,7 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item title="Profile"></v-list-item>
+          <v-list-item title="Perfil"></v-list-item>
           <v-list-item title="Logout"></v-list-item>
         </v-list>
       </v-menu>
@@ -29,8 +29,6 @@
 
     <v-navigation-drawer v-model="drawer" app temporary>
       <v-list v-model:opened="opened">
-        <v-list-item title="Menu" prepend-icon="mdi-menu" class="text-caption" />
-        <v-divider />
 
         <menu-node-component
             v-for="item in menuItems"
@@ -43,20 +41,26 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
-      <v-container fluid>
-        <router-view></router-view>
-      </v-container>
+    <v-main class="main-content main-content-fluid" fluid>
+      <container-component fluid class="pa-0">
+        <v-row class="justify-center">
+          <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
+            <div class="content-container">
+              <RouterView />
+            </div>
+          </v-col>
+        </v-row>
+      </container-component>
     </v-main>
   </v-app>
 </template>
-
 
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import MenuNodeComponent from "@/components/comuns/layout/menu/componentes/MenuNodeComponent.vue";
+import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 
 const router = useRouter()
 const drawer = ref(true)
