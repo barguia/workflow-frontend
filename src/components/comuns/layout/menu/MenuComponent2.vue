@@ -33,12 +33,12 @@
         <v-divider />
 
         <menu-node-component
-            v-for="item in menuItems"
-            :key="item.id"
-            :node="item"
-            :level="0"
-            :open-at-level="openAtLevel"
-            @toggle="handleToggle"
+          v-for="item in menuItems"
+          :key="item.id"
+          :node="item"
+          :level="0"
+          :open-at-level="openAtLevel"
+          @toggle="handleToggle"
         />
       </v-list>
     </v-navigation-drawer>
@@ -63,17 +63,26 @@ const drawer = ref(true)
 
 // mapa: nível -> id aberto (ou null)
 const openAtLevel = reactive({}) // ex: { 0: 'aplicacao', 1: 'usuarios' }
+const opened = ref([])
 
 function handleToggle({ level, id }) {
   // abre/fecha o nível atual
   openAtLevel[level] = id
-
+  console.log('handleToggle -> level:', level, 'id:', id)
   // fecha níveis mais profundos ao trocar um pai
   Object.keys(openAtLevel)
       .map(n => Number(n))
       .filter(n => n > level)
       .forEach(n => (openAtLevel[n] = null))
+
+  // SINCRONIZA o array 'opened' do Vuetify:
+  opened.value = Object.entries(openAtLevel)
+      .filter(([, val]) => !!val)
+      .map(([lvl, val]) => `${lvl}:${val}`) // precisa casar com o 'value' de cada grupo
+  console.log(opened.value)
 }
+
+
 
 // helpers de navegação
 const go = path => () => router.push(path)
