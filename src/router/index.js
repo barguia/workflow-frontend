@@ -4,18 +4,70 @@ import UserPage from "@/components/pages/aplicacao/UserPage.vue";
 import ProjetosPage from "@/components/pages/Projetos/ProjetosPage.vue";
 const routes = [
     {
+        path: '',
+        name: 'Home',
+        component: UserPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/',
+        name: 'Home',
+        component: UserPage,
+        icon: "mdi-home",
+    },
+    {
         path: '/user',
         name: 'User',
         component: UserPage,
         icon: "mdi-home",
-        page_id: '#home',
     },
     {
         path: '/login',
         name: 'Login',
         component: ProjetosPage,
         icon: "mdi-home",
-        page_id: '#login',
+    },
+    {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: ProjetosPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/profiles',
+        name: 'profiles',
+        component: ProjetosPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/workflows',
+        name: 'workflows',
+        component: ProjetosPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/processes',
+        name: 'processes',
+        component: ProjetosPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/tasks',
+        name: 'tasks',
+        component: ProjetosPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/hierarchy',
+        name: 'hierarchy',
+        component: ProjetosPage,
+        icon: "mdi-home",
+    },
+    {
+        path: '/organizations',
+        name: 'organizations',
+        component: ProjetosPage,
+        icon: "mdi-home",
     },
 ];
 

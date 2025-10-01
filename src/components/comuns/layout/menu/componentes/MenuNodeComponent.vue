@@ -1,15 +1,16 @@
 <template>
-  {{hasChildren}}
   <v-list-group
     v-if="hasChildren"
     :value="groupKey"
+    v-model:opened="opened"
     class="menu-group"
   >
+
     <template #activator>
       <v-list-item
-          :prepend-icon="node.icon"
-          :title="node.title"
-          @click.stop="toggleHere"
+        :prepend-icon="node.icon"
+        :title="node.title"
+        @click.stop="toggleHere"
       />
     </template>
 
@@ -26,10 +27,12 @@
   <v-list-item
     v-else
     :prepend-icon="node.icon"
+    v-model:opened="opened"
     :title="node.title"
     class="submenu-item"
     @click="node.action && node.action()"
   />
+
 </template>
 
 <script setup>
@@ -50,10 +53,10 @@ const hasChildren = computed(() =>
 const groupKey = computed(() => `${props.level}:${props.node.id}`)
 
 /** controla só a sua lógica; quem abre visualmente é o v-list via 'opened' */
-const isOpen = computed(() => props.openAtLevel[props.level] === props.node.id)
+const opened = computed(() => props.openAtLevel[props.level] === props.node.id)
 
 function toggleHere () {
-  emit('toggle', { level: props.level, id: isOpen.value ? null : props.node.id })
+  emit('toggle', { level: props.level, id: opened.value ? null : props.node.id })
 }
 </script>
 
@@ -61,5 +64,11 @@ function toggleHere () {
 .menu-group .v-list-item,
 .submenu-item {
   min-height: 32px !important;
+}
+
+
+.v-list-item:hover {
+  background-color: #f0f0f0;   /* cor ao passar o mouse */
+  cursor: pointer;
 }
 </style>

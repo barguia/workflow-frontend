@@ -4,18 +4,7 @@
 <!--    <menu-component :menus="getMenus"/>-->
     <menu-component2/>
     <!-- Drawer de navegação para telas menores -->
-    <v-navigation-drawer v-model="drawer" app temporary>
-      <v-list>
-        <v-list-item
-            v-for="item in getMenus"
-            :key="item.name"
-            :to="item.path"
-            link
-        >
-          <v-list-item-title>{{ item.name }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+
 
     <v-main class="main-content main-content-fluid" fluid>
       <container-component fluid class="flex-grow-1 pa-0">
@@ -54,11 +43,10 @@ import { useLoading } from '@/composables/useLoading';
 import AppComponent from "@/components/comuns/layout/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import MenuComponent from "@/components/comuns/layout/menu/MenuComponent.vue";
-import MenuComponent2 from "@/components/comuns/layout/menu/MenuComponent2.vue";
 
 export default {
   components: {
-    MenuComponent2,
+    MenuComponent2: MenuComponent,
     MenuComponent,
     ContainerComponent,
     FooterComponent,
