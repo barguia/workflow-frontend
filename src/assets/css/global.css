@@ -1,3 +1,7 @@
+.grecaptcha-badge {
+    visibility: hidden;
+}
+
 .title {
     color: var(--v-theme-textPrimary);
     font-weight: 600;
@@ -38,13 +42,13 @@ p {
 }
 
 .subtitle {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-bottom: 1rem;
     color: var(--v-theme-secondary);
 }
 
 .text-paragraph {
-    font-size: 1rem;
+    font-size: 0.8rem;
     line-height: 1.6;
     text-align: justify;
     margin-bottom: 1rem;
@@ -66,15 +70,15 @@ p {
 /* Ajustes para telas maiores */
 @media (min-width: 1024px) {
     .title {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
     }
 
     .subtitle {
-        font-size: 2rem;
+        font-size: 1.2rem;
     }
 
     .text-paragraph {
-        font-size: 1.1rem;
+        font-size: 0.8rem;
     }
 }
 

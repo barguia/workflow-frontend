@@ -29,7 +29,7 @@
     :prepend-icon="node.icon"
     v-model:opened="opened"
     :title="node.title"
-    class="submenu-item"
+    class="submenu-item text-wrap"
     @click="node.action && node.action()"
   />
 
@@ -51,8 +51,6 @@ const hasChildren = computed(() =>
 )
 /** chave única por nível+id, ex.: "0:aplicacao" */
 const groupKey = computed(() => `${props.level}:${props.node.id}`)
-
-/** controla só a sua lógica; quem abre visualmente é o v-list via 'opened' */
 const opened = computed(() => props.openAtLevel[props.level] === props.node.id)
 
 function toggleHere () {
@@ -64,6 +62,7 @@ function toggleHere () {
 .menu-group .v-list-item,
 .submenu-item {
   min-height: 32px !important;
+  --indent-padding: calc(var(--parent-padding))/3;
 }
 
 

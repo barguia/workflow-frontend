@@ -2,7 +2,17 @@
   <app-component>
 
     <menu-component/>
-
+    <v-main class="main-content main-content-fluid" fluid>
+      <container-component fluid class="pa-0">
+        <v-row class="justify-center">
+          <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
+            <div class="content-container">
+              <RouterView />
+            </div>
+          </v-col>
+        </v-row>
+      </container-component>
+    </v-main>
     <v-overlay
         :model-value="isLoading()"
         scrim="#000"
@@ -22,9 +32,9 @@ import { useTheme } from 'vuetify';
 import router from '@/router';
 import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
 import { useLoading } from '@/composables/useLoading';
-import AppComponent from "@/components/comuns/layout/AppComponent.vue";
+import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
-import MenuComponent from "@/components/comuns/layout/menu/MenuComponent.vue";
+import MenuComponent from "@/components/menu/MenuComponent.vue";
 
 export default {
   components: {

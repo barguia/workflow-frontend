@@ -1,7 +1,8 @@
 import { createMemoryHistory, createRouter } from 'vue-router'
 import UserPage from "@/components/pages/aplicacao/UserPage.vue";
-// import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
 import ProjetosPage from "@/components/pages/Projetos/ProjetosPage.vue";
+import LoginPage from "@/components/pages/aplicacao/login/LoginPage.vue";
+
 const routes = [
     {
         path: '',
@@ -24,7 +25,7 @@ const routes = [
     {
         path: '/login',
         name: 'Login',
-        component: ProjetosPage,
+        component: LoginPage,
         icon: "mdi-home",
     },
     {
