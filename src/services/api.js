@@ -40,7 +40,9 @@ api.interceptors.response.use(
         }
 
         if (error.response && error.response.status === 401) {
-            // store.commit('CLEAR_TOKEN');
+            const authStore = useAuthStore();
+            authStore.logout();
+
             return Promise.reject({
                 type: 'unauthorized',
                 errors: error.response.data.errors,

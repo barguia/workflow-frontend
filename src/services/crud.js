@@ -8,7 +8,6 @@ class Crud {
 
     async index() {
         const response = await this.api.get(`${this.route}`);
-        console.log(response.data.data)
         return response.data.data;
     }
 

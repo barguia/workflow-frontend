@@ -1,7 +1,5 @@
 <template>
   <v-app>
-    <p>URL da API: {{ apiUrl }}</p>
-    <p>Debug: {{ debugMode }}</p>
     <v-main class="fill-height">
       <v-container>
         <v-row justify="center" align="center">
@@ -59,15 +57,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from "@/services/api.js";
-import { useAuthStore } from '@/stores/authStore'; // Ajuste o path
+import { useAuthStore } from '@/stores/authStore.js';
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
-
+const router = useRouter();
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
+const error = ref(false)
 
 
 const emailRules = [
@@ -79,21 +79,16 @@ const passwordRules = [
   v => v.length >= 6 || 'Senha deve ter pelo menos 6 caracteres'
 ]
 
-
-const handleLogin = async () => {
-  loading.value = true
-  // Simule uma chamada de API aqui
-  await new Promise(resolve => setTimeout(resolve, 2000))
-  console.log('Login realizado com:', { email: email.value, password: password.value })
-  loading.value = false
-  // Redirecione ou trate o sucesso aqui
-}
-
 const handleForgotPassword = () => {
-  // Redirecione para página de recuperação de senha
   console.log('Navegar para esqueci a senha')
 }
 
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    router.push('/');
+  }
+});
 async function login() {
   try {
     const response = await api.post('/login', {
@@ -102,7 +97,7 @@ async function login() {
     });
     const newToken = response.data.token;
     authStore.setToken(newToken);
-    console.log('Login bem-sucedido! Token salvo.');
+    router.push('/');
   } catch (err) {
     error.value = err.response?.data?.message || 'Erro no login';
     console.error('Erro:', err);

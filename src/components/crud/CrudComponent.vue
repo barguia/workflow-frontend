@@ -21,20 +21,18 @@
         </DataTableComponent>
       </v-container>
 
-      <!-- Botão de Adicionar Novo Item -->
       <v-btn
           color="primary"
           fab
           dark
           fixed
           bottom
-          right
+          left
           @click="openAddModal"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
 
-      <!-- Botões de Ação em Massa (aparecem quando há seleção) -->
       <v-snackbar v-model="showMassActions" multi-line location="top" timeout="auto">
         <v-row>
           <v-col cols="auto">
@@ -75,7 +73,7 @@
             <button-component v-if="isEditing && hasResetPassword" color="warning" text @click="resetPassword">
               Resetar Senha
             </button-component>
-            <button-component color="primary" text @click="saveItem" :disabled="!valid">
+            <button-component color="primary" text @click="saveItem">
               Salvar
             </button-component>
           </v-card-actions>
@@ -124,12 +122,12 @@ const selectedItems = ref([])
 const search = ref('')
 const dialog = ref(false)
 const isEditing = ref(false)
-const valid = ref(false)
+
 const formRef = ref(null)
 const form = ref({})
 
 // useCrud
-const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud('app/users')
+const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = computed(() => selectedItems.value.length > 0)
 
 // Carregar itens
@@ -169,7 +167,6 @@ const closeModal = () => {
 }
 
 const saveItem = async () => {
-  if (!valid.value) return
   try {
     let result
     if (isEditing.value) {

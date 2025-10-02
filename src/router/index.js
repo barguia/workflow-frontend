@@ -1,7 +1,12 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import { createPinia } from 'pinia'; // Importe Pinia aqui
+import { useAuthStore } from '@/stores/authStore';
+
 import UserPage from "@/components/pages/aplicacao/UserPage.vue";
-import ProjetosPage from "@/components/pages/Projetos/ProjetosPage.vue";
-import LoginPage from "@/components/pages/aplicacao/login/LoginPage.vue";
+import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
+import PerfilPage from "@/components/pages/aplicacao/PerfilPage.vue";
+
+const pinia = createPinia();
 
 const routes = [
     {
@@ -15,40 +20,39 @@ const routes = [
         name: 'Home',
         component: UserPage,
         icon: "mdi-home",
+        meta: { requiresAuth: true },
     },
     {
-        path: '/',
-        name: 'Home',
-        component: UserPage,
+        path: '/perfil',
+        name: 'Perfil',
+        component: PerfilPage,
         icon: "mdi-home",
+        meta: { requiresAuth: true },
     },
     {
         path: '/user',
         name: 'User',
         component: UserPage,
         icon: "mdi-home",
+        meta: { requiresAuth: true },
     },
 ];
 
 const router = createRouter({
-    // history: createMemoryHistory(),
     history: createWebHistory(),
     routes,
 })
 
 router.beforeEach(async (to, from, next) => {
-    // const { isAuthenticated, checkAuth } = useAuth();
+    const authStore = useAuthStore(pinia); // Acesse via pinia instance
+    await authStore.checkAuth(); // Carrega do storage se necessário (assíncrono)
 
-    if (to.meta.requiresAuth && !isAuthenticated.value) {
-        console.log('teste')
-        // await checkAuth();
-        // if (isAuthenticated.value) {
-        //     next('/');
-        // } else {
-        //     next('/login');
-        // }
+    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+
+        next('/login'); // Redireciona para login
     } else {
-        next();
+        next(); // Prossegue
     }
 });
+
 export default router;

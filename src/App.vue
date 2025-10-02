@@ -35,6 +35,8 @@ import { useLoading } from '@/composables/useLoading';
 import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import MenuComponent from "@/components/menu/MenuComponent.vue";
+import { useAuthStore } from '@/stores/authStore';
+
 
 export default {
   components: {
@@ -59,6 +61,13 @@ export default {
       theme,
       isLoading,
     };
+  },
+  mounted() {
+    const authStore = useAuthStore();
+    authStore.loadToken(); // Restaura do LocalStorage se existir
+    if (!authStore.token) {
+      router.push('/login'); // Redireciona se não autenticado
+    }
   },
   created() {
     this.theme.change(this.selectedTheme)

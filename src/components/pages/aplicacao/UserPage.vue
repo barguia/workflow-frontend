@@ -1,6 +1,6 @@
 <template>
   <CrudComponent
-      route="users"
+      route="app/users"
       title="Usuários"
       :fields="userFields"
       :headers="userHeaders"
