@@ -1,8 +1,8 @@
 import axios from 'axios';
-import store from '@/store';
+// import storestore from '@/store';
 
 const api = axios.create({
-    baseURL: process.env.VUE_APP_BASE_URL,
+    baseURL: 'http://localhost/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -10,7 +10,8 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = store.state.token;
+    // const token = store.state.token;
+    const token = 123
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -37,7 +38,7 @@ api.interceptors.response.use(
         }
 
         if (error.response && error.response.status === 401) {
-            store.commit('CLEAR_TOKEN');
+            // store.commit('CLEAR_TOKEN');
             return Promise.reject({
                 type: 'unauthorized',
                 errors: error.response.data.errors,
