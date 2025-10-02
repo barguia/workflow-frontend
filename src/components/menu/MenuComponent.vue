@@ -22,8 +22,11 @@
       <v-list>
         <v-list-item title="Perfil"></v-list-item>
         <v-list-item title="Logout"></v-list-item>
+        <router-link to="/login">
+          <v-list-item title="Login"></v-list-item>
+        </router-link>
         <v-list-item title="Login">
-          <router-link to="/login"/>
+
         </v-list-item>
       </v-list>
     </v-menu>
