@@ -1,5 +1,7 @@
 <template>
   <v-app>
+    <p>URL da API: {{ apiUrl }}</p>
+    <p>Debug: {{ debugMode }}</p>
     <v-main class="fill-height">
       <v-container>
         <v-row justify="center" align="center">
@@ -8,7 +10,7 @@
               <v-card-title class="text-h4 text-center mb-6">
                 Login
               </v-card-title>
-              <v-form @submit.prevent="handleLogin">
+              <v-form @submit.prevent="login">
                 <v-text-field
                     v-model="email"
                     label="Email"
@@ -58,13 +60,16 @@
 
 <script setup>
 import { ref } from 'vue'
+import api from "@/services/api.js";
+import { useAuthStore } from '@/stores/authStore'; // Ajuste o path
 
-// Dados reativos
+const authStore = useAuthStore();
+
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 
-// Regras de validação
+
 const emailRules = [
   v => !!v || 'Email é obrigatório',
   v => /.+@.+\..+/.test(v) || 'Email deve ser válido'
@@ -74,7 +79,7 @@ const passwordRules = [
   v => v.length >= 6 || 'Senha deve ter pelo menos 6 caracteres'
 ]
 
-// Funções de ação
+
 const handleLogin = async () => {
   loading.value = true
   // Simule uma chamada de API aqui
@@ -87,6 +92,21 @@ const handleLogin = async () => {
 const handleForgotPassword = () => {
   // Redirecione para página de recuperação de senha
   console.log('Navegar para esqueci a senha')
+}
+
+async function login() {
+  try {
+    const response = await api.post('/login', {
+      email: email.value,
+      password: password.value,
+    });
+    const newToken = response.data.token;
+    authStore.setToken(newToken);
+    console.log('Login bem-sucedido! Token salvo.');
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Erro no login';
+    console.error('Erro:', err);
+  }
 }
 </script>
 

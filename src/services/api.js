@@ -1,19 +1,21 @@
 import axios from 'axios';
-// import storestore from '@/store';
+import router from "@/router/index.js";
+import {useAuthStore} from "@/stores/authStore.js";
 
 const api = axios.create({
-    baseURL: 'http://localhost/api',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
     withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-    // const token = store.state.token;
-    const token = 123
-    if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+
+api.interceptors.request.use(config => {
+    const authStore = useAuthStore();
+    authStore.loadToken();
+    if (authStore.token) {
+        config.headers.Authorization = `Bearer ${authStore.token}`;
     }
     return config;
 });

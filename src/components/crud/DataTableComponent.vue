@@ -1,5 +1,4 @@
 <template>
-  {{localHeaders}}
   <v-data-table
       v-model="localSelected"
       :headers="localHeaders"

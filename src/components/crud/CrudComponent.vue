@@ -69,15 +69,15 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeModal">
+            <button-component color="blue darken-1" text @click="closeModal">
               Cancelar
-            </v-btn>
-            <v-btn v-if="isEditing && hasResetPassword" color="warning" text @click="resetPassword">
+            </button-component>
+            <button-component v-if="isEditing && hasResetPassword" color="warning" text @click="resetPassword">
               Resetar Senha
-            </v-btn>
-            <v-btn color="primary" text @click="saveItem" :disabled="!valid">
+            </button-component>
+            <button-component color="primary" text @click="saveItem" :disabled="!valid">
               Salvar
-            </v-btn>
+            </button-component>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -103,6 +103,7 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js' // Ajuste o caminho conforme sua estrutura
 import DataTableComponent from './DataTableComponent.vue'
+import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'
