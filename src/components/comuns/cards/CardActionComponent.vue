@@ -4,7 +4,7 @@
   </v-card-actions>
 </template>
 
-<script setupt>
+<script setup>
 
 </script>
 
