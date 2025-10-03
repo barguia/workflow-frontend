@@ -1,12 +1,14 @@
 <template>
-  <v-alert v-bind="$attrs" />
+  <v-navigation-drawer v-bind="$attrs">
+    <slot/>
+  </v-navigation-drawer>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'AlertComponent',
+  name: 'NavigationDrawerComponent',
   inheritAttrs: false,
 });
 </script>

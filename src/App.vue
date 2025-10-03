@@ -1,15 +1,15 @@
 <template>
-  <app-component>
+  <AppComponent>
+    <MenuComponent/>
 
-    <menu-component/>
-    <v-main class="main-content main-content-fluid" fluid>
-      <container-component fluid class="pa-0">
-        <v-row class="justify-center">
-          <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
+    <MainComponent class="main-content main-content-fluid" fluid>
+      <ContainerComponent fluid class="pa-0">
+        <row-component class="justify-center">
+          <ColComponent class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
             <div class="content-container">
               <RouterView />
 
-              <v-snackbar
+              <SnackbarComponent
                   v-model="showSnackbar"
                   :color="type"
                   timeout="5000"
@@ -19,23 +19,23 @@
                 <template #actions>
                   <v-btn color="white" variant="text" @click="clearNotification">Fechar</v-btn>
                 </template>
-              </v-snackbar>
+              </SnackbarComponent>
             </div>
-          </v-col>
-        </v-row>
-      </container-component>
-    </v-main>
-    <v-overlay
+          </ColComponent>
+        </row-component>
+      </ContainerComponent>
+    </MainComponent>
+    <OverlayComponent
         :model-value="isLoading()"
         scrim="#000"
         opacity="0.5"
         z-index="9999"
         persistent
         class="d-flex align-center justify-center">
-      <v-progress-circular indeterminate size="64" color="primary" />
+      <ProgressCircularComponent indeterminate size="64" color="primary" />
       <p class="mt-4 text-white">Carregando...</p>
-    </v-overlay>
-  </app-component>
+    </OverlayComponent>
+  </AppComponent>
 
 </template>
 
@@ -46,16 +46,28 @@ import { useNotifications } from '@/composables/useNotifications.js';
 import { useAuthStore } from '@/stores/authStore';
 import { useLoading } from '@/composables/useLoading';
 
-import MenuComponent from "@/components/menu/MenuComponent.vue";
+import MenuCompletoComponent from "@/components/menu/MenuCompletoComponent.vue";
 import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
+import RowComponent from "@/components/comuns/layout/RowComponent.vue";
+import ColComponent from "@/components/comuns/layout/ColComponent.vue";
+import SnackbarComponent from "@/components/comuns/alerts/SnackbarComponent.vue";
+import MainComponent from "@/components/comuns/containers/MainComponent.vue";
+import OverlayComponent from "@/components/comuns/containers/OverlayComponent.vue";
+import ProgressCircularComponent from "@/components/comuns/progress/ProgressCircularComponent.vue";
 
 
 
 export default {
   components: {
-    MenuComponent,
+    ProgressCircularComponent,
+    OverlayComponent,
+    MainComponent,
+    SnackbarComponent,
+    ColComponent,
+    RowComponent,
+    MenuComponent: MenuCompletoComponent,
     ContainerComponent,
     FooterComponent,
     AppComponent,

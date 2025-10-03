@@ -1,51 +1,47 @@
 <template>
-  <app-bar-component app>
-    <app-bar-nav-icon-component @click="drawer = !drawer"></app-bar-nav-icon-component>
-    <toolbar-title-component>Workflow Management System</toolbar-title-component>
+  <AppBarComponent app>
+    <AppBarNavIconComponent @click="drawer = !drawer"/>
+    <ToolbarTitleComponent>Workflow Management System</ToolbarTitleComponent>
     <v-spacer></v-spacer>
-    <v-text-field
-        v-model="search"
-        prepend-inner-icon="mdi-magnify"
-        variant="underlined"
-        placeholder="Search"
-        single-line
-        hide-details
-    ></v-text-field>
-    <v-menu>
-      <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon>
-          <v-avatar>
-            <v-icon>mdi-account</v-icon>
-          </v-avatar>
-        </v-btn>
-      </template>
-      <v-list>
-        <template v-if="authStore.isAuthenticated">
-          <v-list-item title="Perfil"></v-list-item>
-          <v-list-item title="Logout" @click="efetuaLogout()"></v-list-item>
-        </template>
-
-        <router-link v-else to="/login">
-          <v-list-item title="Login"></v-list-item>
-        </router-link>
-
-      </v-list>
-    </v-menu>
-  </app-bar-component>
-
-  <v-navigation-drawer v-model="drawer" app temporary width=340>
-    <v-list v-model:opened="opened">
-
-      <menu-node-component
-          v-for="item in menuItems"
-          :key="item.id"
-          :node="item"
-          :level="0"
-          :open-at-level="openAtLevel"
-          @toggle="handleToggle"
+    <template v-if="authStore.isAuthenticated">
+      <TextFieldComponent
+          v-model="search"
+          prepend-inner-icon="mdi-magnify"
+          variant="underlined"
+          placeholder="Search"
+          single-line
+          hide-details
       />
-    </v-list>
-  </v-navigation-drawer>
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <ButtonComponent v-bind="props" icon>
+            <AvatarComponent>
+              <IconComponent>mdi-account</IconComponent>
+            </AvatarComponent>
+          </ButtonComponent>
+        </template>
+        <ListComponent>
+          <ListItemComponent title="Perfil"></ListItemComponent>
+          <ListItemComponent title="Logout" @click="efetuaLogout()"></ListItemComponent>
+        </ListComponent>
+      </v-menu>
+    </template>
+
+  </AppBarComponent>
+
+  <NavigationDrawerComponent v-model="drawer" app temporary width=340>
+    <ListComponent v-model:opened="opened">
+
+      <MenuNodeComponent
+        v-for="item in menuItems"
+        :key="item.id"
+        :node="item"
+        :level="0"
+        :open-at-level="openAtLevel"
+        @toggle="handleToggle"
+      />
+    </ListComponent>
+  </NavigationDrawerComponent>
 </template>
 
 <script setup>
@@ -57,6 +53,13 @@ import MenuNodeComponent from "@/components/menu/componentes/MenuNodeComponent.v
 import AppBarComponent from "@/components/comuns/navigations/AppBarComponent.vue";
 import AppBarNavIconComponent from "@/components/comuns/navigations/AppBarNavIconComponent.vue";
 import ToolbarTitleComponent from "@/components/comuns/navigations/ToolbarTitleComponent.vue";
+import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
+import ListComponent from "@/components/comuns/lists/ListComponent.vue";
+import ListItemComponent from "@/components/comuns/lists/ListItemComponent.vue";
+import NavigationDrawerComponent from "@/components/comuns/navigations/NavigationDrawerComponent.vue";
+import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
+import IconComponent from "@/components/comuns/IconComponent.vue";
+import AvatarComponent from "@/components/comuns/containers/AvatarComponent.vue";
 
 
 const router = useRouter()

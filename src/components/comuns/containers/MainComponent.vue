@@ -1,12 +1,14 @@
 <template>
-  <v-alert v-bind="$attrs" />
+  <v-main v-bind="$attrs">
+    <slot/>
+  </v-main>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'AlertComponent',
+  name: 'MainComponent',
   inheritAttrs: false,
 });
 </script>

@@ -1,12 +1,14 @@
 <template>
-  <v-alert v-bind="$attrs" />
+  <v-snackbar v-bind="$attrs">
+    <slot/>
+  </v-snackbar>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'AlertComponent',
+  name: 'SnackbarComponent',
   inheritAttrs: false,
 });
 </script>

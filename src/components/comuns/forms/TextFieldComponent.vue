@@ -1,11 +1,12 @@
-<script setup>
-
-</script>
-
 <template>
-
+  <v-text-field v-bind="$attrs"/>
 </template>
 
-<style scoped>
+<script>
+import { defineComponent } from 'vue';
 
-</style>
+export default defineComponent({
+  name: 'TextFieldComponent',
+  inheritAttrs: false,
+});
+</script>
