@@ -4,10 +4,8 @@
   </v-card-actions>
 </template>
 
-<script>
-export default {
-  name: "CardActionComponent"
-}
+<script setupt>
+
 </script>
 
 <style scoped>

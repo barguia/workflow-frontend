@@ -4,23 +4,6 @@
   </v-btn>
 </template>
 
-<script>
-export default {
-  name: 'ButtonComponent',
-  props: {
-    color: {
-      type: String,
-      default: 'primary',
-    },
-    variant: {
-      type: String,
-      default: 'contained',
-    },
-  },
-  methods: {
-    onClick() {
-      this.$emit('click');
-    },
-  },
-};
+<script setup>
+
 </script>
