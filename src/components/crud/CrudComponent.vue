@@ -102,6 +102,7 @@ import { ref, onMounted, computed, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js' // Ajuste o caminho conforme sua estrutura
 import DataTableComponent from './DataTableComponent.vue'
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
+import { useValidationErrors } from '@/composables/useValidationErrors';
 
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'
@@ -125,6 +126,7 @@ const isEditing = ref(false)
 
 const formRef = ref(null)
 const form = ref({})
+const { validationErrors } = useValidationErrors();
 
 // useCrud
 const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
@@ -210,6 +212,7 @@ const deleteSelected = async () => {
       loadItems()
     } catch (err) {
       // Erros tratados pelo useCrud
+      console.log(err)
     }
   }
 }

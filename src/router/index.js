@@ -36,6 +36,12 @@ const routes = [
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: () => import('@/components/pages/NotFoundView.vue'),
+        meta: { layout: 'public' }
+    },
 ];
 
 const router = createRouter({
@@ -45,7 +51,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore(pinia); // Acesse via pinia instance
-    await authStore.checkAuth(); // Carrega do storage se necessário (assíncrono)
+    await authStore.checkAuth();
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
 

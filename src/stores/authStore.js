@@ -9,14 +9,15 @@ export const useAuthStore = defineStore('auth', {
         loaded: false,
     }),
     getters: {
-        isAuthenticated: (state) => !!state.token,
+        isAuthenticated: (state) => state.loaded,
     },
     actions: {
         setToken(newToken) {
             if (newToken) {
                 const encrypted = CryptoJS.AES.encrypt(newToken, CRYPTO_KEY).toString();
                 localStorage.setItem('authToken', encrypted);
-                this.token = newToken; // Armazena descriptografado no estado
+                this.token = newToken;
+                this.loaded = true;
             }
         },
         // Descriptografa e carrega do LocalStorage

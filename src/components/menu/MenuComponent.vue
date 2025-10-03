@@ -20,14 +20,15 @@
         </v-btn>
       </template>
       <v-list>
-        <v-list-item title="Perfil"></v-list-item>
-        <v-list-item title="Logout"></v-list-item>
-        <router-link to="/login">
+        <template v-if="authStore.isAuthenticated">
+          <v-list-item title="Perfil"></v-list-item>
+          <v-list-item title="Logout" @click="efetuaLogout()"></v-list-item>
+        </template>
+
+        <router-link v-else to="/login">
           <v-list-item title="Login"></v-list-item>
         </router-link>
-        <v-list-item title="Login">
 
-        </v-list-item>
       </v-list>
     </v-menu>
   </app-bar-component>
@@ -50,19 +51,18 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-
 import MenuNodeComponent from "@/components/menu/componentes/MenuNodeComponent.vue";
-import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
-import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import AppBarComponent from "@/components/comuns/navigations/AppBarComponent.vue";
 import AppBarNavIconComponent from "@/components/comuns/navigations/AppBarNavIconComponent.vue";
 import ToolbarTitleComponent from "@/components/comuns/navigations/ToolbarTitleComponent.vue";
+import {useAuthStore} from "@/stores/authStore.js";
 
 const router = useRouter()
 const drawer = ref(true)
 const search = ref('')
 const openAtLevel = reactive({})
 const opened = ref([])
+const authStore = useAuthStore()
 
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
@@ -77,6 +77,10 @@ function handleToggle({ level, id }) {
       .map(([lvl, val]) => `${lvl}:${val}`)
 }
 
+function efetuaLogout() {
+  authStore.logout()
+  router.push('/login')
+}
 const go = path => () => router.push(path)
 
 const menuItems = [
@@ -117,7 +121,6 @@ const menuItems = [
 .v-navigation-drawer { background-color: #fff; }
 
 .v-list-item--active { background-color: #212121; color: #fff !important; }
-
 
 .v-list-item:hover {
   background-color: #f0f0f0;   /* cor ao passar o mouse */

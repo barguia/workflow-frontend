@@ -83,6 +83,8 @@ const handleForgotPassword = () => {
   console.log('Navegar para esqueci a senha')
 }
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 
 onMounted(() => {
   if (authStore.isAuthenticated) {
@@ -90,6 +92,7 @@ onMounted(() => {
   }
 });
 async function login() {
+
   try {
     const response = await api.post('/login', {
       email: email.value,
@@ -97,6 +100,7 @@ async function login() {
     });
     const newToken = response.data.token;
     authStore.setToken(newToken);
+
     router.push('/');
   } catch (err) {
     error.value = err.response?.data?.message || 'Erro no login';
