@@ -8,6 +8,18 @@
           <v-col class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
             <div class="content-container">
               <RouterView />
+
+              <v-snackbar
+                  v-model="showSnackbar"
+                  :color="type"
+                  timeout="5000"
+                  location="top"
+              >
+                {{ message }}
+                <template #actions>
+                  <v-btn color="white" variant="text" @click="clearNotification">Fechar</v-btn>
+                </template>
+              </v-snackbar>
             </div>
           </v-col>
         </v-row>
@@ -30,12 +42,15 @@
 <script>
 import { useTheme } from 'vuetify';
 import router from '@/router';
-import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
+import { useNotifications } from '@/composables/useNotifications.js';
+import { useAuthStore } from '@/stores/authStore';
 import { useLoading } from '@/composables/useLoading';
+
+import MenuComponent from "@/components/menu/MenuComponent.vue";
 import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
-import MenuComponent from "@/components/menu/MenuComponent.vue";
-import { useAuthStore } from '@/stores/authStore';
+import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
+
 
 
 export default {
@@ -56,10 +71,14 @@ export default {
   setup() {
     const theme = useTheme();
     const { isLoading } = useLoading();
-
+    const { message, type, showSnackbar, clearNotification } = useNotifications();
     return {
       theme,
       isLoading,
+      message,
+      type,
+      showSnackbar,
+      clearNotification,
     };
   },
   mounted() {

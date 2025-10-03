@@ -51,11 +51,13 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from "@/stores/authStore.js";
+
 import MenuNodeComponent from "@/components/menu/componentes/MenuNodeComponent.vue";
 import AppBarComponent from "@/components/comuns/navigations/AppBarComponent.vue";
 import AppBarNavIconComponent from "@/components/comuns/navigations/AppBarNavIconComponent.vue";
 import ToolbarTitleComponent from "@/components/comuns/navigations/ToolbarTitleComponent.vue";
-import {useAuthStore} from "@/stores/authStore.js";
+
 
 const router = useRouter()
 const drawer = ref(true)
@@ -77,8 +79,8 @@ function handleToggle({ level, id }) {
       .map(([lvl, val]) => `${lvl}:${val}`)
 }
 
-function efetuaLogout() {
-  authStore.logout()
+async function  efetuaLogout() {
+  await authStore.logout()
   router.push('/login')
 }
 const go = path => () => router.push(path)

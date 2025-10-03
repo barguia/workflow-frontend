@@ -54,10 +54,9 @@ router.beforeEach(async (to, from, next) => {
     await authStore.checkAuth();
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-
-        next('/login'); // Redireciona para login
+        next('/login');
     } else {
-        next(); // Prossegue
+        next();
     }
 });
 

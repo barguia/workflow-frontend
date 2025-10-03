@@ -14,7 +14,6 @@
                     label="Email"
                     type="email"
                     prepend-inner-icon="mdi-email"
-                    :rules="emailRules"
                     required
                     class="mb-4"
                 ></v-text-field>
@@ -23,7 +22,6 @@
                     label="Senha"
                     type="password"
                     prepend-inner-icon="mdi-lock"
-                    :rules="passwordRules"
                     required
                     class="mb-4"
                 ></v-text-field>
@@ -58,9 +56,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import api from "@/services/api.js";
 import { useAuthStore } from '@/stores/authStore.js';
 import { useRouter } from 'vue-router';
+import {useNotifications} from "@/composables/useNotifications.js";
+
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -68,23 +67,11 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref(false)
-
-
-const emailRules = [
-  v => !!v || 'Email é obrigatório',
-  v => /.+@.+\..+/.test(v) || 'Email deve ser válido'
-]
-const passwordRules = [
-  v => !!v || 'Senha é obrigatória',
-  v => v.length >= 6 || 'Senha deve ter pelo menos 6 caracteres'
-]
+const { triggerNotification } = useNotifications();
 
 const handleForgotPassword = () => {
   console.log('Navegar para esqueci a senha')
 }
-
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 
 onMounted(() => {
   if (authStore.isAuthenticated) {
@@ -94,13 +81,18 @@ onMounted(() => {
 async function login() {
 
   try {
-    const response = await api.post('/login', {
+    await authStore.login({
       email: email.value,
       password: password.value,
     });
-    const newToken = response.data.token;
-    authStore.setToken(newToken);
-
+    // triggerNotification({ message: 'Login realizado com sucesso!', type: 'success' });
+    window.dispatchEvent(
+        new CustomEvent('notification', {
+          detail: {
+            type: 'success',
+            message: 'Login realizado com sucesso!',
+          },
+        }));
     router.push('/');
   } catch (err) {
     error.value = err.response?.data?.message || 'Erro no login';

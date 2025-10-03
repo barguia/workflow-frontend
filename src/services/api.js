@@ -1,5 +1,4 @@
 import axios from 'axios';
-import router from "@/router/index.js";
 import {useAuthStore} from "@/stores/authStore.js";
 import {useLoading} from "@/composables/useLoading.js";
 
@@ -15,30 +14,40 @@ const api = axios.create({
 const errorHandlers = {
     422: (error) => ({
         type: 'validation',
+        listener: 'validation-errors',
         errors: error.response.data.errors,
-        message: 'Erro de validação. Corrija os campos destacados.',
+        message: error.response.data.message || 'Erro de validação. Corrija os campos destacados.',
     }),
     403: (error) => ({
         type: 'forbidden',
+        errorType: 'error',
+        listener: 'notification',
         errors: error.response.data.errors,
-        message: 'Acesso negado. Solicite permissão para o administrador.',
+        message: error.response.data.message || 'Acesso negado. Solicite permissão para o administrador.',
     }),
     401: (error) => {
-        const authStore = useAuthStore(); // Assumindo Pinia disponível
-        authStore.logout();
+        const authStore = useAuthStore();
+        authStore.limpaSessao();
         return {
             type: 'unauthorized',
+            errorType: 'error',
+            listener: 'notification',
             errors: error.response.data.errors,
-            message: 'Efetue o login para navegar no sistema.',
+            message: error.response.data.message,
+        };
+    },
+    500: (error) => {
+        const authStore = useAuthStore();
+        authStore.limpaSessao();
+        return {
+            type: 'server',
+            errorType: 'error',
+            listener: 'notification',
+            errors: error.response.data.errors,
+            message: error.response.data.message,
         };
     },
 };
-
-api.interceptors.request.use((config) => {
-    const { startLoading } = useLoading();
-    startLoading();
-    return config;
-});
 
 api.interceptors.request.use(config => {
     const authStore = useAuthStore();
@@ -46,6 +55,12 @@ api.interceptors.request.use(config => {
     if (authStore.token) {
         config.headers.Authorization = `Bearer ${authStore.token}`;
     }
+    return config;
+});
+
+api.interceptors.request.use((config) => {
+    const { startLoading } = useLoading();
+    startLoading();
     return config;
 });
 
@@ -63,11 +78,34 @@ api.interceptors.response.use(
 
         const handler = errorHandlers[status] || (() => ({
             type: 'general',
+            listener: 'notification',
+            errorType: 'error',
             message: 'Erro ao processar os dados.',
-            details: error,
+            detail: error,
+            errors: error,
         }));
 
-        return Promise.reject(handler(error));
+        const errorData = handler(error); // Executa o handler com o erro
+
+        // Dispara evento para o composable useNotifications
+        if (errorData.listener === 'notification') {
+            window.dispatchEvent(
+                new CustomEvent('notification', {
+                    detail: {
+                        type: errorData.errorType,
+                        message: errorData.message,
+                    },
+                })
+            );
+        } else if (errorData.listener === 'validation-errors') {
+            window.dispatchEvent(
+                new CustomEvent('validation-errors', {
+                    detail: errorData.errors,
+                })
+            );
+        }
+
+        return Promise.reject(errorData);
     }
 );
 
