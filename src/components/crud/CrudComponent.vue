@@ -1,108 +1,115 @@
 <template>
-  <v-app>
-    <v-main>
-      <v-container fluid>
-        <DataTableComponent
-            v-model:selected="selectedItems"
-            :headers="headers"
-            :items="items"
-            :search.sync="search"
-            :title="title"
-            @edit="openEditModal"
-        >
-          <template #actions="{ item }">
-            <v-icon small class="mr-2" @click="openEditModal(item)">
-              mdi-pencil
-            </v-icon>
-            <v-icon small @click="deleteItem(item)">
-              mdi-delete
-            </v-icon>
-          </template>
-        </DataTableComponent>
-      </v-container>
+  <ContainerComponent fluid>
+    <CrudDataTableComponent
+        v-model:selected="selectedItems"
+        :headers="headers"
+        :items="items"
+        :search.sync="search"
+        :title="title"
+        @edit="openEditModal"
+    >
+      <template #actions="{ item }">
+        <v-icon small class="mr-2" @click="openEditModal(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon small @click="deleteItem(item)">
+          mdi-delete
+        </v-icon>
+      </template>
+    </CrudDataTableComponent>
+  </ContainerComponent>
 
-      <v-btn
-          color="primary"
-          fab
-          dark
-          fixed
-          bottom
-          left
-          @click="openAddModal"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
+  <ButtonComponent
+      color="primary"
+      fab
+      dark
+      fixed
+      bottom
+      left
+      @click="openAddModal"
+  >
+    <v-icon>mdi-plus</v-icon>
+  </ButtonComponent>
 
-      <v-snackbar v-model="showMassActions" multi-line location="top" timeout="auto">
-        <v-row>
-          <v-col cols="auto">
-            {{ selectedItems.length }} item(ns) selecionado(s)
-          </v-col>
-          <v-col cols="auto">
-            <v-btn text color="error" @click="deleteSelected">
-              Excluir Selecionados
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-snackbar>
+  <SnackbarComponent v-model="showMassActions" multi-line location="top" timeout="auto">
+    <RowComponent>
+      <ColComponent cols="auto">
+        {{ selectedItems.length }} item(ns) selecionado(s)
+      </ColComponent>
+      <ColComponent cols="auto">
+        <ButtonComponent text color="error" @click="deleteSelected">
+          Excluir Selecionados
+        </ButtonComponent>
+      </ColComponent>
+    </RowComponent>
+  </SnackbarComponent>
 
-      <!-- Modal para Adicionar/Editar Item -->
-      <v-dialog v-model="dialog" max-width="600px" @keydown.esc="closeModal">
-        <v-card>
-          <v-card-title>
-            <span class="text-h5">{{ isEditing ? 'Editar ' + title.toLowerCase() : 'Adicionar ' + title.toLowerCase() }}</span>
-          </v-card-title>
-          <v-card-text>
-            <v-form ref="formRef" v-model="valid" lazy-validation>
-              <v-text-field
-                  v-for="field in fields"
-                  :key="field.key"
-                  v-model="form[field.key]"
-                  :label="field.label"
-                  :type="field.type || 'text'"
-                  :rules="field.rules"
-                  :required="!field.optional"
-              ></v-text-field>
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <button-component color="blue darken-1" text @click="closeModal">
-              Cancelar
-            </button-component>
-            <button-component v-if="isEditing && hasResetPassword" color="warning" text @click="resetPassword">
-              Resetar Senha
-            </button-component>
-            <button-component color="primary" text @click="saveItem">
-              Salvar
-            </button-component>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+  <!-- Modal para Adicionar/Editar Item -->
+  <v-dialog v-model="dialog" max-width="600px" @keydown.esc="closeModal">
+    <CardComponent>
+      <CardTitleComponent>
+        <span class="text-h5">{{ isEditing ? 'Editar ' + title.toLowerCase() : 'Adicionar ' + title.toLowerCase() }}</span>
+      </CardTitleComponent>
+      <CardTextComponent>
+        <FormComponent ref="formRef" v-model="valid" lazy-validation>
+          <TextFieldComponent
+              v-for="field in fields"
+              :key="field.key"
+              v-model="form[field.key]"
+              :label="field.label"
+              :type="field.type || 'text'"
+              :rules="field.rules"
+              :required="!field.optional"
+          />
+        </FormComponent>
+      </CardTextComponent>
+      <CardActionsComponent>
+        <v-spacer></v-spacer>
+        <ButtonComponent color="blue darken-1" text @click="closeModal">
+          Cancelar
+        </ButtonComponent>
+        <ButtonComponent v-if="isEditing && hasResetPassword" color="warning" text @click="resetPassword">
+          Resetar Senha
+        </ButtonComponent>
+        <ButtonComponent color="primary" text @click="saveItem">
+          Salvar
+        </ButtonComponent>
+      </CardActionsComponent>
+    </CardComponent>
+  </v-dialog>
 
-      <!-- Snackbar para Erros/Sucesso -->
-      <v-snackbar
-          v-model="showSnackbar"
-          :color="snackbarMessage === 'Operação realizada com sucesso!' ? 'success' : 'error'"
-          timeout="3000"
-      >
-        {{ snackbarMessage }}
-        <template v-slot:actions>
-          <v-btn color="white" variant="text" @click="showSnackbar = false">
-            Fechar
-          </v-btn>
-        </template>
-      </v-snackbar>
-    </v-main>
-  </v-app>
+  <!-- Snackbar para Erros/Sucesso -->
+  <SnackbarComponent
+      v-model="showSnackbar"
+      :color="snackbarMessage === 'Operação realizada com sucesso!' ? 'success' : 'error'"
+      timeout="3000"
+  >
+    {{ snackbarMessage }}
+    <template v-slot:actions>
+      <ButtonComponent color="white" variant="text" @click="showSnackbar = false">
+        Fechar
+      </ButtonComponent>
+    </template>
+  </SnackbarComponent>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, nextTick } from 'vue'
-import { useCrud } from '@/services/useCrud.js' // Ajuste o caminho conforme sua estrutura
-import DataTableComponent from './DataTableComponent.vue'
-import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
+import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors';
+
+import CrudDataTableComponent from './CrudDataTableComponent.vue'
+import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
+import SnackbarComponent from "@/components/comuns/alerts/SnackbarComponent.vue";
+import CardComponent from "@/components/comuns/cards/CardComponent.vue";
+import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
+import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
+import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
+import FormComponent from "@/components/comuns/forms/FormComponent.vue";
+import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
+import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
+import RowComponent from "@/components/comuns/layout/RowComponent.vue";
+import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'

@@ -58,7 +58,7 @@ import ListComponent from "@/components/comuns/lists/ListComponent.vue";
 import ListItemComponent from "@/components/comuns/lists/ListItemComponent.vue";
 import NavigationDrawerComponent from "@/components/comuns/navigations/NavigationDrawerComponent.vue";
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
-import IconComponent from "@/components/comuns/IconComponent.vue";
+import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 import AvatarComponent from "@/components/comuns/containers/AvatarComponent.vue";
 
 

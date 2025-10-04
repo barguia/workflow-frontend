@@ -11,23 +11,23 @@
       item-key="id"
   >
     <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <ToolbarComponent flat>
+        <ToolbarTitleComponent>{{ title }}</ToolbarTitleComponent>
         <v-spacer></v-spacer>
-        <v-text-field
-            v-model="localSearch"
-            append-icon="mdi-magnify"
-            label="Buscar"
-            single-line
-            hide-details
-        ></v-text-field>
-      </v-toolbar>
+        <TextFieldComponent
+          v-model="localSearch"
+          append-icon="mdi-magnify"
+          label="Buscar"
+          single-line
+          hide-details
+        />
+      </ToolbarComponent>
     </template>
     <template v-slot:item.actions="{ item }">
       <slot name="actions" :item="item">
-        <v-icon small class="mr-2" @click="$emit('edit', item)">
+        <IconComponent small class="mr-2" @click="$emit('edit', item)">
           mdi-pencil
-        </v-icon>
+        </IconComponent>
       </slot>
     </template>
   </v-data-table>
@@ -35,6 +35,10 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import IconComponent from "@/components/comuns/icons/IconComponent.vue";
+import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
+import ToolbarTitleComponent from "@/components/comuns/navigations/ToolbarTitleComponent.vue";
+import ToolbarComponent from "@/components/comuns/navigations/ToolbarComponent.vue";
 
 const props = defineProps({
   headers: { type: Array, default: () => [] },
