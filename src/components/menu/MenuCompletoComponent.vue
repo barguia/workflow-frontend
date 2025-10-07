@@ -31,9 +31,8 @@
 
   <NavigationDrawerComponent v-model="drawer" app temporary width=340>
     <ListComponent v-model:opened="opened">
-
       <MenuNodeComponent
-        v-for="item in menuItems"
+        v-for="item in authStore.getMenus"
         :key="item.id"
         :node="item"
         :level="0"
@@ -68,7 +67,7 @@ const search = ref('')
 const openAtLevel = reactive({})
 const opened = ref([])
 const authStore = useAuthStore()
-
+console.log(authStore.getMenus)
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
 
@@ -86,40 +85,6 @@ async function  efetuaLogout() {
   await authStore.logout()
   router.push('/login')
 }
-const go = path => () => router.push(path)
-
-const menuItems = [
-  { id: 'login', title: 'Login', icon: 'mdi-chart-bar', action: go('/login') },
-  {
-    id: 'aplicacao',
-    title: 'Aplicação',
-    icon: 'mdi-file-document',
-    children: [
-      {
-        id: 'orgs',
-        title: '',
-        icon: 'mdi-file-document',
-        children: [
-          { id: 'usuarios2', title: 'Usuários',                  action: go('/users') },
-          { id: 'perfis2',   title: 'Perfis',                     action: go('/profiles') },
-        ],
-      },
-      { id: 'usuarios', title: 'Usuários',                  action: go('/users') },
-      { id: 'perfis',   title: 'Perfis',                     action: go('/profiles') },
-    ],
-  },
-  {
-    id: 'workflow',
-    title: 'Workflow',
-    icon: 'mdi-file-document',
-    children: [
-      { id: 'wfs',   title: 'Workflows',               icon: 'mdi-sitemap',   action: go('/workflows') },
-      { id: 'procs', title: 'Processos',               icon: 'mdi-cog',       action: go('/processes') },
-      { id: 'tasks', title: 'Tarefas',                 icon: 'mdi-check',     action: go('/tasks') },
-      { id: 'hier',  title: 'Hierarquia de Processos', icon: 'mdi-hierarchy', action: go('/hierarchy') },
-    ],
-  },
-]
 </script>
 
 <style scoped>

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import UserPage from "@/components/pages/aplicacao/UserPage.vue";
 import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
 import PerfilPage from "@/components/pages/aplicacao/PerfilPage.vue";
+import MenuPage from "@/components/pages/aplicacao/MenuPage.vue";
 
 const pinia = createPinia();
 
@@ -33,6 +34,13 @@ const routes = [
         path: '/user',
         name: 'User',
         component: UserPage,
+        icon: "mdi-home",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/menu',
+        name: 'Menu',
+        component: MenuPage,
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },

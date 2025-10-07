@@ -24,14 +24,15 @@
     />
   </v-list-group>
 
-  <v-list-item
-    v-else
-    :prepend-icon="node.icon"
-    v-model:opened="opened"
-    :title="node.title"
-    class="submenu-item text-wrap"
-    @click="node.action && node.action()"
-  />
+  <router-link :to="node.path" class="nav-link hover:text-blue-300 text-wrap" v-else>
+    <v-list-item
+        :prepend-icon="node.icon"
+        v-model:opened="opened"
+        class="submenu-item"
+        :title="node.title"
+    />
+  </router-link>
+
 
 </template>
 
@@ -62,7 +63,7 @@ function toggleHere () {
 .menu-group .v-list-item,
 .submenu-item {
   min-height: 32px !important;
-  --indent-padding: calc(var(--parent-padding))/3;
+  --indent-padding: calc(var(--parent-padding))/2;
 }
 
 
