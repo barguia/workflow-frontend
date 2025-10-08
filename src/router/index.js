@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import UserPage from "@/components/pages/aplicacao/UserPage.vue";
 import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
 import PerfilPage from "@/components/pages/aplicacao/PerfilPage.vue";
-import MenuPage from "@/components/pages/aplicacao/MenuPage.vue";
+import MenuPage from "@/components/pages/aplicacao/Menus/MenuPage.vue";
 
 const pinia = createPinia();
 

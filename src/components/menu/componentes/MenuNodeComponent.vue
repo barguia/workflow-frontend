@@ -15,21 +15,25 @@
     </template>
 
     <menu-node-component
-        v-for="child in node.children"
-        :key="child.id"
-        :node="child"
-        :level="level + 1"
-        :open-at-level="openAtLevel"
-        @toggle="$emit('toggle', $event)"
+      v-for="child in node.children"
+      :key="child.id"
+      :node="child"
+      :level="level + 1"
+      :open-at-level="openAtLevel"
+      @toggle="$emit('toggle', $event)"
     />
   </v-list-group>
 
-  <router-link :to="node.path" class="nav-link hover:text-blue-300 text-wrap" v-else>
+  <router-link
+    v-else
+    :to="node.path"
+    class="nav-link hover:text-blue-300 text-wrap"
+  >
     <v-list-item
-        :prepend-icon="node.icon"
-        v-model:opened="opened"
-        class="submenu-item"
-        :title="node.title"
+      :prepend-icon="node.icon"
+      v-model:opened="opened"
+      class="submenu-item"
+      :title="node.title"
     />
   </router-link>
 

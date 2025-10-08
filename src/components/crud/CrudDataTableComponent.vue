@@ -1,4 +1,5 @@
 <template>
+  {{localHeaders}}
   <v-data-table
       v-model="localSelected"
       :headers="localHeaders"
@@ -9,6 +10,7 @@
       small
       class="elevation-1"
       item-key="id"
+      :hide-default-header="false"
   >
     <template v-slot:top>
       <ToolbarComponent flat>
@@ -67,3 +69,13 @@ const localSelected = computed({
   set: (val) => emit('update:selected', val)
 })
 </script>
+
+<style scoped>
+/* Garante que os headers sejam visíveis */
+.v-data-table-header {
+  display: table-header-group !important;
+}
+.v-data-table-header th {
+  font-weight: bold;
+}
+</style>

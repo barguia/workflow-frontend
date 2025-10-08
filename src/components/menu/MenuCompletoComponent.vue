@@ -67,7 +67,6 @@ const search = ref('')
 const openAtLevel = reactive({})
 const opened = ref([])
 const authStore = useAuthStore()
-console.log(authStore.getMenus)
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
 

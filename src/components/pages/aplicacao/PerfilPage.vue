@@ -4,7 +4,6 @@
       title="Perfis"
       :fields="fieldsDatatable"
       :headers="headersDatatable"
-      has-reset-password
   />
 </template>
 
