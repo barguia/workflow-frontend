@@ -152,7 +152,7 @@ const props = defineProps({
   },
   headers: { type: Array, required: true }, // Headers para a tabela
 })
-console.log(props.headers)
+
 const emit = defineEmits(['item-saved', 'item-deleted'])
 
 const items = ref([])

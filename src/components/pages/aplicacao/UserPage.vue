@@ -25,11 +25,9 @@ const userFields = [
 ]
 
 const userHeaders = [
-  { text: 'Nome', value: 'name' },
-  { text: 'Email', value: 'email' },
-  { text: 'Telefone', value: 'phone' },
-  { text: 'Data de Nascimento', value: 'birthDate' },
-  { text: 'Ações', value: 'actions', sortable: false }
+  { title: 'Nome', value: 'name' },
+  { title: 'Email', value: 'email' },
+  { title: '', value: 'actions'}
 ]
 
 const resetPassword = (form, closeModal) => {

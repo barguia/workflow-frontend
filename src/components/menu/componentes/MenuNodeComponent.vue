@@ -26,7 +26,7 @@
 
   <router-link
     v-else
-    :to="node.path"
+    :to="node.path ? node.path : ''"
     class="nav-link hover:text-blue-300 text-wrap"
   >
     <v-list-item

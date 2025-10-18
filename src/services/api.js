@@ -1,6 +1,9 @@
 import axios from 'axios';
 import {useAuthStore} from "@/stores/authStore.js";
 import {useLoading} from "@/composables/useLoading.js";
+// import { useRouter } from 'vue-router';
+import router from '@/router';
+
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -28,6 +31,22 @@ const errorHandlers = {
     401: (error) => {
         const authStore = useAuthStore();
         authStore.limpaSessao();
+
+        const publicRoutes = ['/login', '/forgot-password', '/register'];
+        const publicEndpoints = ['/api/login', '/api/register', '/api/password/reset'];
+        const currentPath = router.currentRoute.value?.path || '';
+        const requestUrl = error.config?.url || 'unknown';
+
+        if (
+            currentPath &&
+            !publicRoutes.includes(currentPath) &&
+            !publicEndpoints.some(endpoint => requestUrl.includes(endpoint))
+        ) {
+            router.push('/login').catch(err => {
+                console.error('Erro ao redirecionar para /login:', err);
+            });
+        }
+
         return {
             type: 'unauthorized',
             errorType: 'error',
@@ -37,8 +56,6 @@ const errorHandlers = {
         };
     },
     500: (error) => {
-        const authStore = useAuthStore();
-        authStore.limpaSessao();
         return {
             type: 'server',
             errorType: 'error',

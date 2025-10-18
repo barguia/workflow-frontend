@@ -15,6 +15,7 @@ const routes = [
         name: 'Login',
         component: LoginPage,
         icon: "mdi-user",
+        meta: { requiresAuth: false },
     },
     {
         path: '',

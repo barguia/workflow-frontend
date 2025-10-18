@@ -19,7 +19,7 @@ export function useNotifications() {
     };
 
     const handler = (event) => {
-        console.log('Evento recebido:', event.detail); // Debug
+        // console.log('Evento recebido:', event.detail); // Debug
         triggerNotification({
             message: event.detail.message,
             typeMessage: event.detail.type || 'error',

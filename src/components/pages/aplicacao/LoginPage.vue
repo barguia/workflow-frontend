@@ -77,6 +77,7 @@ const handleForgotPassword = () => {
 }
 
 onMounted(() => {
+  console.log(authStore.isAuthenticated)
   if (authStore.isAuthenticated) {
     router.push('/');
   }
@@ -96,7 +97,11 @@ async function login() {
             message: 'Login realizado com sucesso!',
           },
         }));
-    router.push('/');
+
+    if (authStore.isAuthenticated) {
+      router.push('/');
+    }
+
   } catch (err) {
     error.value = err.response?.data?.message || 'Erro no login';
     console.error('Erro:', err);

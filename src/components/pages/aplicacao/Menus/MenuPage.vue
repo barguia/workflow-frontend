@@ -62,10 +62,10 @@ const menuFields = [
 ]
 
 const menuHeaders = [
-  { text: 'Titulo Menu', value: 'menu' },
-  { text: 'Tipo de Menu', value: 'acl_menu_pai.menu' },
-  { text: 'Página Associada', value: 'page_menu.path' },
-  { text: 'Permissões', value: 'permissions' },
-  { text: 'Ações', value: 'actions', sortable: false }
+  { title: 'Titulo Menu', value: 'menu' },
+  { title: 'Menu Pai', value: 'acl_menu_pai.menu' },
+  { title: 'Página Associada', value: 'page_menu.path' },
+  { title: 'Permissões', value: 'permissions' },
+  { title: 'Ações', value: 'actions', sortable: false }
 ]
 </script>

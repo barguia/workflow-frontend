@@ -11,14 +11,13 @@ export const useAuthStore = defineStore('auth', {
         loaded: false,
     }),
     getters: {
-        isAuthenticated: (state) => state.loaded,
+        isAuthenticated: (state) => !!state.token,
         getMenus: (state) => state.menus,
     },
     actions: {
         async login({ email, password }) {
             try {
                 const { token, menus } = await authService.login({ email, password });
-                console.log(menus)
                 this.setSessao(token, menus);
 
                 return true;

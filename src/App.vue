@@ -95,9 +95,9 @@ export default {
   },
   mounted() {
     const authStore = useAuthStore();
-    authStore.loadToken(); // Restaura do LocalStorage se existir
+    authStore.loadToken();
     if (!authStore.token) {
-      router.push('/login'); // Redireciona se não autenticado
+      router.push('/login');
     }
   },
   created() {

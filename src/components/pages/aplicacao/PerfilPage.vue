@@ -16,9 +16,8 @@ const fieldsDatatable = [
 ]
 
 const headersDatatable = [
-  { text: 'Perfil', value: 'perfil' },
-  { text: 'Descrição', value: 'descricao' },
-  { text: 'Telefone', value: 'phone' },
-  { text: 'Ações', value: 'actions', sortable: false }
+  { title: 'Perfil', value: 'perfil' },
+  { title: 'Descrição', value: 'descricao' },
+  { title: '', value: 'actions', sortable: false }
 ]
 </script>

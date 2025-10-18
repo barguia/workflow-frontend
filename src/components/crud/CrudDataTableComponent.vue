@@ -1,5 +1,4 @@
 <template>
-  {{localHeaders}}
   <v-data-table
       v-model="localSelected"
       :headers="localHeaders"
@@ -7,7 +6,6 @@
       :items-per-page="10"
       :search="localSearch"
       show-select
-      small
       class="elevation-1"
       item-key="id"
       :hide-default-header="false"
@@ -27,7 +25,7 @@
     </template>
     <template v-slot:item.actions="{ item }">
       <slot name="actions" :item="item">
-        <IconComponent small class="mr-2" @click="$emit('edit', item)">
+        <IconComponent class="mr-2" @click="$emit('edit', item)">
           mdi-pencil
         </IconComponent>
       </slot>
@@ -71,7 +69,6 @@ const localSelected = computed({
 </script>
 
 <style scoped>
-/* Garante que os headers sejam visíveis */
 .v-data-table-header {
   display: table-header-group !important;
 }
