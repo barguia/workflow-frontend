@@ -3,13 +3,22 @@ import { createPinia } from 'pinia'; // Importe Pinia aqui
 import { useAuthStore } from '@/stores/authStore';
 
 import UserPage from "@/components/pages/aplicacao/UserPage.vue";
-import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
+import LoginPage from "@/components/pages/aplicacao/Auth/LoginPage.vue";
 import PerfilPage from "@/components/pages/aplicacao/PerfilPage.vue";
 import MenuPage from "@/components/pages/aplicacao/Menus/MenuPage.vue";
+import ForgotPasswordPage from "@/components/pages/aplicacao/Auth/ForgotPasswordPage.vue";
+import ResetPasswordPage from "@/components/pages/aplicacao/Auth/ResetPasswordPage.vue";
 
 const pinia = createPinia();
 
 const routes = [
+    {
+        path: '/',
+        name: 'Home',
+        component: UserPage,
+        icon: "mdi-home",
+        meta: { requiresAuth: true },
+    },
     {
         path: '/login',
         name: 'Login',
@@ -18,11 +27,16 @@ const routes = [
         meta: { requiresAuth: false },
     },
     {
-        path: '',
-        name: 'Home',
-        component: UserPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
+        path: '/forgot-password',
+        name: 'ForgotPassword',
+        component: ForgotPasswordPage,
+        meta: { requiresAuth: false },
+    },
+    {
+        path: '/reset-password',
+        name: 'ResetPassword',
+        component: ResetPasswordPage,
+        meta: { requiresAuth: false },
     },
     {
         path: '/perfil',

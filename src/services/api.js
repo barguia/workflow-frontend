@@ -32,16 +32,13 @@ const errorHandlers = {
         const authStore = useAuthStore();
         authStore.limpaSessao();
 
-        const publicRoutes = ['/login', '/forgot-password', '/register'];
-        const publicEndpoints = ['/api/login', '/api/register', '/api/password/reset'];
+        const publicRoutes = ['/login', '/forgot-password', '/reset-password'];
+        // const publicEndpoints = ['/api/login', '/api/register', '/api/password/reset'];
         const currentPath = router.currentRoute.value?.path || '';
-        const requestUrl = error.config?.url || 'unknown';
+        // const requestUrl = error.config?.url || 'unknown';
 
-        if (
-            currentPath &&
-            !publicRoutes.includes(currentPath) &&
-            !publicEndpoints.some(endpoint => requestUrl.includes(endpoint))
-        ) {
+        //&& !publicEndpoints.some(endpoint => requestUrl.includes(endpoint))
+        if (currentPath && !publicRoutes.includes(currentPath)) {
             router.push('/login').catch(err => {
                 console.error('Erro ao redirecionar para /login:', err);
             });

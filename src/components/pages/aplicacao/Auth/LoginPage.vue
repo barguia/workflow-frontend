@@ -25,13 +25,15 @@
             />
             <RowComponent justify="space-between" class="mb-4">
               <ColComponent cols="auto">
-                <ButtonComponent
-                    variant="text"
-                    color="primary"
-                    @click="handleForgotPassword"
-                >
-                  Esqueci a senha
-                </ButtonComponent>
+                <RouterLink to="/forgot-password">
+                  <ButtonComponent
+                      variant="text"
+                      color="primary"
+                      @click="handleForgotPassword"
+                  >
+                    Esqueci a senha
+                  </ButtonComponent>
+                </RouterLink>
               </ColComponent>
               <ColComponent cols="auto">
                 <ButtonComponent

@@ -2,7 +2,7 @@
   <AppComponent>
     <MenuComponent/>
 
-    <MainComponent class="main-content main-content-fluid" fluid>
+    <MainComponent class="main-content main-content-fluid" fluid >
       <ContainerComponent fluid class="pa-0">
         <row-component class="justify-center">
           <ColComponent class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
@@ -78,6 +78,7 @@ export default {
       todas_rotas: router.options.routes,
       isMobile: false,
       drawer: false,
+      autenticado: false,
     };
   },
   setup() {
@@ -93,12 +94,10 @@ export default {
       clearNotification,
     };
   },
-  mounted() {
+  async mounted() {
     const authStore = useAuthStore();
-    authStore.loadToken();
-    if (!authStore.token) {
-      router.push('/login');
-    }
+    await authStore.checkAuth();
+    this.autenticado = authStore.isAuthenticated
   },
   created() {
     this.theme.change(this.selectedTheme)

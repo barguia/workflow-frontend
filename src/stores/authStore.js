@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import CryptoJS from 'crypto-js';
-import {authService} from "@/services/auth.js";
+import {authService} from "@/services/authService.js";
 
 const CRYPTO_KEY = import.meta.env.VITE_CRYPTO_KEY || 'sua-chave-secreta-aqui';
 

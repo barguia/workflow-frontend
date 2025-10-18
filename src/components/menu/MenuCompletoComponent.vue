@@ -1,6 +1,6 @@
 <template>
   <AppBarComponent app>
-    <AppBarNavIconComponent @click="drawer = !drawer"/>
+    <AppBarNavIconComponent v-if="authStore.isAuthenticated" @click="drawer = !drawer"/>
     <ToolbarTitleComponent>Workflow Management System</ToolbarTitleComponent>
     <v-spacer></v-spacer>
     <template v-if="authStore.isAuthenticated">
@@ -29,7 +29,7 @@
 
   </AppBarComponent>
 
-  <NavigationDrawerComponent v-model="drawer" app temporary width=340>
+  <NavigationDrawerComponent v-model="drawer" app temporary width=340 v-if="authStore.isAuthenticated">
     <ListComponent v-model:opened="opened">
       <MenuNodeComponent
         v-for="item in authStore.getMenus"
