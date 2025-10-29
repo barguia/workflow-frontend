@@ -15,5 +15,9 @@ export function useValidationErrors() {
         window.removeEventListener('validation-errors', handler);
     });
 
-    return { validationErrors };
+    function clearErrors() {
+        validationErrors.value = {}
+    }
+
+    return { validationErrors, clearErrors};
 }

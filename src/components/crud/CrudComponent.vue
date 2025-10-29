@@ -59,6 +59,7 @@
                 :label="field.label"
                 :type="field.type || 'text'"
                 :rules="field.rules"
+                :error-messages="validationErrors[field.key]"
                 :required="!field.optional"
             />
             <SelectComponent
@@ -68,6 +69,7 @@
                 :items="resolvedOptions[field.key] || []"
                 :rules="field.rules"
                 :multiple="field.multiple || false"
+                :error-messages="validationErrors[field.key]"
                 :required="!field.optional"
             />
             <RadioComponent
@@ -77,6 +79,7 @@
                 :items="resolvedOptions[field.key] || []"
                 :rules="field.rules"
                 :inline="field.inline || false"
+                :error-messages="validationErrors[field.key]"
                 :required="!field.optional"
             />
             <CheckboxComponent
@@ -86,6 +89,7 @@
                 :items="resolvedOptions[field.key] || []"
                 :rules="field.rules"
                 :inline="field.inline || false"
+                :error-messages="validationErrors[field.key]"
                 :required="!field.optional"
             />
           </template>
@@ -105,7 +109,6 @@
       </CardActionsComponent>
     </CardComponent>
   </v-dialog>
-
   <!-- Snackbar para Erros/Sucesso -->
   <SnackbarComponent
       v-model="showSnackbar"
@@ -164,7 +167,7 @@ const valid = ref(true)
 const formRef = ref(null)
 const form = ref({})
 const resolvedOptions = ref({})
-const { validationErrors } = useValidationErrors();
+const { validationErrors, clearErrors } = useValidationErrors();
 
 // useCrud
 const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
@@ -233,6 +236,7 @@ const openEditModal = async (item) => {
 const closeModal = () => {
   dialog.value = false
   form.value = {}
+  clearErrors()
 }
 
 const saveItem = async () => {
@@ -249,7 +253,7 @@ const saveItem = async () => {
     loadItems() // Recarregar lista
     emit('item-saved', result)
   } catch (err) {
-    console.log(err)
+    // console.log(err)
   }
 }
 

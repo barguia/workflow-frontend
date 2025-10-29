@@ -16,12 +16,13 @@
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
+import {authService} from "@/services/authService.js"
 
 const userFields = [
   { key: 'name', label: 'Nome', type: 'text', rules: [v => !!v || 'Nome é obrigatório'], optional: false },
   { key: 'email', label: 'Email', type: 'email', rules: [v => !!v || 'Email é obrigatório', v => /.+@.+\..+/.test(v) || 'Email deve ser válido'], optional: false },
-  { key: 'phone', label: 'Telefone', rules: [v => !v || /^\d{10,11}$/.test(v) || 'Telefone deve ser válido (10-11 dígitos)'], optional: true },
-  { key: 'birthDate', label: 'Data de Nascimento', type: 'date', rules: [v => !!v || 'Data de Nascimento é obrigatória'], optional: false }
+  // { key: 'phone', label: 'Telefone', rules: [v => !v || /^\d{10,11}$/.test(v) || 'Telefone deve ser válido (10-11 dígitos)'], optional: true },
+  // { key: 'birthDate', label: 'Data de Nascimento', type: 'date', rules: [v => !!v || 'Data de Nascimento é obrigatória'], optional: false }
 ]
 
 const userHeaders = [
@@ -30,12 +31,18 @@ const userHeaders = [
   { title: '', value: 'actions'}
 ]
 
-const resetPassword = (form, closeModal) => {
+async function resetPassword (form, closeModal) {
   if (confirm('Tem certeza que deseja resetar a senha para este usuário?')) {
     console.log('Resetando senha para:', form.id)
-    // Aqui, chame a API real, ex.: await userService.resetPassword(form.id)
-    // Se sucesso, exiba um snackbar personalizado ou use emit para notificar
-    closeModal() // Fecha o modal após sucesso, se desejado
+    const data =  await authService.forgotPassword({email: form.email})
+    window.dispatchEvent(
+        new CustomEvent('notification', {
+          detail: {
+            type: 'success',
+            message: data.message,
+          },
+        }));
+    closeModal()
   }
 }
 </script>
