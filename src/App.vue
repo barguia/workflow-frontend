@@ -2,7 +2,7 @@
   <AppComponent>
     <MenuComponent/>
 
-    <MainComponent class="main-content main-content-fluid" fluid>
+    <MainComponent class="main-content main-content-fluid" fluid >
       <ContainerComponent fluid class="pa-0">
         <row-component class="justify-center">
           <ColComponent class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
@@ -41,7 +41,7 @@
 
 <script>
 import { useTheme } from 'vuetify';
-import router from '@/router';
+import router from '@/router/router.js';
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useAuthStore } from '@/stores/authStore';
 import { useLoading } from '@/composables/useLoading';
@@ -78,6 +78,7 @@ export default {
       todas_rotas: router.options.routes,
       isMobile: false,
       drawer: false,
+      autenticado: false,
     };
   },
   setup() {
@@ -93,12 +94,10 @@ export default {
       clearNotification,
     };
   },
-  mounted() {
+  async mounted() {
     const authStore = useAuthStore();
-    authStore.loadToken(); // Restaura do LocalStorage se existir
-    if (!authStore.token) {
-      router.push('/login'); // Redireciona se não autenticado
-    }
+    await authStore.checkAuth();
+    this.autenticado = authStore.isAuthenticated
   },
   created() {
     this.theme.change(this.selectedTheme)

@@ -6,9 +6,9 @@
       :items-per-page="10"
       :search="localSearch"
       show-select
-      small
       class="elevation-1"
       item-key="id"
+      :hide-default-header="false"
   >
     <template v-slot:top>
       <ToolbarComponent flat>
@@ -25,7 +25,7 @@
     </template>
     <template v-slot:item.actions="{ item }">
       <slot name="actions" :item="item">
-        <IconComponent small class="mr-2" @click="$emit('edit', item)">
+        <IconComponent class="mr-2" @click="$emit('edit', item)">
           mdi-pencil
         </IconComponent>
       </slot>
@@ -67,3 +67,12 @@ const localSelected = computed({
   set: (val) => emit('update:selected', val)
 })
 </script>
+
+<style scoped>
+.v-data-table-header {
+  display: table-header-group !important;
+}
+.v-data-table-header th {
+  font-weight: bold;
+}
+</style>

@@ -2,40 +2,17 @@ import {createRouter, createWebHistory} from 'vue-router'
 import { createPinia } from 'pinia'; // Importe Pinia aqui
 import { useAuthStore } from '@/stores/authStore';
 
-import UserPage from "@/components/pages/aplicacao/UserPage.vue";
-import LoginPage from "@/components/pages/aplicacao/LoginPage.vue";
-import PerfilPage from "@/components/pages/aplicacao/PerfilPage.vue";
+import appRoutes from "@/components/pages/aplicacao/routes/routes.js"
+import authRoutes from "@/components/pages/autenticacao/routes/routes.js"
+import workflowRoutes from "@/components/pages/workflow/routes/routes.js"
 
 const pinia = createPinia();
 
 const routes = [
-    {
-        path: '/login',
-        name: 'Login',
-        component: LoginPage,
-        icon: "mdi-user",
-    },
-    {
-        path: '',
-        name: 'Home',
-        component: UserPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/perfil',
-        name: 'Perfil',
-        component: PerfilPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/user',
-        name: 'User',
-        component: UserPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
+    ...authRoutes,
+    ...appRoutes,
+    ...workflowRoutes,
+
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',

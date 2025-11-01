@@ -15,23 +15,28 @@
     </template>
 
     <menu-node-component
-        v-for="child in node.children"
-        :key="child.id"
-        :node="child"
-        :level="level + 1"
-        :open-at-level="openAtLevel"
-        @toggle="$emit('toggle', $event)"
+      v-for="child in node.children"
+      :key="child.id"
+      :node="child"
+      :level="level + 1"
+      :open-at-level="openAtLevel"
+      @toggle="$emit('toggle', $event)"
     />
   </v-list-group>
 
-  <v-list-item
+  <router-link
     v-else
-    :prepend-icon="node.icon"
-    v-model:opened="opened"
-    :title="node.title"
-    class="submenu-item text-wrap"
-    @click="node.action && node.action()"
-  />
+    :to="node.path ? node.path : ''"
+    class="nav-link hover:text-blue-300 text-wrap"
+  >
+    <v-list-item
+      :prepend-icon="node.icon"
+      v-model:opened="opened"
+      class="submenu-item"
+      :title="node.title"
+    />
+  </router-link>
+
 
 </template>
 
@@ -62,7 +67,7 @@ function toggleHere () {
 .menu-group .v-list-item,
 .submenu-item {
   min-height: 32px !important;
-  --indent-padding: calc(var(--parent-padding))/3;
+  --indent-padding: calc(var(--parent-padding))/2;
 }
 
 

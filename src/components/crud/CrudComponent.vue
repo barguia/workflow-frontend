@@ -52,15 +52,55 @@
       </CardTitleComponent>
       <CardTextComponent>
         <FormComponent ref="formRef" v-model="valid" lazy-validation>
-          <TextFieldComponent
-              v-for="field in fields"
-              :key="field.key"
-              v-model="form[field.key]"
-              :label="field.label"
-              :type="field.type || 'text'"
-              :rules="field.rules"
-              :required="!field.optional"
-          />
+          <template v-for="field in fields" :key="field.key">
+            <TextFieldComponent
+                v-if="['text', 'email', 'date', 'password'].includes(field.type || 'text')"
+                v-model="form[field.key]"
+                :label="field.label"
+                :type="field.type || 'text'"
+                :rules="field.rules"
+                :error-messages="validationErrors[field.key]"
+                :required="!field.optional"
+            />
+            <TextAreaComponent
+                v-else-if="field.type === 'textarea'"
+                v-model="form[field.key]"
+                :label="field.label"
+                :rules="field.rules"
+                :error-messages="validationErrors[field.key]"
+                :required="!field.optional"
+            />
+            <SelectComponent
+                v-else-if="field.type === 'select'"
+                v-model="form[field.key]"
+                :label="field.label"
+                :items="resolvedOptions[field.key] || []"
+                :rules="field.rules"
+                :multiple="field.multiple || false"
+                :error-messages="validationErrors[field.key]"
+                :required="!field.optional"
+            />
+            <RadioComponent
+                v-else-if="field.type === 'radio'"
+                v-model="form[field.key]"
+                :label="field.label"
+                :items="resolvedOptions[field.key] || []"
+                :rules="field.rules"
+                :inline="field.inline || false"
+                :error-messages="validationErrors[field.key]"
+                :required="!field.optional"
+            />
+            <CheckboxComponent
+                v-else-if="field.type === 'checkbox'"
+                v-model="form[field.key]"
+                :label="field.label"
+                :items="resolvedOptions[field.key] || []"
+                :rules="field.rules"
+                :inline="field.inline || false"
+                :error-messages="validationErrors[field.key]"
+                :required="!field.optional"
+            />
+          </template>
         </FormComponent>
       </CardTextComponent>
       <CardActionsComponent>
@@ -68,16 +108,15 @@
         <ButtonComponent color="blue darken-1" text @click="closeModal">
           Cancelar
         </ButtonComponent>
-        <ButtonComponent v-if="isEditing && hasResetPassword" color="warning" text @click="resetPassword">
-          Resetar Senha
-        </ButtonComponent>
+
+        <slot name="actions" :is-editing="isEditing" :form="form" :save-item="saveItem" :close-modal="closeModal" />
+
         <ButtonComponent color="primary" text @click="saveItem">
           Salvar
         </ButtonComponent>
       </CardActionsComponent>
     </CardComponent>
   </v-dialog>
-
   <!-- Snackbar para Erros/Sucesso -->
   <SnackbarComponent
       v-model="showSnackbar"
@@ -94,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors';
 
@@ -105,11 +144,15 @@ import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
-import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
+import FormComponent from "@/components/comuns/forms/FormComponent.vue";
+import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
+import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
+import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
+import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'
@@ -120,7 +163,6 @@ const props = defineProps({
     default: () => [] // [{ key: 'name', label: 'Nome', type: 'text', rules: [...], optional: false }]
   },
   headers: { type: Array, required: true }, // Headers para a tabela
-  hasResetPassword: { type: Boolean, default: false } // Se deve mostrar botão de reset senha
 })
 
 const emit = defineEmits(['item-saved', 'item-deleted'])
@@ -130,15 +172,21 @@ const selectedItems = ref([])
 const search = ref('')
 const dialog = ref(false)
 const isEditing = ref(false)
-
+const valid = ref(true)
 const formRef = ref(null)
 const form = ref({})
-const { validationErrors } = useValidationErrors();
+const resolvedOptions = ref({})
+const { validationErrors, clearErrors } = useValidationErrors();
 
 // useCrud
 const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
-const showMassActions = computed(() => selectedItems.value.length > 0)
+// const showMassActions = computed(() => selectedItems.value.length > 0)
+const showMassActions = ref(false)
 
+// Sincronizar showMassActions com selectedItems
+watch(selectedItems, (newValue) => {
+  showMassActions.value = newValue.length > 0
+})
 // Carregar itens
 const loadItems = async () => {
   try {
@@ -152,27 +200,52 @@ onMounted(() => {
   loadItems()
 })
 
+const loadFieldOptions = async () => {
+  const promises = props.fields
+      .filter(field => field.options && typeof field.options === 'function')
+      .map(async (field) => {
+        resolvedOptions.value[field.key] = await field.options()
+      })
+  await Promise.all(promises)
+}
 // Funções
-const openAddModal = () => {
+const openAddModal = async () => {
   isEditing.value = false
   form.value = {}
   props.fields.forEach(field => {
     form.value[field.key] = ''
   })
+
+  await loadFieldOptions() // Linha potencialmente problemática
   dialog.value = true
-  nextTick(() => formRef.value?.resetValidation())
+
+  nextTick(() => {
+    if (formRef.value?.resetValidation) {
+      formRef.value.resetValidation()
+    } else {
+      console.warn('resetValidation não está disponível em formRef')
+    }
+  })
 }
 
-const openEditModal = (item) => {
+const openEditModal = async (item) => {
   isEditing.value = true
   form.value = { ...item } // Cópia profunda para garantir carregamento correto dos dados
+  await loadFieldOptions() // Carrega opções dinâmicas
   dialog.value = true
-  nextTick(() => formRef.value?.resetValidation())
+  nextTick(() => {
+    if (formRef.value?.resetValidation) {
+      formRef.value.resetValidation()
+    } else {
+      console.warn('resetValidation não está disponível em formRef')
+    }
+  })
 }
 
 const closeModal = () => {
   dialog.value = false
   form.value = {}
+  clearErrors()
 }
 
 const saveItem = async () => {
@@ -189,7 +262,7 @@ const saveItem = async () => {
     loadItems() // Recarregar lista
     emit('item-saved', result)
   } catch (err) {
-    console.log(err)
+    // console.log(err)
   }
 }
 
@@ -222,11 +295,5 @@ const deleteSelected = async () => {
       console.log(err)
     }
   }
-}
-
-const resetPassword = () => {
-  // Implementar lógica específica de reset senha via API
-  console.log('Resetando senha para:', form.value.id)
-  // Exemplo: await someResetService(form.value.id)
 }
 </script>
