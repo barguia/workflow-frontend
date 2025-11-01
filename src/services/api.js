@@ -2,7 +2,7 @@ import axios from 'axios';
 import {useAuthStore} from "@/stores/authStore.js";
 import {useLoading} from "@/composables/useLoading.js";
 // import { useRouter } from 'vue-router';
-import router from '@/router';
+import router from '@/router/router.js';
 
 
 const api = axios.create({

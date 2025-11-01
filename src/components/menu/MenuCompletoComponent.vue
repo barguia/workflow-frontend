@@ -1,31 +1,32 @@
 <template>
   <AppBarComponent app>
     <AppBarNavIconComponent v-if="authStore.isAuthenticated" @click="drawer = !drawer"/>
-    <ToolbarTitleComponent>Workflow Management System</ToolbarTitleComponent>
+    <ToolbarTitleComponent>
+      <router-link to="/" class="nav-link hover:text-blue-300 text-wrap">
+        Workflow Management System
+      </router-link>
+    </ToolbarTitleComponent>
     <v-spacer></v-spacer>
-    <template v-if="authStore.isAuthenticated">
-      <TextFieldComponent
-          v-model="search"
-          prepend-inner-icon="mdi-magnify"
-          variant="underlined"
-          placeholder="Search"
-          single-line
-          hide-details
-      />
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <ButtonComponent v-bind="props" icon>
-            <AvatarComponent>
-              <IconComponent>mdi-account</IconComponent>
-            </AvatarComponent>
-          </ButtonComponent>
-        </template>
-        <ListComponent>
+    <v-menu>
+      <template v-slot:activator="{ props }">
+        <ButtonComponent v-bind="props" icon>
+          <AvatarComponent>
+            <IconComponent>mdi-account</IconComponent>
+          </AvatarComponent>
+        </ButtonComponent>
+      </template>
+      <ListComponent>
+        <template v-if="authStore.isAuthenticated">
           <ListItemComponent title="Perfil"></ListItemComponent>
           <ListItemComponent title="Logout" @click="efetuaLogout()"></ListItemComponent>
-        </ListComponent>
-      </v-menu>
-    </template>
+        </template>
+        <template v-else>
+          <router-link to="/login" class="nav-link hover:text-blue-300">
+            <ListItemComponent title="Login"></ListItemComponent>
+          </router-link>
+        </template>
+      </ListComponent>
+    </v-menu>
 
   </AppBarComponent>
 

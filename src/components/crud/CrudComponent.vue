@@ -62,6 +62,14 @@
                 :error-messages="validationErrors[field.key]"
                 :required="!field.optional"
             />
+            <TextAreaComponent
+                v-else-if="field.type === 'textarea'"
+                v-model="form[field.key]"
+                :label="field.label"
+                :rules="field.rules"
+                :error-messages="validationErrors[field.key]"
+                :required="!field.optional"
+            />
             <SelectComponent
                 v-else-if="field.type === 'select'"
                 v-model="form[field.key]"
@@ -144,6 +152,7 @@ import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
+import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'

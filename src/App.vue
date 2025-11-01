@@ -41,7 +41,7 @@
 
 <script>
 import { useTheme } from 'vuetify';
-import router from '@/router';
+import router from '@/router/router.js';
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useAuthStore } from '@/stores/authStore';
 import { useLoading } from '@/composables/useLoading';
