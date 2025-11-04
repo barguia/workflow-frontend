@@ -1,121 +1,199 @@
 <!-- src/components/forms/FormularioDinamico.vue -->
 <template>
   <FormComponent ref="formRef" v-model="valid" lazy-validation>
-    <template v-for="field in fields" :key="field.key">
-      <!-- Text, Email, Date, Password -->
-      <TextFieldComponent
-          v-if="['text', 'email', 'date', 'password'].includes(field.type || 'text')"
-          v-model="localForm[field.key]"
-          :label="field.label"
-          :type="field.type || 'text'"
-          :rules="field.rules"
-          :error-messages="validationErrors[field.key]"
-          :required="!field.optional"
-      />
+    <!-- v-show = hidden, mas ainda no DOM -->
+    <div v-for="field in visibleFields" :key="field.key" v-show="resolveVisible(field)">
+      <!-- v-if = remove do DOM -->
+      <template v-if="resolveRenderIf(field)">
 
-      <!-- Textarea -->
-      <TextAreaComponent
-          v-else-if="field.type === 'textarea'"
-          v-model="localForm[field.key]"
-          :label="field.label"
-          :rules="field.rules"
-          :error-messages="validationErrors[field.key]"
-          :required="!field.optional"
-      />
+        <!-- TEXT / EMAIL / DATE / PASSWORD -->
+        <TextFieldComponent
+            v-if="isType(field, ['text','email','date','password'])"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :type="field.type || 'text'"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:modelValue="onFieldChange(field, $event)"
+        />
 
-      <!-- Select -->
-      <SelectComponent
-          v-else-if="field.type === 'select'"
-          v-model="localForm[field.key]"
-          :label="field.label"
-          :items="resolvedOptions[field.key] || []"
-          :rules="field.rules"
-          :multiple="field.multiple || false"
-          :error-messages="validationErrors[field.key]"
-          :required="!field.optional"
-      />
+        <!-- TEXTAREA -->
+        <TextAreaComponent
+            v-else-if="isType(field, 'textarea')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:modelValue="onFieldChange(field, $event)"
+        />
 
-      <!-- Radio -->
-      <RadioComponent
-          v-else-if="field.type === 'radio'"
-          v-model="localForm[field.key]"
-          :label="field.label"
-          :items="resolvedOptions[field.key] || []"
-          :rules="field.rules"
-          :inline="field.inline || false"
-          :error-messages="validationErrors[field.key]"
-          :required="!field.optional"
-      />
+        <!-- SELECT -->
+        <SelectComponent
+            v-else-if="isType(field, 'select')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :multiple="field.multiple ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:modelValue="onFieldChange(field, $event)"
+        />
 
-      <!-- Checkbox -->
-      <CheckboxComponent
-          v-else-if="field.type === 'checkbox'"
-          v-model="localForm[field.key]"
-          :label="field.label"
-          :items="resolvedOptions[field.key] || []"
-          :rules="field.rules"
-          :inline="field.inline || false"
-          :error-messages="validationErrors[field.key]"
-          :required="!field.optional"
-      />
-    </template>
+        <!-- RADIO -->
+        <RadioComponent
+            v-else-if="isType(field, 'radio')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :inline="field.inline ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:modelValue="onFieldChange(field, $event)"
+        />
+
+        <!-- CHECKBOX -->
+        <CheckboxComponent
+            v-else-if="isType(field, 'checkbox')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :inline="field.inline ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:modelValue="onFieldChange(field, $event)"
+        />
+      </template>
+    </div>
   </FormComponent>
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
-import FormComponent from "@/components/comuns/forms/FormComponent.vue"
-import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue"
-import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue"
-import SelectComponent from "@/components/comuns/forms/SelectComponent.vue"
-import RadioComponent from "@/components/comuns/forms/RadioComponent.vue"
-import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue"
+import { ref, watch, computed, nextTick, onMounted } from 'vue'
+import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
+import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
+import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
+import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
+import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
+import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 
 const props = defineProps({
   fields: { type: Array, required: true },
   modelValue: { type: Object, required: true },
   validationErrors: { type: Object, default: () => ({}) },
-  isEditing: { type: Boolean, default: false },
-  resolvedOptions: { type: Object, default: () => ({}) }
+  isEditing: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['update:modelValue', 'update:valid'])
+const emit = defineEmits(['update:modelValue', 'update:valid', 'field-change'])
 
-const localForm = ref({ ...props.modelValue })
-const valid = ref(true)
-const formRef = ref(null)
+const localForm   = ref({ ...props.modelValue })
+const valid       = ref(true)
+const formRef     = ref(null)
+const fieldOptions = ref({})               // { campoKey: [opções] }
 
-// Função auxiliar para comparar objetos profundamente
-const isEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+/* -------------------------------------------------
+   1. CÁLCULO DE VISIBILIDADE
+   ------------------------------------------------- */
+const visibleFields = computed(() => {
+  // Primeiro filtra campos que nunca devem aparecer (renderIf = false)
+  return props.fields.filter(f => resolveRenderIf(f))
+})
 
-// 1. props.modelValue → localForm (entrada)
-watch(
-    () => props.modelValue,
-    (newVal) => {
-      if (!isEqual(newVal, localForm.value)) {
-        localForm.value = { ...newVal }
-      }
-    },
-    { deep: true }
-)
-
-// 2. localForm → emit (saída)
-watch(
-    localForm,
-    (newVal) => {
-      if (!isEqual(newVal, props.modelValue)) {
-        emit('update:modelValue', { ...newVal })
-      }
-    },
-    { deep: true }
-)
-
-// Reset validation
-const resetValidation = () => {
-  nextTick(() => {
-    formRef.value?.resetValidation?.()
-  })
+const resolveVisible = (field) => {
+  if (field.visible === false) return false
+  if (typeof field.visible === 'function') return field.visible(localForm.value)
+  return true
+}
+const resolveRenderIf = (field) => {
+  if (field.renderIf === false) return false
+  if (typeof field.renderIf === 'function') return field.renderIf(localForm.value)
+  return true
 }
 
-defineExpose({ resetValidation })
+/* -------------------------------------------------
+   2. RESOLUÇÃO DE PROPS DINÂMICAS
+   ------------------------------------------------- */
+const resolveDisabled = (field) => {
+  if (typeof field.disabled === 'function') return field.disabled(localForm.value)
+  return !!field.disabled
+}
+const resolveRules = (field) => field.rules ?? []
+
+/* -------------------------------------------------
+   3. CARREGAMENTO DE OPÇÕES (backend)
+   ------------------------------------------------- */
+const loadOptions = async () => {
+  const promises = props.fields
+      .filter(field => typeof field.options === 'function') // ← field
+      .map(async (field) => { // ← field
+        try {
+          const opts = await field.options(localForm.value) // ← field.options
+          fieldOptions.value[field.key] = Array.isArray(opts) ? opts : []
+        } catch (e) {
+          console.warn(`[FormularioDinamico] erro ao carregar ${field.key}`, e)
+          fieldOptions.value[field.key] = []
+        }
+      })
+  await Promise.all(promises)
+}
+
+/* -------------------------------------------------
+   4. WATCHERS (evita loop infinito)
+   ------------------------------------------------- */
+watch(() => props.modelValue, (nv) => {
+  if (JSON.stringify(nv) !== JSON.stringify(localForm.value))
+    localForm.value = { ...nv }
+}, { deep: true })
+
+watch(localForm, (nv) => {
+  if (JSON.stringify(nv) !== JSON.stringify(props.modelValue))
+    emit('update:modelValue', { ...nv })
+}, { deep: true })
+
+/* Recarrega opções sempre que o form mudar (ex: estado → cidade) */
+watch(localForm, loadOptions, { deep: true })
+
+/* Carrega opções iniciais */
+onMounted(loadOptions)
+
+/* -------------------------------------------------
+   5. EVENTOS
+   ------------------------------------------------- */
+const onFieldChange = async (field, value) => {
+  // 1. Emite evento genérico
+  emit('field-change', { field, value, form: localForm.value })
+
+  // 2. Executa callback customizado (pode limpar outro campo, etc.)
+  if (typeof field.onChange === 'function') {
+    await field.onChange({
+      value,
+      form: localForm.value,
+      setField: (key, val) => (localForm.value[key] = val),
+      loadOptions
+    })
+  }
+}
+
+/* -------------------------------------------------
+   6. UTILIDADES
+   ------------------------------------------------- */
+const isType = (field, types) => {
+  const arr = Array.isArray(types) ? types : [types]
+  return arr.includes(field.type || 'text')
+}
+
+/* -------------------------------------------------
+   7. EXPOR
+   ------------------------------------------------- */
+const resetValidation = () => nextTick(() => formRef.value?.resetValidation?.())
+defineExpose({ resetValidation, loadOptions })
 </script>
