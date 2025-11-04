@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card max-width="600" class="mx-auto">
+    <v-card max-width="1000" class="mx-auto">
       <v-card-title class="text-h5">Formulário Dinâmico Completo</v-card-title>
       <v-card-text>
         <FormularioDinamico
@@ -55,6 +55,7 @@ const fields = computed(() => [
     label: 'Nome Completo',
     type: 'text',
     rules: [v => !!v || 'Nome é obrigatório'],
+    col: 6,
   },
   {
     key: 'email',
@@ -64,6 +65,7 @@ const fields = computed(() => [
       v => !!v || 'E-mail é obrigatório',
       v => /.+@.+\..+/.test(v) || 'E-mail inválido'
     ],
+    col: 6,
   },
   {
     key: 'estado_id',
@@ -73,7 +75,8 @@ const fields = computed(() => [
     rules: [v => !!v || 'Selecione um estado'],
     onChange: async ({ setField }) => {
       setField('cidade_id', null) // limpa cidade
-    }
+    },
+    col: 6,
   },
   {
     key: 'cidade_id',
@@ -85,6 +88,7 @@ const fields = computed(() => [
       return await api.get(`/cidades?estado_id=${form.estado_id}`)
     },
     rules: [v => !!v || 'Selecione uma cidade'],
+    col: 6,
   },
   {
     key: 'interesses',
@@ -93,6 +97,7 @@ const fields = computed(() => [
     multiple: true,
     options: () => api.get('/interesses'),
     rules: [v => (v && v.length > 0) || 'Selecione pelo menos um interesse'],
+    col: 6,
   },
   {
     key: 'observacoes',

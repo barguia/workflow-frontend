@@ -2,78 +2,80 @@
 <template>
   <FormComponent ref="formRef" v-model="valid" lazy-validation>
     <!-- v-show = hidden, mas ainda no DOM -->
-    <div v-for="field in visibleFields" :key="field.key" v-show="resolveVisible(field)">
-      <!-- v-if = remove do DOM -->
-      <template v-if="resolveRenderIf(field)">
+    <RowComponent>
+      <ColComponent v-for="field in visibleFields" :key="field.key" v-show="resolveVisible(field)" :class="'v-col-'+(field.col ?? 12)">
+        <!-- v-if = remove do DOM -->
+        <template v-if="resolveRenderIf(field)">
 
-        <!-- TEXT / EMAIL / DATE / PASSWORD -->
-        <TextFieldComponent
-            v-if="isType(field, ['text','email','date','password'])"
-            v-model="localForm[field.key]"
-            :label="field.label"
-            :type="field.type || 'text'"
-            :rules="resolveRules(field)"
-            :error-messages="validationErrors[field.key]"
-            :required="!field.optional"
-            :disabled="resolveDisabled(field)"
-            @update:modelValue="onFieldChange(field, $event)"
-        />
+          <!-- TEXT / EMAIL / DATE / PASSWORD -->
+          <TextFieldComponent
+              v-if="isType(field, ['text','email','date','password'])"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :type="field.type || 'text'"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
 
-        <!-- TEXTAREA -->
-        <TextAreaComponent
-            v-else-if="isType(field, 'textarea')"
-            v-model="localForm[field.key]"
-            :label="field.label"
-            :rules="resolveRules(field)"
-            :error-messages="validationErrors[field.key]"
-            :required="!field.optional"
-            :disabled="resolveDisabled(field)"
-            @update:modelValue="onFieldChange(field, $event)"
-        />
+          <!-- TEXTAREA -->
+          <TextAreaComponent
+              v-else-if="isType(field, 'textarea')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
 
-        <!-- SELECT -->
-        <SelectComponent
-            v-else-if="isType(field, 'select')"
-            v-model="localForm[field.key]"
-            :label="field.label"
-            :items="fieldOptions[field.key] || []"
-            :rules="resolveRules(field)"
-            :multiple="field.multiple ?? false"
-            :error-messages="validationErrors[field.key]"
-            :required="!field.optional"
-            :disabled="resolveDisabled(field)"
-            @update:modelValue="onFieldChange(field, $event)"
-        />
+          <!-- SELECT -->
+          <SelectComponent
+              v-else-if="isType(field, 'select')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :items="fieldOptions[field.key] || []"
+              :rules="resolveRules(field)"
+              :multiple="field.multiple ?? false"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
 
-        <!-- RADIO -->
-        <RadioComponent
-            v-else-if="isType(field, 'radio')"
-            v-model="localForm[field.key]"
-            :label="field.label"
-            :items="fieldOptions[field.key] || []"
-            :rules="resolveRules(field)"
-            :inline="field.inline ?? false"
-            :error-messages="validationErrors[field.key]"
-            :required="!field.optional"
-            :disabled="resolveDisabled(field)"
-            @update:modelValue="onFieldChange(field, $event)"
-        />
+          <!-- RADIO -->
+          <RadioComponent
+              v-else-if="isType(field, 'radio')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :items="fieldOptions[field.key] || []"
+              :rules="resolveRules(field)"
+              :inline="field.inline ?? false"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
 
-        <!-- CHECKBOX -->
-        <CheckboxComponent
-            v-else-if="isType(field, 'checkbox')"
-            v-model="localForm[field.key]"
-            :label="field.label"
-            :items="fieldOptions[field.key] || []"
-            :rules="resolveRules(field)"
-            :inline="field.inline ?? false"
-            :error-messages="validationErrors[field.key]"
-            :required="!field.optional"
-            :disabled="resolveDisabled(field)"
-            @update:modelValue="onFieldChange(field, $event)"
-        />
-      </template>
-    </div>
+          <!-- CHECKBOX -->
+          <CheckboxComponent
+              v-else-if="isType(field, 'checkbox')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :items="fieldOptions[field.key] || []"
+              :rules="resolveRules(field)"
+              :inline="field.inline ?? false"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+        </template>
+      </ColComponent>
+    </RowComponent>
   </FormComponent>
 </template>
 
@@ -85,6 +87,8 @@ import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
 import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
 import FormComponent from "@/components/comuns/forms/FormComponent.vue";
+import RowComponent from "@/components/comuns/layout/RowComponent.vue";
+import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 
 const props = defineProps({
   fields: { type: Array, required: true },
