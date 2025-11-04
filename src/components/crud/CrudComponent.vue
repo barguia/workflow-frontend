@@ -45,63 +45,21 @@
   </SnackbarComponent>
 
   <!-- Modal para Adicionar/Editar Item -->
+  <!-- Modal para Adicionar/Editar Item -->
   <v-dialog v-model="dialog" max-width="600px" @keydown.esc="closeModal">
     <CardComponent>
       <CardTitleComponent>
         <span class="text-h5">{{ isEditing ? 'Editar ' + title.toLowerCase() : 'Adicionar ' + title.toLowerCase() }}</span>
       </CardTitleComponent>
       <CardTextComponent>
-        <FormComponent ref="formRef" v-model="valid" lazy-validation>
-          <template v-for="field in fields" :key="field.key">
-            <TextFieldComponent
-                v-if="['text', 'email', 'date', 'password'].includes(field.type || 'text')"
-                v-model="form[field.key]"
-                :label="field.label"
-                :type="field.type || 'text'"
-                :rules="field.rules"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <TextAreaComponent
-                v-else-if="field.type === 'textarea'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :rules="field.rules"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <SelectComponent
-                v-else-if="field.type === 'select'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :items="resolvedOptions[field.key] || []"
-                :rules="field.rules"
-                :multiple="field.multiple || false"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <RadioComponent
-                v-else-if="field.type === 'radio'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :items="resolvedOptions[field.key] || []"
-                :rules="field.rules"
-                :inline="field.inline || false"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <CheckboxComponent
-                v-else-if="field.type === 'checkbox'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :items="resolvedOptions[field.key] || []"
-                :rules="field.rules"
-                :inline="field.inline || false"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-          </template>
-        </FormComponent>
+        <FormularioDinamico
+            ref="formularioRef"
+            :fields="fields"
+            v-model="form"
+            :validationErrors="validationErrors"
+            :is-editing="isEditing"
+            :resolvedOptions="resolvedOptions"
+        />
       </CardTextComponent>
       <CardActionsComponent>
         <v-spacer></v-spacer>
@@ -153,6 +111,7 @@ import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
 import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
+import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
 
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'
@@ -173,7 +132,7 @@ const search = ref('')
 const dialog = ref(false)
 const isEditing = ref(false)
 const valid = ref(true)
-const formRef = ref(null)
+const formularioRef = ref(null)
 const form = ref({})
 const resolvedOptions = ref({})
 const { validationErrors, clearErrors } = useValidationErrors();
@@ -220,8 +179,8 @@ const openAddModal = async () => {
   dialog.value = true
 
   nextTick(() => {
-    if (formRef.value?.resetValidation) {
-      formRef.value.resetValidation()
+    if (formularioRef.value?.resetValidation) {
+      formularioRef.value.resetValidation()
     } else {
       console.warn('resetValidation não está disponível em formRef')
     }
@@ -234,8 +193,8 @@ const openEditModal = async (item) => {
   await loadFieldOptions() // Carrega opções dinâmicas
   dialog.value = true
   nextTick(() => {
-    if (formRef.value?.resetValidation) {
-      formRef.value.resetValidation()
+    if (formularioRef.value?.resetValidation) {
+      formularioRef.value.resetValidation()
     } else {
       console.warn('resetValidation não está disponível em formRef')
     }
