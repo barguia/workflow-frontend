@@ -116,6 +116,7 @@ import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vu
 const props = defineProps({
   route: { type: String, required: true }, // e.g., 'users'
   title: { type: String, required: true },
+  form: { type: Object, default: () => ({}) },
   fields: {
     type: Array,
     required: true,
@@ -131,7 +132,6 @@ const selectedItems = ref([])
 const search = ref('')
 const dialog = ref(false)
 const isEditing = ref(false)
-const valid = ref(true)
 const formularioRef = ref(null)
 const form = ref({})
 const resolvedOptions = ref({})
@@ -159,46 +159,38 @@ onMounted(() => {
   loadItems()
 })
 
-const loadFieldOptions = async () => {
-  const promises = props.fields
-      .filter(field => field.options && typeof field.options === 'function')
-      .map(async (field) => {
-        resolvedOptions.value[field.key] = await field.options()
-      })
-  await Promise.all(promises)
-}
+// const loadFieldOptions = async () => {
+//   const promises = props.fields
+//       .filter(field => typeof field.options === 'function')
+//       .map(async (field) => {
+//         try {
+//           const opts = await field.options(form.value) // usa form interno
+//           resolvedOptions.value[field.key] = opts || []
+//         } catch (e) {
+//           console.warn(`Erro ao carregar ${field.key}`, e)
+//           resolvedOptions.value[field.key] = []
+//         }
+//       })
+//   await Promise.all(promises)
+// }
+
+
 // Funções
 const openAddModal = async () => {
   isEditing.value = false
   form.value = {}
   props.fields.forEach(field => {
-    form.value[field.key] = ''
+    form.value[field.key] = field.defaultValue ?? null
   })
-
-  await loadFieldOptions() // Linha potencialmente problemática
   dialog.value = true
-
-  nextTick(() => {
-    if (formularioRef.value?.resetValidation) {
-      formularioRef.value.resetValidation()
-    } else {
-      console.warn('resetValidation não está disponível em formRef')
-    }
-  })
+  nextTick(() => formularioRef.value?.resetValidation())
 }
 
 const openEditModal = async (item) => {
   isEditing.value = true
-  form.value = { ...item } // Cópia profunda para garantir carregamento correto dos dados
-  await loadFieldOptions() // Carrega opções dinâmicas
+  form.value = { ...item }
   dialog.value = true
-  nextTick(() => {
-    if (formularioRef.value?.resetValidation) {
-      formularioRef.value.resetValidation()
-    } else {
-      console.warn('resetValidation não está disponível em formRef')
-    }
-  })
+  nextTick(() => formularioRef.value?.resetValidation())
 }
 
 const closeModal = () => {
