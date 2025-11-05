@@ -81,6 +81,7 @@
 
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
+import { debounce } from 'lodash-es'
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
@@ -135,20 +136,39 @@ const resolveRules = (field) => field.rules ?? []
 /* -------------------------------------------------
    3. CARREGAMENTO DE OPÇÕES (backend)
    ------------------------------------------------- */
-const loadOptions = async () => {
-  const promises = props.fields
-      .filter(field => typeof field.options === 'function') // ← field
-      .map(async (field) => { // ← field
-        try {
-          const opts = await field.options(localForm.value) // ← field.options
-          fieldOptions.value[field.key] = Array.isArray(opts) ? opts : []
-        } catch (e) {
-          console.warn(`[FormularioDinamico] erro ao carregar ${field.key}`, e)
-          fieldOptions.value[field.key] = []
-        }
-      })
+const loadOptions = async (triggerKey = null) => {
+  // Se não há trigger, carrega apenas campos sem dependência (inicial)
+  if (!triggerKey) {
+    const rootFields = props.fields.filter(f =>
+        typeof f.options === 'function' && !f.dependsOn
+    )
+    await loadFields(rootFields)
+    return
+  }
+
+  // Se há trigger, carrega apenas campos que dependem dele
+  const dependentFields = props.fields.filter(f =>
+      typeof f.options === 'function' && f.dependsOn === triggerKey
+  )
+  await loadFields(dependentFields)
+}
+const debouncedLoadOptions = debounce((triggerKey) => {
+  loadOptions(triggerKey)
+}, 100)
+
+const loadFields = async (fields) => {
+  const promises = fields.map(async (field) => {
+    try {
+      const opts = await field.options(localForm.value)
+      fieldOptions.value[field.key] = Array.isArray(opts) ? opts : []
+    } catch (e) {
+      console.warn(`[FormularioDinamico] erro ao carregar ${field.key}`, e)
+      fieldOptions.value[field.key] = []
+    }
+  })
   await Promise.all(promises)
 }
+
 
 /* -------------------------------------------------
    4. WATCHERS (evita loop infinito)
@@ -164,7 +184,7 @@ watch(localForm, (nv) => {
 }, { deep: true })
 
 /* Recarrega opções sempre que o form mudar (ex: estado → cidade) */
-watch(localForm, loadOptions, { deep: true })
+// watch(localForm, loadOptions, { deep: true })
 
 /* Carrega opções iniciais */
 onMounted(loadOptions)
@@ -173,18 +193,18 @@ onMounted(loadOptions)
    5. EVENTOS
    ------------------------------------------------- */
 const onFieldChange = async (field, value) => {
-  // 1. Emite evento genérico
   emit('field-change', { field, value, form: localForm.value })
-
-  // 2. Executa callback customizado (pode limpar outro campo, etc.)
   if (typeof field.onChange === 'function') {
     await field.onChange({
       value,
       form: localForm.value,
-      setField: (key, val) => (localForm.value[key] = val),
-      loadOptions
+      setField: (k, v) => (localForm.value[k] = v),
+      loadOptions: debouncedLoadOptions
     })
   }
+
+  // Use debounced para evitar dupla chamada
+  debouncedLoadOptions(field.key)
 }
 
 /* -------------------------------------------------

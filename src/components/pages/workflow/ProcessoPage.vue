@@ -27,6 +27,9 @@ const fields = [
       return workflows
           .map(workflow => ({ value: workflow.id, text: workflow.workflow }));
     },
+    onChange: async ({ setField }) => {
+      setField('ctrl_hierarquia_id', null)
+    },
     defaultValue: null,
     rules: [v => !!v || 'Workflow é obrigatório'],
     optional: false
@@ -35,11 +38,15 @@ const fields = [
     key: 'ctrl_hierarquia_id',
     label: 'Nível de Hierarquia',
     type: 'select',
+    dependsOn: 'ctrl_workflow_id',
     disabled: f => !f.ctrl_workflow_id,
     options: async (f) => {
       const fields = await fetchHierarquia({ctrl_workflow_id: f.ctrl_workflow_id})
       return fields.filter(field => field.id !== null)
           .map(field => ({ value: field.id, text: field.hierarquia }));
+    },
+    onChange: async ({ setField }) => {
+      setField('ctrl_processo_id', null)
     },
     defaultValue: null,
     rules: [v => !!v || 'Hierarquia é obrigatório'],
@@ -51,6 +58,7 @@ const fields = [
     key: 'ctrl_processo_id',
     label: 'Processo Relacionado',
     type: 'select',
+    dependsOn: 'ctrl_hierarquia_id',
     disabled: f => !f.ctrl_hierarquia_id,
     options: async (f) => {
       if (!f.ctrl_hierarquia_id) return []

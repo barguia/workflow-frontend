@@ -82,6 +82,7 @@ const fields = computed(() => [
     key: 'cidade_id',
     label: 'Cidade',
     type: 'select',
+    dependsOn: 'estado_id',
     disabled: form => !form.estado_id,
     options: async (form) => {
       if (!form.estado_id) return []
