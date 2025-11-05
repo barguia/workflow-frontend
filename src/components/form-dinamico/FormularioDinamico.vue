@@ -81,7 +81,7 @@
 
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { debounce } from 'lodash-es'
+import { debounce, isEqual } from 'lodash-es'
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
@@ -97,7 +97,7 @@ const props = defineProps({
   validationErrors: { type: Object, default: () => ({}) },
   isEditing: { type: Boolean, default: false }
 })
-
+const prevValues = ref({})
 const emit = defineEmits(['update:modelValue', 'update:valid', 'field-change'])
 
 const localForm   = ref({ ...props.modelValue })
@@ -174,14 +174,16 @@ const loadFields = async (fields) => {
    4. WATCHERS (evita loop infinito)
    ------------------------------------------------- */
 watch(() => props.modelValue, (nv) => {
-  if (JSON.stringify(nv) !== JSON.stringify(localForm.value))
+  if (!isEqual(nv, localForm.value)) {
     localForm.value = { ...nv }
+  }
 }, { deep: true })
 
 watch(localForm, (nv) => {
-  if (JSON.stringify(nv) !== JSON.stringify(props.modelValue))
+  if (!isEqual(nv, props.modelValue)) {
     emit('update:modelValue', { ...nv })
-}, { deep: true })
+  }
+}, { deep: true, flush: 'sync' })
 
 /* Recarrega opções sempre que o form mudar (ex: estado → cidade) */
 // watch(localForm, loadOptions, { deep: true })
@@ -193,18 +195,33 @@ onMounted(loadOptions)
    5. EVENTOS
    ------------------------------------------------- */
 const onFieldChange = async (field, value) => {
-  emit('field-change', { field, value, form: localForm.value })
+  const key = field.key
+  const prev = prevValues.value[key]
+
+  // 1. Sempre atualiza o form
+  localForm.value[key] = value
+
+  // 2. Emite field-change APENAS se o valor mudou
+  if (!isEqual(prev, value)) {
+    emit('field-change', { field, value, form: localForm.value })
+    prevValues.value[key] = value // atualiza cache
+  }
+
+  // 3. Executa onChange
   if (typeof field.onChange === 'function') {
     await field.onChange({
       value,
       form: localForm.value,
-      setField: (k, v) => (localForm.value[k] = v),
+      setField: (k, v) => {
+        localForm.value[k] = v
+        prevValues.value[k] = v // mantém cache atualizado
+      },
       loadOptions: debouncedLoadOptions
     })
   }
 
-  // Use debounced para evitar dupla chamada
-  debouncedLoadOptions(field.key)
+  // 4. Recarrega dependentes
+  debouncedLoadOptions(key)
 }
 
 /* -------------------------------------------------
