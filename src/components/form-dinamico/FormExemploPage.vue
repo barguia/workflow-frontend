@@ -119,7 +119,13 @@ const fields = computed(() => [
 
 // === EVENTOS ===
 const onChange = ({ field, value }) => {
-  console.log(`Campo ${field.key} mudou:`, value)
+  const isSelect = field.type === 'select'
+  // console.log(`Campo ${field.key} mudou:`, 'color: green', value)
+  console.log(
+      `%c[CHANGE] Campo ${field.key} mudou: %c${JSON.stringify(value)}`,
+      `font-weight: bold;`,
+      `color: ${isSelect ? '#0f0' : '#00f'};`
+  )
 }
 
 const salvar = () => {
