@@ -9,7 +9,8 @@ class Crud {
     async index(payload = {}) {
         let parametros = {};
         if (payload !== {}) {
-            parametros = {payload};
+            parametros = {params: payload};
+            // console.log('Enviou Payload', this.route, parametros)
         }
         const response = await this.api.get(`${this.route}`, parametros);
         return response.data.data;

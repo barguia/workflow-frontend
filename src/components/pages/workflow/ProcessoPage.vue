@@ -52,8 +52,6 @@ const fields = [
     rules: [v => !!v || 'Hierarquia é obrigatório'],
     optional: false
   },
-  { key: 'processo', label: 'Processo', type: 'text', rules: [v => !!v || 'Processo é obrigatório'], optional: false },
-
   {
     key: 'ctrl_processo_id',
     label: 'Processo Relacionado',
@@ -62,9 +60,19 @@ const fields = [
     disabled: f => !f.ctrl_hierarquia_id,
     options: async (f) => {
       if (!f.ctrl_hierarquia_id) return []
-      const data = await fetchProcesso({ ctrl_hierarquia_id: f.ctrl_hierarquia_id })
+      const data = await fetchProcesso({
+        ctrl_hierarquia_id: f.ctrl_hierarquia_id,
+        ctrl_workflow_id: f.ctrl_workflow_id
+      })
       return data.map(d => ({ value: d.id, text: d.processo }))
     }
+  },
+  {
+    key: 'processo',
+    label: 'Processo',
+    type: 'text',
+    rules: [v => !!v || 'Processo é obrigatório'],
+    optional: false
   },
 ]
 

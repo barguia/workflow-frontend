@@ -16,7 +16,6 @@ export function useCrud(route) {
 
     const index = async (payload) => {
         try {
-            console.log(payload)
             return await crudService.index(payload);
         } catch (error) {
             handleCrudError(error, errors, snackbarMessage, showSnackbar);
