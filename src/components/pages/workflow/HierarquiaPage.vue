@@ -1,7 +1,7 @@
 <template>
   <CrudComponent
-      route="wf/processos"
-      title="Processos"
+      route="wf/hierarquias"
+      title="Hierarquias de Processos"
       :fields="fields"
       :headers="headers"
   >
@@ -14,8 +14,10 @@ import {useCrud} from "@/services/useCrud.js";
 import {ref} from "vue";
 const { index: fetchWorkflow } = useCrud('wf/workflows')
 const { index: fetchHierarquia } = useCrud('wf/hierarquias')
-const { index: fetchProcesso } = useCrud('wf/processos')
+
 const hierarquias = ref({})
+const opcoesHieraquia = ref({})
+const form = ref({})
 
 const fields = [
   {
@@ -28,57 +30,65 @@ const fields = [
           .map(workflow => ({ value: workflow.id, text: workflow.workflow }));
     },
     onChange: async ({ setField }) => {
-      setField('ctrl_hierarquia_id', null)
+      setField('ctrl_sub_hierarquia_id', null)
+      setField('ctrl_macro_hierarquia_id', null)
+      opcoesHieraquia.value = {}
     },
     defaultValue: null,
     rules: [v => !!v || 'Workflow é obrigatório'],
     optional: false
   },
   {
-    key: 'ctrl_hierarquia_id',
+    key: 'hierarquia',
     label: 'Nível de Hierarquia',
-    type: 'select',
-    dependsOn: 'ctrl_workflow_id',
-    disabled: f => !f.ctrl_workflow_id,
-    options: async (f) => {
-      const fields = await fetchHierarquia({ctrl_workflow_id: f.ctrl_workflow_id})
-      return fields
-          .map(field => ({ value: field.id, text: field.hierarquia }));
-    },
-    onChange: async ({ setField }) => {
-      setField('ctrl_processo_id', null)
-    },
+    type: 'text',
     defaultValue: null,
     rules: [v => !!v || 'Hierarquia é obrigatório'],
     optional: false
   },
   {
-    key: 'ctrl_processo_id',
-    label: 'Processo Relacionado',
+    key: 'ctrl_macro_hierarquia_id',
+    label: 'Nível Macro de Hierarquia',
     type: 'select',
-    dependsOn: 'ctrl_hierarquia_id',
-    disabled: f => !f.ctrl_hierarquia_id,
+    // dependsOn: 'ctrl_workflow_id',
+    disabled: f => !f.ctrl_workflow_id,
     options: async (f) => {
-      if (!f.ctrl_hierarquia_id) return []
-      const data = await fetchProcesso({
-        ctrl_hierarquia_id: f.ctrl_hierarquia_id,
-        ctrl_workflow_id: f.ctrl_workflow_id
-      })
-      return data.map(d => ({ value: d.id, text: d.processo }))
-    }
+      if (!f.ctrl_workflow_id) return []
+      const fields = await fetchHierarquia({ctrl_workflow_id: f.ctrl_workflow_id})
+      console.log(fields)
+      return fields
+          .map(field => ({ value: field.id, text: field.hierarquia }));
+    },
+    defaultValue: null,
   },
   {
-    key: 'processo',
-    label: 'Processo',
-    type: 'text',
-    rules: [v => !!v || 'Processo é obrigatório'],
-    optional: false
+    key: 'ctrl_sub_hierarquia_id',
+    label: 'Sub nível de Hierarquia',
+    type: 'select',
+    // dependsOn: 'ctrl_workflow_id',
+    disabled: f => !f.ctrl_workflow_id,
+    options: async (f) => {
+      if (!f.ctrl_workflow_id) return []
+      const fields = await fetchHierarquia({ctrl_workflow_id: f.ctrl_workflow_id})
+      console.log(fields)
+      return fields
+          .map(field => ({ value: field.id, text: field.hierarquia }));
+    },
+    defaultValue: null,
   },
+  {
+    key: 'descricao',
+    label: 'Descrição',
+    type: 'textarea',
+    defaultValue: null,
+  },
+
 ]
 
 const headers = [
-  { title: 'Processo', value: 'processo' },
-  { title: 'Hierarquia', value: 'hierarquia.hierarquia' },
+  { title: 'Hierarquia', value: 'hierarquia' },
+  { title: 'Hierarquia Macro', value: 'macro_hierarquia.hierarquia' },
+  { title: 'Hierarquia Sub', value: 'sub_hierarquia.hierarquia' },
   { title: 'Workflow', value: 'workflow.workflow' },
   { title: '', value: 'actions'}
 ]

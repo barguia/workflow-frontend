@@ -45,7 +45,6 @@
   </SnackbarComponent>
 
   <!-- Modal para Adicionar/Editar Item -->
-  <!-- Modal para Adicionar/Editar Item -->
   <v-dialog v-model="dialog" max-width="600px" @keydown.esc="closeModal">
     <CardComponent>
       <CardTitleComponent>
@@ -101,16 +100,10 @@ import SnackbarComponent from "@/components/comuns/alerts/SnackbarComponent.vue"
 import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
-import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
-import FormComponent from "@/components/comuns/forms/FormComponent.vue";
-import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
-import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
-import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
-import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
 import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
 
 const props = defineProps({
@@ -139,7 +132,6 @@ const { validationErrors, clearErrors } = useValidationErrors();
 
 // useCrud
 const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
-// const showMassActions = computed(() => selectedItems.value.length > 0)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -158,22 +150,6 @@ const loadItems = async () => {
 onMounted(() => {
   loadItems()
 })
-
-// const loadFieldOptions = async () => {
-//   const promises = props.fields
-//       .filter(field => typeof field.options === 'function')
-//       .map(async (field) => {
-//         try {
-//           const opts = await field.options(form.value) // usa form interno
-//           resolvedOptions.value[field.key] = opts || []
-//         } catch (e) {
-//           console.warn(`Erro ao carregar ${field.key}`, e)
-//           resolvedOptions.value[field.key] = []
-//         }
-//       })
-//   await Promise.all(promises)
-// }
-
 
 // Funções
 const openAddModal = async () => {

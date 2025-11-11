@@ -2,9 +2,9 @@
 const delay = (ms) => new Promise(r => setTimeout(r, ms))
 
 const ESTADOS = [
-    { text: 'São Paulo', value: 1 },
-    { text: 'Rio de Janeiro', value: 2 },
-    { text: 'Minas Gerais', value: 3 },
+    { text: 'São Paulo', value: 1, gorvernador: 'Julio Alves' },
+    { text: 'Rio de Janeiro', value: 2, gorvernador: 'Julio Alves' },
+    { text: 'Minas Gerais', value: 3, gorvernador: 'Julio Alves' },
 ]
 
 const INTERESSES = [

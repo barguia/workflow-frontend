@@ -15,4 +15,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+    server: {
+        allowedHosts: [
+            'prefatory-aliyah-eligibly.ngrok-free.dev', // 👈 host gerado pelo ngrok
+        ],
+    },
 })
