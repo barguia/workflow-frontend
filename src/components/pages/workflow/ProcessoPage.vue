@@ -67,17 +67,14 @@ const fields = [
       return fields
           .map(field => ({ value: field.id, text: field.hierarquia }));
     },
-    onChange: async ({ setField, form, context, loadOptions }) => {
+    onChange: async ({ setField, form, context }) => {
       setField('ctrl_processo_id', null)
 
       const hierarquiaAtual = context.hierarquias[form.ctrl_hierarquia_id]
-      console.log(hierarquiaAtual)
-      // Limpa cache anterior
-      // context.limparProcessos?.(form.ctrl_hierarquia_id)
+      console.log('hierarquia selecionada:', hierarquiaAtual)
 
       if (!hierarquiaAtual?.ctrl_macro_hierarquia_id) {
-        // É macroprocesso → não precisa de processo relacionado
-        // loadOptions('ctrl_processo_id') // atualiza select (vai ficar vazio)
+        context.processosRelacionados[form.ctrl_hierarquia_id] = []
         return
       }
 
@@ -88,16 +85,12 @@ const fields = [
         })
 
         const opcoes = data.map(d => ({ value: d.id, text: d.processo }))
-
-        // Armazena no context (estado reativo!)
         context.processosRelacionados[form.ctrl_hierarquia_id] = opcoes
 
-        // Força atualização do select
-        loadOptions('ctrl_processo_id')
+        // REMOVA loadOptions AQUI
       } catch (err) {
         console.error('Erro ao carregar processos relacionados', err)
         context.processosRelacionados[form.ctrl_hierarquia_id] = []
-        loadOptions('ctrl_processo_id')
       }
     },
     defaultValue: null,
@@ -108,11 +101,15 @@ const fields = [
     key: 'ctrl_processo_id',
     label: 'Processo Relacionado',
     type: 'select',
-    dependsOn: 'ctrl_hierarquia_id',
+    dependsOn: 'ctrl_hierarquia_id',  // ← mantém
     disabled: f => !f.ctrl_hierarquia_id,
     options: (form, context) => {
       return context.processosRelacionados[form.ctrl_hierarquia_id] || []
     },
+    // rules: (form, context) => {
+    //   const temOpcoes = !!context.processosRelacionados[form.ctrl_hierarquia_id]?.length
+    //   return !temOpcoes || !!form.ctrl_processo_id || 'Processo relacionado é obrigatório'
+    // }
   },
   {
     key: 'processo',

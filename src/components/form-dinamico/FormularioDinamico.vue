@@ -132,7 +132,6 @@ const resolveDisabled = (field) => {
   if (typeof field.disabled === 'function') return field.disabled(localForm.value, props.context)
   return !!field.disabled
 }
-// const resolveRules = (field) => field.rules ?? []
 
 const resolveRules = (field) => {
   if (Array.isArray(field.rules)) return field.rules
@@ -141,6 +140,7 @@ const resolveRules = (field) => {
   }
   return []
 }
+
 /* -------------------------------------------------
    3. CARREGAMENTO DE OPÇÕES (backend)
    ------------------------------------------------- */
@@ -160,9 +160,6 @@ const loadOptions = async (triggerKey = null) => {
   )
   await loadFields(dependentFields)
 }
-const debouncedLoadOptions = debounce((triggerKey) => {
-  loadOptions(triggerKey)
-}, 100)
 
 const loadFields = async (fields) => {
   const promises = fields.map(async (field) => {
@@ -182,9 +179,9 @@ const loadFields = async (fields) => {
    4. WATCHERS (evita loop infinito)
    ------------------------------------------------- */
 watch(() => props.modelValue, (nv) => {
-  if (!isEqual(nv, localForm.value)) {
-    localForm.value = { ...nv }
-  }
+  if (isEqual(nv, localForm.value)) return
+
+  localForm.value = { ...nv }
 }, { deep: true })
 
 watch(localForm, (nv) => {
@@ -224,13 +221,13 @@ const onFieldChange = async (field, value) => {
         localForm.value[k] = v
         prevValues.value[k] = v // mantém cache atualizado
       },
-      loadOptions: debouncedLoadOptions,
+      loadOptions,
       context: props.context,
     })
   }
 
   // 4. Recarrega dependentes
-  debouncedLoadOptions(key)
+  loadOptions(key)
 }
 
 /* -------------------------------------------------

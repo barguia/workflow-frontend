@@ -10,12 +10,12 @@
         :rules="rules"
         :inline="inline"
         :required="required"
-        @update:modelValue="$emit('update:modelValue', $event)"
+
     />
   </div>
 </template>
-
 <script setup>
+//       @update:modelValue="$emit('update:modelValue', $event)" chamada duplicada
 defineProps({
   label: String,
   items: Array,

@@ -166,7 +166,7 @@ const openAddModal = async () => {
 
 const openEditModal = async (item) => {
   isEditing.value = true
-  form.value = { ...item }
+  form.value = item
   dialog.value = true
   nextTick(() => formularioRef.value?.resetValidation())
 }
