@@ -4,6 +4,7 @@
       title="Processos"
       :fields="fields"
       :headers="headers"
+      :context="auxiliares"
   >
   </CrudComponent>
 </template>
@@ -11,11 +12,30 @@
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import {useCrud} from "@/services/useCrud.js";
-import {ref} from "vue";
+import {ref, computed} from "vue";
 const { index: fetchWorkflow } = useCrud('wf/workflows')
 const { index: fetchHierarquia } = useCrud('wf/hierarquias')
 const { index: fetchProcesso } = useCrud('wf/processos')
+
 const hierarquias = ref({})
+const processosRelacionados = ref({})
+
+const auxiliares = computed(() => ({
+  hierarquias: hierarquias.value,
+  processosRelacionados: processosRelacionados.value,
+}))
+
+const carregarHierarquias = async (workflowId) => {
+  if (!workflowId) {
+    hierarquias.value = {}
+    return
+  }
+  const data = await fetchHierarquia({
+    ctrl_workflow_id: workflowId,
+    with: 'macro_hierarquia,sub_hierarquia'
+  })
+  hierarquias.value = Object.fromEntries(data.map(h => [h.id, h]))
+}
 
 const fields = [
   {
@@ -27,8 +47,10 @@ const fields = [
       return workflows
           .map(workflow => ({ value: workflow.id, text: workflow.workflow }));
     },
-    onChange: async ({ setField }) => {
+    onChange: async ({ setField , form}) => {
       setField('ctrl_hierarquia_id', null)
+      setField('ctrl_processo_id', null)
+      await carregarHierarquias(form.ctrl_workflow_id)
     },
     defaultValue: null,
     rules: [v => !!v || 'Workflow é obrigatório'],
@@ -45,8 +67,38 @@ const fields = [
       return fields
           .map(field => ({ value: field.id, text: field.hierarquia }));
     },
-    onChange: async ({ setField }) => {
+    onChange: async ({ setField, form, context, loadOptions }) => {
       setField('ctrl_processo_id', null)
+
+      const hierarquiaAtual = context.hierarquias[form.ctrl_hierarquia_id]
+      console.log(hierarquiaAtual)
+      // Limpa cache anterior
+      // context.limparProcessos?.(form.ctrl_hierarquia_id)
+
+      if (!hierarquiaAtual?.ctrl_macro_hierarquia_id) {
+        // É macroprocesso → não precisa de processo relacionado
+        // loadOptions('ctrl_processo_id') // atualiza select (vai ficar vazio)
+        return
+      }
+
+      try {
+        const data = await fetchProcesso({
+          ctrl_hierarquia_id: hierarquiaAtual.ctrl_macro_hierarquia_id,
+          ctrl_workflow_id: form.ctrl_workflow_id
+        })
+
+        const opcoes = data.map(d => ({ value: d.id, text: d.processo }))
+
+        // Armazena no context (estado reativo!)
+        context.processosRelacionados[form.ctrl_hierarquia_id] = opcoes
+
+        // Força atualização do select
+        loadOptions('ctrl_processo_id')
+      } catch (err) {
+        console.error('Erro ao carregar processos relacionados', err)
+        context.processosRelacionados[form.ctrl_hierarquia_id] = []
+        loadOptions('ctrl_processo_id')
+      }
     },
     defaultValue: null,
     rules: [v => !!v || 'Hierarquia é obrigatório'],
@@ -58,14 +110,9 @@ const fields = [
     type: 'select',
     dependsOn: 'ctrl_hierarquia_id',
     disabled: f => !f.ctrl_hierarquia_id,
-    options: async (f) => {
-      if (!f.ctrl_hierarquia_id) return []
-      const data = await fetchProcesso({
-        ctrl_hierarquia_id: f.ctrl_hierarquia_id,
-        ctrl_workflow_id: f.ctrl_workflow_id
-      })
-      return data.map(d => ({ value: d.id, text: d.processo }))
-    }
+    options: (form, context) => {
+      return context.processosRelacionados[form.ctrl_hierarquia_id] || []
+    },
   },
   {
     key: 'processo',

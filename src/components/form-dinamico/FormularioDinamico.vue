@@ -95,7 +95,8 @@ const props = defineProps({
   fields: { type: Array, required: true },
   modelValue: { type: Object, required: true },
   validationErrors: { type: Object, default: () => ({}) },
-  isEditing: { type: Boolean, default: false }
+  isEditing: { type: Boolean, default: false },
+  context: { type: Object, default: () => ({}) },
 })
 const prevValues = ref({})
 const emit = defineEmits(['update:modelValue', 'update:valid', 'field-change'])
@@ -115,12 +116,12 @@ const visibleFields = computed(() => {
 
 const resolveVisible = (field) => {
   if (field.visible === false) return false
-  if (typeof field.visible === 'function') return field.visible(localForm.value)
+  if (typeof field.visible === 'function') return field.visible(localForm.value, props.context)
   return true
 }
 const resolveRenderIf = (field) => {
   if (field.renderIf === false) return false
-  if (typeof field.renderIf === 'function') return field.renderIf(localForm.value)
+  if (typeof field.renderIf === 'function') return field.renderIf(localForm.value, props.context)
   return true
 }
 
@@ -128,11 +129,18 @@ const resolveRenderIf = (field) => {
    2. RESOLUÇÃO DE PROPS DINÂMICAS
    ------------------------------------------------- */
 const resolveDisabled = (field) => {
-  if (typeof field.disabled === 'function') return field.disabled(localForm.value)
+  if (typeof field.disabled === 'function') return field.disabled(localForm.value, props.context)
   return !!field.disabled
 }
-const resolveRules = (field) => field.rules ?? []
+// const resolveRules = (field) => field.rules ?? []
 
+const resolveRules = (field) => {
+  if (Array.isArray(field.rules)) return field.rules
+  if (typeof field.rules === 'function') {
+    return field.rules(localForm.value, props.context)
+  }
+  return []
+}
 /* -------------------------------------------------
    3. CARREGAMENTO DE OPÇÕES (backend)
    ------------------------------------------------- */
@@ -159,7 +167,7 @@ const debouncedLoadOptions = debounce((triggerKey) => {
 const loadFields = async (fields) => {
   const promises = fields.map(async (field) => {
     try {
-      const opts = await field.options(localForm.value)
+      const opts = await field.options(localForm.value, props.context)
       fieldOptions.value[field.key] = Array.isArray(opts) ? opts : []
     } catch (e) {
       console.warn(`[FormularioDinamico] erro ao carregar ${field.key}`, e)
@@ -216,7 +224,8 @@ const onFieldChange = async (field, value) => {
         localForm.value[k] = v
         prevValues.value[k] = v // mantém cache atualizado
       },
-      loadOptions: debouncedLoadOptions
+      loadOptions: debouncedLoadOptions,
+      context: props.context,
     })
   }
 

@@ -58,6 +58,7 @@
             :validationErrors="validationErrors"
             :is-editing="isEditing"
             :resolvedOptions="resolvedOptions"
+            :context="props.context"
         />
       </CardTextComponent>
       <CardActionsComponent>
@@ -116,6 +117,7 @@ const props = defineProps({
     default: () => [] // [{ key: 'name', label: 'Nome', type: 'text', rules: [...], optional: false }]
   },
   headers: { type: Array, required: true }, // Headers para a tabela
+  context: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['item-saved', 'item-deleted'])
