@@ -71,8 +71,6 @@ const fields = [
       setField('ctrl_processo_id', null)
 
       const hierarquiaAtual = context.hierarquias[form.ctrl_hierarquia_id]
-      console.log('hierarquia selecionada:', hierarquiaAtual)
-
       if (!hierarquiaAtual?.ctrl_macro_hierarquia_id) {
         context.processosRelacionados[form.ctrl_hierarquia_id] = []
         return
@@ -86,8 +84,6 @@ const fields = [
 
         const opcoes = data.map(d => ({ value: d.id, text: d.processo }))
         context.processosRelacionados[form.ctrl_hierarquia_id] = opcoes
-
-        // REMOVA loadOptions AQUI
       } catch (err) {
         console.error('Erro ao carregar processos relacionados', err)
         context.processosRelacionados[form.ctrl_hierarquia_id] = []
@@ -102,14 +98,19 @@ const fields = [
     label: 'Processo Relacionado',
     type: 'select',
     dependsOn: 'ctrl_hierarquia_id',  // ← mantém
+    visible: (form, context) => {
+      const hierarquiaAtual = context.hierarquias[form.ctrl_hierarquia_id]
+      return !!hierarquiaAtual?.ctrl_macro_hierarquia_id
+    },
     disabled: f => !f.ctrl_hierarquia_id,
     options: (form, context) => {
       return context.processosRelacionados[form.ctrl_hierarquia_id] || []
     },
-    // rules: (form, context) => {
-    //   const temOpcoes = !!context.processosRelacionados[form.ctrl_hierarquia_id]?.length
-    //   return !temOpcoes || !!form.ctrl_processo_id || 'Processo relacionado é obrigatório'
-    // }
+    rules: (form, context) => {
+      const hierarquiaAtual = context.hierarquias[form.ctrl_hierarquia_id]
+      const precisaProcesso = !!hierarquiaAtual?.ctrl_macro_hierarquia_id
+      return precisaProcesso ? [v => !!v || 'Processo relacionado é obrigatório'] : []
+    }
   },
   {
     key: 'processo',
