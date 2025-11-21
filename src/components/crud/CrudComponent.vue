@@ -15,6 +15,8 @@
         <v-icon small @click="deleteItem(item)">
           mdi-delete
         </v-icon>
+
+        <slot name="actionsField" :item="item"/>
       </template>
     </CrudDataTableComponent>
   </ContainerComponent>
@@ -45,7 +47,7 @@
   </SnackbarComponent>
 
   <!-- Modal para Adicionar/Editar Item -->
-  <v-dialog v-model="dialog" max-width="600px" @keydown.esc="closeModal">
+  <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal">
     <CardComponent>
       <CardTitleComponent>
         <span class="text-h5">{{ isEditing ? 'Editar ' + title.toLowerCase() : 'Adicionar ' + title.toLowerCase() }}</span>
@@ -140,6 +142,7 @@ const showMassActions = ref(false)
 watch(selectedItems, (newValue) => {
   showMassActions.value = newValue.length > 0
 })
+
 // Carregar itens
 const loadItems = async () => {
   try {

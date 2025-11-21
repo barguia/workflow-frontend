@@ -1,30 +1,40 @@
 <template>
   <div>
     <v-label v-if="label">{{ label }}</v-label>
-    <v-checkbox
-        v-for="item in items"
-        :key="item.value"
+    <v-combobox
         v-model="modelValue"
-        :label="item.text"
-        :value="item.value"
+        :items="items"
         :rules="rules"
         :inline="inline"
         :required="required"
-        chips
-        multiple
+        item-title="text"
+        item-value="value"
+        :chips="chips"
+        :multiple="multiple"
+        :clearable="clearable"
     />
   </div>
 </template>
 <script setup>
-//       @update:modelValue="$emit('update:modelValue', $event)" chamada duplicada
+
 defineProps({
   label: String,
   items: Array,
   rules: Array,
   inline: Boolean,
   required: Boolean,
-  chips: Boolean,
-  multiple: Boolean,
+  chips: {
+    type: Boolean,
+    default: true,
+  },
+  multiple: {
+    type: Boolean,
+    default: true,
+  },
+  clearable: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const modelValue = defineModel()

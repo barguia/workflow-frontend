@@ -1,6 +1,6 @@
 <template>
   <AppBarComponent app>
-    <AppBarNavIconComponent v-if="authStore.isAuthenticated" @click="drawer = !drawer"/>
+      <AppBarNavIconComponent v-if="authStore.isAuthenticated" @click="drawer = !drawer" data-testid="menu-toggle"/>
     <ToolbarTitleComponent>
       <router-link to="/" class="nav-link hover:text-blue-300 text-wrap">
         Workflow Management System

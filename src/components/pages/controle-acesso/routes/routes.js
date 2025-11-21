@@ -1,7 +1,7 @@
-import LoginPage from "@/components/pages/autenticacao/LoginPage.vue";
-import ForgotPasswordPage from "@/components/pages/autenticacao/ForgotPasswordPage.vue";
-import ResetPasswordPage from "@/components/pages/autenticacao/ResetPasswordPage.vue";
-
+import RolePage from "@/components/pages/controle-acesso/RolePage.vue";
+import LoginPage from "@/components/pages/controle-acesso/LoginPage.vue";
+import ForgotPasswordPage from "@/components/pages/controle-acesso/ForgotPasswordPage.vue";
+import ResetPasswordPage from "@/components/pages/controle-acesso/ResetPasswordPage.vue";
 
 const routes = [
     {
@@ -22,6 +22,13 @@ const routes = [
         name: 'ResetPassword',
         component: ResetPasswordPage,
         meta: { requiresAuth: false },
+    },
+    {
+        path: '/role',
+        name: 'Role',
+        component: RolePage,
+        icon: "mdi-user",
+        meta: { requiresAuth: true },
     },
 ]
 

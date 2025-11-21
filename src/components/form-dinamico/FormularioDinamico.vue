@@ -67,7 +67,26 @@
               :label="field.label"
               :items="fieldOptions[field.key] || []"
               :rules="resolveRules(field)"
+              :multiple="field.multiple ?? false"
+              :chips="field.chips ?? false"
               :inline="field.inline ?? false"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- COMBOBOX -->
+          <ComboboxComponent
+              v-else-if="isType(field, 'combobox')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :items="fieldOptions[field.key] || []"
+              :rules="resolveRules(field)"
+              :multiple="field.multiple"
+              :chips="field.chips"
+              :clearable="field.clearable"
+              :inline="field.inline"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
@@ -81,7 +100,7 @@
 
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { debounce, isEqual } from 'lodash-es'
+import { isEqual } from 'lodash-es'
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
@@ -90,6 +109,7 @@ import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue
 import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
+import ComboboxComponent from "@/components/comuns/forms/ComboboxComponent.vue";
 
 const props = defineProps({
   fields: { type: Array, required: true },
