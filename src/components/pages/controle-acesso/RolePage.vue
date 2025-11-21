@@ -12,17 +12,46 @@
         </v-icon>
       </template>
     </CrudComponent>
-    <v-dialog v-if="dialog" v-model="dialog" max-width="1000px" @keydown.esc="closeModalRole">
+    <v-dialog v-if="dialog" v-model="dialog" max-width="1200px" @keydown.esc="closeModalRole">
       <CardComponent>
         <CardTitleComponent>
           <span class="text-h5">Configuração do Perfil: {{ role.name }}</span>
         </CardTitleComponent>
         <CardTextComponent>
-          <FormularioDinamico
-            ref="formularioRule"
-            :fields="fieldPermissions"
-            v-model="form"
-          />
+          <FormComponent v-model="form">
+            <RowComponent>
+              <ColComponent
+                  v-for="grupo in grupo_permissions"
+                  :key="grupo.grupo"
+                  cols="3"
+              >
+                <v-divider class="mb-3"  />
+                <span class="text-h5">{{ grupo.grupo }}</span>
+                <v-checkbox
+                    v-for="opt in grupo.options"
+                    :key="opt.value"
+                    v-model="localForm.permissions_ids"
+                    :value="opt.value"
+                    :label="opt.text"
+                    hide-details
+                    density="compact"
+                    false-value
+                    class="ma-0 my-1"
+                    style="height: 32px;"
+                >
+                  <template v-slot:label>
+                    <v-chip
+                        :color="localForm.permissions_ids.includes(opt.value) ? 'primary' : 'grey-lighten-2'"
+                        :text="opt.text"
+                        size="small"
+                        class="px-2 text-caption font-weight-medium"
+                    />
+                  </template>
+                </v-checkbox>
+              </ColComponent>
+            </RowComponent>
+
+          </FormComponent>
         </CardTextComponent>
         <CardActionsComponent>
           <v-spacer></v-spacer>
@@ -52,18 +81,28 @@ import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
-import {useNotifications} from "@/composables/useNotifications.js";
-const { triggerNotification } = useNotifications();
+import RowComponent from "@/components/comuns/layout/RowComponent.vue";
+import ColComponent from "@/components/comuns/layout/ColComponent.vue";
+import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
+import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 const { index: fetchPermissions } = useCrud('app/permissions')
 
 
 const dialog = ref(false)
+const grupo_permissions = ref([])
+
 const form = ref({
   id: null,
   permissions_ids: []
 })
+const localForm   = ref({
+  id: null,
+  permissions_ids: []
+})
+
+const permissions_ids = ref([])
 const role = ref(null)
-const fieldPermissions = ref([])
+
 const fields = [
   {
     key: 'name',
@@ -102,16 +141,15 @@ const headers = [
 const closeModalRole = () => {
   dialog.value = false
   role.value = null
-  form.value = {
-    id: null,
-    permissions_ids: []
-  }
+  localForm.value.id = null
+  localForm.value.permissions_ids = []  // limpa seleção
+  grupo_permissions.value = []
 }
 
 const atualizarRole = async () => {
   const payload = {
-    id: form.value.id,
-    permissions_ids: form.value.permissions_ids,
+    id: localForm.value.id,
+    permissions_ids: localForm.value.permissions_ids,
   }
 
   await api.post(`app/roles-permissions`, payload)
@@ -119,36 +157,52 @@ const atualizarRole = async () => {
 }
 
 const openModalRole = async (parametro) => {
-  console.log(parametro)
   role.value = parametro
-  await api.get(`app/roles-permissions/${parametro.id}`).then(response => {
-    form.value = {
-      id: parametro.id,
-      permissions_ids: response.data.data.map((f) => f.id),
+  dialog.value = true
+
+  // 1. Carrega as permissões que a role JÁ TEM
+  const resPermissoesAtuais = await api.get(`app/roles-permissions/${parametro.id}`)
+  localForm.value.permissions_ids = resPermissoesAtuais.data.data.map(p => p.id)
+  localForm.value.id = parametro.id
+
+  // 2. Carrega TODAS as permissões (para montar os checkboxes)
+  const resTodasPermissoes = await api.get(`app/permissions`)
+  grupo_permissions.value = [] // limpa antes
+
+  resTodasPermissoes.data.data.forEach((item) => {
+    const grupoNome = item.grupo
+    let grupoExistente = grupo_permissions.value.find(g => g.grupo === grupoNome)
+
+    if (!grupoExistente) {
+      grupoExistente = { grupo: grupoNome, options: [] }
+      grupo_permissions.value.push(grupoExistente)
     }
+
+    grupoExistente.options.push({
+      value: item.id,
+      text: `${item.name.replace("app.", "").replace("wf.", "")} (${item.guard_name})`
+    })
   })
 
-  fieldPermissions.value = [
-    {
-      key: 'permissions_ids',
-      label: 'Permissões',
-      type: 'combobox',
-      multiple: true,
-      chips: true,
-      clearable: true,
-      options: async () => {
-        const fields = await fetchPermissions()
-        return fields
-            .map(field => ({
-              value: field.id,
-              text: field.name.replace("app.", "").replace("wf.", "") + ` (${field.guard_name})`,
-              props: { subtitle: field.grupo },
-            }));
-      },
-      optional: false
-    },
-  ]
-  dialog.value = true
+  // Ordena os grupos
+  grupo_permissions.value.sort((a, b) => a.grupo.localeCompare(b.grupo))
 }
 
 </script>
+
+
+<style scoped>
+.permission-group-checkboxes .v-input__control {
+  gap: 4px !important;
+}
+
+.permission-group-checkboxes .v-selection-control {
+  margin: 0 !important;
+  padding: 0 4px !important;
+}
+
+.permission-group-checkboxes .v-label {
+  opacity: 1 !important;
+  font-size: 13px !important;
+}
+</style>
