@@ -20,13 +20,9 @@
         <CardTextComponent>
           <FormComponent v-model="form">
             <RowComponent>
-              <ColComponent
-                  v-for="grupo in grupo_permissions"
-                  :key="grupo.grupo"
-                  cols="3"
-              >
+              <v-col v-for="grupo in grupo_permissions" :key="grupo.grupo" cols="12" xs="12" sm="6" md="4" lg="3" xl="3" >
                 <v-divider class="mb-3"  />
-                <span class="text-h5">{{ grupo.grupo }}</span>
+                <span class="text-h5 text-center">{{ grupo.grupo }}</span>
                 <v-checkbox
                     v-for="opt in grupo.options"
                     :key="opt.value"
@@ -35,7 +31,6 @@
                     :label="opt.text"
                     hide-details
                     density="compact"
-                    false-value
                     class="ma-0 my-1"
                     style="height: 32px;"
                 >
@@ -48,7 +43,7 @@
                     />
                   </template>
                 </v-checkbox>
-              </ColComponent>
+              </v-col>
             </RowComponent>
 
           </FormComponent>

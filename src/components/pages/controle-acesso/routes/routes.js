@@ -1,7 +1,8 @@
-import RolePage from "@/components/pages/controle-acesso/RolePage.vue";
+import RolePage from "@/components/pages/controle-acesso/sub-pages/RolePage.vue";
 import LoginPage from "@/components/pages/controle-acesso/LoginPage.vue";
 import ForgotPasswordPage from "@/components/pages/controle-acesso/ForgotPasswordPage.vue";
 import ResetPasswordPage from "@/components/pages/controle-acesso/ResetPasswordPage.vue";
+import ControleAcessoPage from "@/components/pages/controle-acesso/ControleAcessoPage.vue";
 
 const routes = [
     {
@@ -11,6 +12,7 @@ const routes = [
         icon: "mdi-user",
         meta: { requiresAuth: false },
     },
+
     {
         path: '/forgot-password',
         name: 'ForgotPassword',
@@ -22,6 +24,13 @@ const routes = [
         name: 'ResetPassword',
         component: ResetPasswordPage,
         meta: { requiresAuth: false },
+    },
+    {
+        path: '/administracao',
+        name: 'Administracao',
+        component: ControleAcessoPage,
+        icon: "mdi-user",
+        meta: { requiresAuth: true },
     },
     {
         path: '/role',
