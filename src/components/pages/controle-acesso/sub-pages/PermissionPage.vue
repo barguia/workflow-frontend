@@ -4,38 +4,25 @@
     title="Permissões"
     :fields="fields"
     :headers="headers"
+    :filter_index="{guard_name: 'web'}"
   />
 </template>
 
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
-
-let fields;
-fields = [
+const fields = [
+  {
+    key: 'grupo',
+    label: 'Grupo',
+    type: 'text',
+    rules: [v => !!v || 'Grupo é obrigatório'],
+    optional: false
+  },
   {
     key: 'name',
     label: 'Permissão',
     type: 'text',
     rules: [v => !!v || 'Permissão é obrigatório'],
-    optional: false
-  },
-  {
-    key: 'guard_name',
-    label: 'Guard Name',
-    type: 'select',
-    default: 'api',
-    options: async () => {
-      return [
-        {
-          value: 'api',
-          text: 'API',
-        },
-        {
-          value: 'web',
-          text: 'WEB',
-        },
-      ]
-    },
     optional: false
   },
 ];

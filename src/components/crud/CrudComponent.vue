@@ -110,13 +110,14 @@ import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
 
 const props = defineProps({
-  route: { type: String, required: true }, // e.g., 'users'
+  route: { type: String, required: true },
+  filter_index: { type: Object, required: false, default: {} },
   title: { type: String, required: true },
   form: { type: Object, default: () => ({}) },
   fields: {
     type: Array,
     required: true,
-    default: () => [] // [{ key: 'name', label: 'Nome', type: 'text', rules: [...], optional: false }]
+    default: () => []
   },
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
@@ -145,8 +146,10 @@ watch(selectedItems, (newValue) => {
 
 // Carregar itens
 const loadItems = async () => {
+  const filterIndex = props.filter_index
+  console.log(search.value)
   try {
-    items.value = await index({ search: search.value })
+    items.value = await index(filterIndex)
   } catch (err) {
     // Erros tratados pelo useCrud
   }
@@ -223,7 +226,6 @@ const deleteSelected = async () => {
       selectedItems.value = []
       loadItems()
     } catch (err) {
-      // Erros tratados pelo useCrud
       console.log(err)
     }
   }

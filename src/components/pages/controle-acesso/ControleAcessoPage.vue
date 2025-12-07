@@ -69,11 +69,14 @@ const telas = markRaw([
     icon: 'mdi-table-key',
     componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/PermissionPage.vue'))
   },
+  {
+    id: 'menu',
+    title: 'Menu',
+    title_page: 'Gestãos de Menus',
+    icon: 'mdi-menu-open',
+    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/MenuPage.vue'))
+  },
 ])
 
 
 </script>
-
-
-<style scoped>
-</style>
