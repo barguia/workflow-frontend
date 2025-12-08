@@ -68,19 +68,15 @@
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import {ref} from "vue";
-import {useCrud} from "@/services/useCrud.js";
+
 import api from "@/services/api.js";
-import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
 import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
-import ColComponent from "@/components/comuns/layout/ColComponent.vue";
-import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import FormComponent from "@/components/comuns/forms/FormComponent.vue";
-const { index: fetchPermissions } = useCrud('app/permissions')
 
 
 const dialog = ref(false)
@@ -95,7 +91,6 @@ const localForm   = ref({
   permissions_ids: []
 })
 
-const permissions_ids = ref([])
 const role = ref(null)
 
 const fields = [
@@ -161,7 +156,7 @@ const openModalRole = async (parametro) => {
   localForm.value.id = parametro.id
 
   // 2. Carrega TODAS as permissões (para montar os checkboxes)
-  const resTodasPermissoes = await api.get(`app/permissions`)
+  const resTodasPermissoes = await api.get(`app/permissions`, {params:{guard_name: parametro.guard_name}})
   grupo_permissions.value = [] // limpa antes
 
   resTodasPermissoes.data.data.forEach((item) => {
