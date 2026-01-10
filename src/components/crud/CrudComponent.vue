@@ -147,7 +147,6 @@ watch(selectedItems, (newValue) => {
 // Carregar itens
 const loadItems = async () => {
   const filterIndex = props.filter_index
-  console.log(search.value)
   try {
     items.value = await index(filterIndex)
   } catch (err) {

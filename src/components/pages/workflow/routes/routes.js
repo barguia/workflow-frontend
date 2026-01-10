@@ -3,31 +3,32 @@ import TarefaPage from "@/components/pages/workflow/TarefaPage.vue";
 import ProcessoPage from "@/components/pages/workflow/ProcessoPage.vue";
 import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
 import HierarquiaPage from "@/components/pages/workflow/HierarquiaPage.vue";
+import ProjetoPage from "@/components/pages/workflow/ProjetoPage.vue";
 
 const routes = [
     {
-        path: '/hierarquia',
+        path: '/hierarquias',
         name: 'Hierarquia',
         component: HierarquiaPage,
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },
     {
-        path: '/tarefa',
+        path: '/tarefas',
         name: 'Tarefa',
         component: TarefaPage,
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },
     {
-        path: '/processo',
+        path: '/processos',
         name: 'Processo',
         component: ProcessoPage,
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },
     {
-        path: '/workflow',
+        path: '/workflows',
         name: 'Workflow',
         component: WorkflowPage,
         icon: "mdi-home",
@@ -37,6 +38,13 @@ const routes = [
         path: '/formulario-dinamico-exemplo',
         name: 'FormularioDinamicoExemplo',
         component: FormExemploPage,
+        icon: "mdi-home",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/projetos',
+        name: 'Projeto',
+        component: ProjetoPage,
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },

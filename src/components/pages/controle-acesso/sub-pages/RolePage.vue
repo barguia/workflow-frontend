@@ -12,6 +12,7 @@
         </v-icon>
       </template>
     </CrudComponent>
+
     <v-dialog v-if="dialog" v-model="dialog" max-width="1200px" @keydown.esc="closeModalRole">
       <CardComponent>
         <CardTitleComponent>
@@ -20,7 +21,7 @@
         <CardTextComponent>
           <FormComponent v-model="form">
             <RowComponent>
-              <v-col v-for="grupo in grupo_permissions" :key="grupo.grupo" cols="12" xs="12" sm="6" md="4" lg="3" xl="3" >
+              <ColComponent v-for="grupo in grupo_permissions" :key="grupo.grupo" cols="12" xs="12" sm="6" md="4" lg="3" xl="3" >
                 <v-divider class="mb-3"  />
                 <span class="text-h5 text-center">{{ grupo.grupo }}</span>
                 <v-checkbox
@@ -43,7 +44,7 @@
                     />
                   </template>
                 </v-checkbox>
-              </v-col>
+              </ColComponent>
             </RowComponent>
 
           </FormComponent>
@@ -77,6 +78,7 @@ import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import FormComponent from "@/components/comuns/forms/FormComponent.vue";
+import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 
 
 const dialog = ref(false)
