@@ -12,17 +12,36 @@
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import {useCrud} from "@/services/useCrud.js";
 const { index: fetchOrganizacoes } = useCrud('app/organizacoes')
+const { index: fetchTarefa } = useCrud('wf/tarefas')
 
 const fields = [
-  { key: 'workflow', label: 'Workflow', type: 'text', rules: [v => !!v || 'Workflow é obrigatório'], optional: false },
+  {
+    key: 'workflow',
+    label: 'Workflow',
+    type: 'text',
+    rules: [v => !!v || 'Workflow é obrigatório'],
+    optional: false
+  },
+  {
+    key: 'ctrl_default_tarefa_id',
+    label: 'Tarefa inicial',
+    type: 'select',
+    renderIf: f => f.id,
+    options: async (f) => {
+      const fields = await fetchTarefa({ctrl_workflow_id: f.id})
+      return fields
+          .map(field => ({ value: field.id, text: field.tarefa }));
+    },
+    defaultValue: null,
+  },
   {
     key: 'acl_organizacao_id',
     label: 'Organização',
     type: 'select',
     options: async () => {
-      const organizacoes = await fetchOrganizacoes()
-      return organizacoes.filter(organizacao => organizacao.id !== null)
-          .map(organizacao => ({ value: organizacao.id, text: organizacao.organizacao }));
+      const fields = await fetchOrganizacoes()
+      return fields.filter(field => field.id !== null)
+          .map(field => ({ value: field.id, text: field.razao_social }));
     },
     multiple: false,
     defaultValue: null, // Ou um ID default
@@ -33,7 +52,8 @@ const fields = [
 
 const headers = [
   { title: 'Workflow', value: 'workflow' },
-  { title: 'Organização', value: 'organizacao.organizacao' },
+  { title: 'Tarefa inicial', value: 'tarefa_default.tarefa' },
+  { title: 'Organização', value: 'organizacao.razao_social' },
   { title: '', value: 'actions'}
 ]
 </script>

@@ -168,7 +168,7 @@ const loadOptions = async (triggerKey = null) => {
   // Se não há trigger, carrega apenas campos sem dependência (inicial)
   if (!triggerKey) {
     const rootFields = props.fields.filter(f =>
-        typeof f.options === 'function' && !f.dependsOn
+        typeof f.options === 'function' // && !f.dependsOn
     )
     await loadFields(rootFields)
     return

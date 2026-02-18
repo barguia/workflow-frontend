@@ -50,12 +50,11 @@ const fields = [
     key: 'ctrl_macro_hierarquia_id',
     label: 'Nível Macro de Hierarquia',
     type: 'select',
-    // dependsOn: 'ctrl_workflow_id',
+    dependsOn: 'ctrl_workflow_id',
     disabled: f => !f.ctrl_workflow_id,
     options: async (f) => {
       if (!f.ctrl_workflow_id) return []
       const fields = await fetchHierarquia({ctrl_workflow_id: f.ctrl_workflow_id})
-      console.log(fields)
       return fields
           .map(field => ({ value: field.id, text: field.hierarquia }));
     },

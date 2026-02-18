@@ -24,7 +24,7 @@ const tarefaFields = [
       return workflows
           .map(workflow => ({ value: workflow.id, text: workflow.workflow }));
     },
-    onChange: async ({ setField , form}) => {
+    onChange: async ({ setField }) => {
       setField('ctrl_processo_id', null)
     },
     defaultValue: null,
@@ -35,7 +35,7 @@ const tarefaFields = [
     key: 'ctrl_processo_id',
     label: 'Processo',
     type: 'select',
-    // dependsOn: 'ctrl_workflow_id',
+    dependsOn: 'ctrl_workflow_id',
     disabled: f => !f.ctrl_workflow_id,
     options: async (f) => {
       if (!f.ctrl_workflow_id) return []
@@ -45,7 +45,7 @@ const tarefaFields = [
           .map(field => ({ value: field.id, text: field.processo }));
     },
     multiple: false,
-    defaultValue: null, // Ou um ID default
+    defaultValue: null,
     rules: [v => !!v || 'Processo é obrigatório'],
     optional: false
   },
