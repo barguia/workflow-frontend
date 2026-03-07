@@ -4,6 +4,7 @@ import ProcessoPage from "@/components/pages/workflow/ProcessoPage.vue";
 import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
 import HierarquiaPage from "@/components/pages/workflow/HierarquiaPage.vue";
 import ProjetoPage from "@/components/pages/workflow/ProjetoPage.vue";
+import VolumetriaBacklog from "@/components/pages/workflow/VolumetriaBacklog.vue";
 
 const routes = [
     {
@@ -45,6 +46,13 @@ const routes = [
         path: '/projetos',
         name: 'Projeto',
         component: ProjetoPage,
+        icon: "mdi-home",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/backlog',
+        name: 'backlog',
+        component: VolumetriaBacklog,
         icon: "mdi-home",
         meta: { requiresAuth: true },
     },
