@@ -11,7 +11,6 @@
       item-title="text"
       item-value="value"
       :return-object="false"
-      @update:modelValue="$emit('update:modelValue', $event)"
   />
 </template>
 

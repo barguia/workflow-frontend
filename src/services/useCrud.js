@@ -28,7 +28,6 @@ export function useCrud(route) {
         } catch (error) {
             handleCrudError(error, errors, snackbarMessage, showSnackbar);
         }
-
     };
 
     const update = async (payload) => {

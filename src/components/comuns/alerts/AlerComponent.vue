@@ -1,5 +1,7 @@
 <template>
-  <v-alert v-bind="$attrs" />
+  <v-alert v-bind="$attrs">
+    <slot/>
+  </v-alert>
 </template>
 
 <script>

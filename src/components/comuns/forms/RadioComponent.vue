@@ -6,7 +6,6 @@
       :rules="rules"
       :inline="inline"
       :required="required"
-      @update:modelValue="$emit('update:modelValue', $event)"
   >
     <v-radio
         v-for="item in items"
@@ -18,6 +17,7 @@
 </template>
 
 <script setup>
+// @update:modelValue="$emit('update:modelValue', $event)" Chamada duplicada
 defineProps({
   label: String,
   items: Array,

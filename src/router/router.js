@@ -2,14 +2,14 @@ import {createRouter, createWebHistory} from 'vue-router'
 import { createPinia } from 'pinia'; // Importe Pinia aqui
 import { useAuthStore } from '@/stores/authStore';
 
+import controleAcessoRoutes from "@/components/pages/controle-acesso/routes/routes.js"
 import appRoutes from "@/components/pages/aplicacao/routes/routes.js"
-import authRoutes from "@/components/pages/autenticacao/routes/routes.js"
 import workflowRoutes from "@/components/pages/workflow/routes/routes.js"
 
 const pinia = createPinia();
 
 const routes = [
-    ...authRoutes,
+    ...controleAcessoRoutes,
     ...appRoutes,
     ...workflowRoutes,
 

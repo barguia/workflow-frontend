@@ -1,20 +1,25 @@
 <template>
-  <v-list-group
+  <!-- Grupo: tem filhos -->
+  <ListGroupComponent
     v-if="hasChildren"
     :value="groupKey"
     v-model:opened="opened"
-    class="menu-group"
   >
-
-    <template #activator>
-      <v-list-item
+    <template #activator="{ props: activatorProps }">
+      <ListItemComponent
+        v-bind="activatorProps"
         :prepend-icon="node.icon"
         :title="node.title"
+        rounded="lg"
+        density="compact"
+        active-color="primary"
+        class="menu-item"
+        :style="indentStyle"
         @click.stop="toggleHere"
       />
     </template>
 
-    <menu-node-component
+    <MenuNodeComponent
       v-for="child in node.children"
       :key="child.id"
       :node="child"
@@ -22,57 +27,66 @@
       :open-at-level="openAtLevel"
       @toggle="$emit('toggle', $event)"
     />
-  </v-list-group>
+  </ListGroupComponent>
 
-  <router-link
+  <!-- Folha: navega para rota -->
+  <ListItemComponent
     v-else
-    :to="node.path ? node.path : ''"
-    class="nav-link hover:text-blue-300 text-wrap"
-  >
-    <v-list-item
-      :prepend-icon="node.icon"
-      v-model:opened="opened"
-      class="submenu-item"
-      :title="node.title"
-    />
-  </router-link>
-
-
+    :prepend-icon="node.icon"
+    :title="node.title"
+    :to="node.path || undefined"
+    rounded="lg"
+    density="compact"
+    active-color="primary"
+    class="menu-item"
+    :style="indentStyle"
+  />
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import ListGroupComponent from '@/components/comuns/lists/ListGroupComponent.vue'
+import ListItemComponent from '@/components/comuns/lists/ListItemComponent.vue'
+
 defineOptions({ name: 'MenuNodeComponent' })
 
 const props = defineProps({
-  node: { type: Object, required: true },
-  level: { type: Number, required: true },
-  openAtLevel: { type: Object, required: true },
+  node:        { type: Object,  required: true },
+  level:       { type: Number,  required: true },
+  openAtLevel: { type: Object,  required: true },
 })
+
 const emit = defineEmits(['toggle'])
 
 const hasChildren = computed(() =>
-    Array.isArray(props.node.children) && props.node.children.length > 0
+  Array.isArray(props.node.children) && props.node.children.length > 0
 )
-/** chave única por nível+id, ex.: "0:aplicacao" */
-const groupKey = computed(() => `${props.level}:${props.node.id}`)
-const opened = computed(() => props.openAtLevel[props.level] === props.node.id)
 
-function toggleHere () {
+const groupKey = computed(() => `${props.level}:${props.node.id}`)
+const opened   = computed(() => props.openAtLevel[props.level] === props.node.id)
+
+const indentStyle = computed(() => ({
+  paddingLeft: `${props.level * 10}px`,
+}))
+
+function toggleHere() {
   emit('toggle', { level: props.level, id: opened.value ? null : props.node.id })
 }
 </script>
 
 <style scoped>
-.menu-group .v-list-item,
-.submenu-item {
-  min-height: 32px !important;
-  --indent-padding: calc(var(--parent-padding))/2;
+.menu-item {
+  min-height: 36px !important;
+  margin-bottom: 2px;
+  font-size: 0.875rem;
 }
 
+.menu-item :deep(.v-list-item__prepend .v-icon) {
+  opacity: 0.75;
+  font-size: 18px;
+}
 
-.v-list-item:hover {
-  background-color: #f0f0f0;   /* cor ao passar o mouse */
-  cursor: pointer;
+.menu-item:hover :deep(.v-list-item__prepend .v-icon) {
+  opacity: 1;
 }
 </style>

@@ -9,109 +9,73 @@
         @edit="openEditModal"
     >
       <template #actions="{ item }">
-        <v-icon small class="mr-2" @click="openEditModal(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
+        <ButtonComponent icon="mdi-pencil"  variant="text" size="small" color="primary" @click="openEditModal(item)" />
+        <ButtonComponent icon="mdi-delete"  variant="text" size="small" color="error"   @click="deleteItem(item)" />
+        <slot name="actionsField" :item="item"/>
       </template>
     </CrudDataTableComponent>
   </ContainerComponent>
 
   <ButtonComponent
       color="primary"
-      fab
-      dark
-      fixed
-      bottom
-      left
+      icon="mdi-plus"
+      size="large"
+      position="fixed"
+      location="bottom right"
+      class="ma-6"
+      elevation="4"
       @click="openAddModal"
-  >
-    <v-icon>mdi-plus</v-icon>
-  </ButtonComponent>
+  />
 
-  <SnackbarComponent v-model="showMassActions" multi-line location="top" timeout="auto">
-    <RowComponent>
-      <ColComponent cols="auto">
-        {{ selectedItems.length }} item(ns) selecionado(s)
-      </ColComponent>
-      <ColComponent cols="auto">
-        <ButtonComponent text color="error" @click="deleteSelected">
-          Excluir Selecionados
-        </ButtonComponent>
-      </ColComponent>
-    </RowComponent>
+  <SnackbarComponent
+    v-model="showMassActions"
+    location="bottom"
+    timeout="-1"
+    color="surface"
+    rounded="lg"
+    elevation="6"
+    class="mass-action-bar"
+  >
+    <div class="d-flex align-center ga-3">
+      <IconComponent color="primary" size="18">mdi-checkbox-marked-circle-outline</IconComponent>
+      <span class="text-body-2 font-weight-medium">{{ selectedItems.length }} item(ns) selecionado(s)</span>
+      <v-spacer />
+      <ButtonComponent variant="text" color="error" size="small" @click="deleteSelected">
+        <IconComponent start size="16">mdi-delete-outline</IconComponent>
+        Excluir
+      </ButtonComponent>
+    </div>
   </SnackbarComponent>
 
   <!-- Modal para Adicionar/Editar Item -->
-  <v-dialog v-model="dialog" max-width="600px" @keydown.esc="closeModal">
-    <CardComponent>
-      <CardTitleComponent>
-        <span class="text-h5">{{ isEditing ? 'Editar ' + title.toLowerCase() : 'Adicionar ' + title.toLowerCase() }}</span>
+  <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal" scrollable>
+    <CardComponent rounded="lg">
+      <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
+        <IconComponent color="primary" size="22">{{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}</IconComponent>
+        <span class="text-h6">{{ isEditing ? 'Editar ' + title : 'Adicionar ' + title }}</span>
+        <v-spacer />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModal" />
       </CardTitleComponent>
       <CardTextComponent>
-        <FormComponent ref="formRef" v-model="valid" lazy-validation>
-          <template v-for="field in fields" :key="field.key">
-            <TextFieldComponent
-                v-if="['text', 'email', 'date', 'password'].includes(field.type || 'text')"
-                v-model="form[field.key]"
-                :label="field.label"
-                :type="field.type || 'text'"
-                :rules="field.rules"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <TextAreaComponent
-                v-else-if="field.type === 'textarea'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :rules="field.rules"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <SelectComponent
-                v-else-if="field.type === 'select'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :items="resolvedOptions[field.key] || []"
-                :rules="field.rules"
-                :multiple="field.multiple || false"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <RadioComponent
-                v-else-if="field.type === 'radio'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :items="resolvedOptions[field.key] || []"
-                :rules="field.rules"
-                :inline="field.inline || false"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-            <CheckboxComponent
-                v-else-if="field.type === 'checkbox'"
-                v-model="form[field.key]"
-                :label="field.label"
-                :items="resolvedOptions[field.key] || []"
-                :rules="field.rules"
-                :inline="field.inline || false"
-                :error-messages="validationErrors[field.key]"
-                :required="!field.optional"
-            />
-          </template>
-        </FormComponent>
+        <FormularioDinamico
+            ref="formularioRef"
+            :fields="fields"
+            v-model="form"
+            :validationErrors="validationErrors"
+            :is-editing="isEditing"
+            :resolvedOptions="resolvedOptions"
+            :context="props.context"
+        />
       </CardTextComponent>
-      <CardActionsComponent>
-        <v-spacer></v-spacer>
-        <ButtonComponent color="blue darken-1" text @click="closeModal">
+      <CardActionsComponent class="px-6 py-4 border-t">
+        <v-spacer />
+        <ButtonComponent variant="text" @click="closeModal">
           Cancelar
         </ButtonComponent>
 
         <slot name="actions" :is-editing="isEditing" :form="form" :save-item="saveItem" :close-modal="closeModal" />
 
-        <ButtonComponent color="primary" text @click="saveItem">
+        <ButtonComponent color="primary" variant="flat" @click="saveItem">
           Salvar
         </ButtonComponent>
       </CardActionsComponent>
@@ -143,26 +107,25 @@ import SnackbarComponent from "@/components/comuns/alerts/SnackbarComponent.vue"
 import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
-import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
-import FormComponent from "@/components/comuns/forms/FormComponent.vue";
-import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
-import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
-import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
-import TextAreaComponent from "@/components/comuns/forms/TextAreaComponent.vue";
+import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue"
+import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 
 const props = defineProps({
-  route: { type: String, required: true }, // e.g., 'users'
+  route: { type: String, required: true },
+  filter_index: { type: Object, required: false, default: {} },
   title: { type: String, required: true },
+  form: { type: Object, default: () => ({}) },
   fields: {
     type: Array,
     required: true,
-    default: () => [] // [{ key: 'name', label: 'Nome', type: 'text', rules: [...], optional: false }]
+    default: () => []
   },
   headers: { type: Array, required: true }, // Headers para a tabela
+  context: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['item-saved', 'item-deleted'])
@@ -172,25 +135,25 @@ const selectedItems = ref([])
 const search = ref('')
 const dialog = ref(false)
 const isEditing = ref(false)
-const valid = ref(true)
-const formRef = ref(null)
+const formularioRef = ref(null)
 const form = ref({})
 const resolvedOptions = ref({})
 const { validationErrors, clearErrors } = useValidationErrors();
 
 // useCrud
 const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
-// const showMassActions = computed(() => selectedItems.value.length > 0)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
 watch(selectedItems, (newValue) => {
   showMassActions.value = newValue.length > 0
 })
+
 // Carregar itens
 const loadItems = async () => {
+  const filterIndex = props.filter_index
   try {
-    items.value = await index({ search: search.value })
+    items.value = await index(filterIndex)
   } catch (err) {
     // Erros tratados pelo useCrud
   }
@@ -200,46 +163,22 @@ onMounted(() => {
   loadItems()
 })
 
-const loadFieldOptions = async () => {
-  const promises = props.fields
-      .filter(field => field.options && typeof field.options === 'function')
-      .map(async (field) => {
-        resolvedOptions.value[field.key] = await field.options()
-      })
-  await Promise.all(promises)
-}
 // Funções
 const openAddModal = async () => {
   isEditing.value = false
   form.value = {}
   props.fields.forEach(field => {
-    form.value[field.key] = ''
+    form.value[field.key] = field.defaultValue ?? null
   })
-
-  await loadFieldOptions() // Linha potencialmente problemática
   dialog.value = true
-
-  nextTick(() => {
-    if (formRef.value?.resetValidation) {
-      formRef.value.resetValidation()
-    } else {
-      console.warn('resetValidation não está disponível em formRef')
-    }
-  })
+  nextTick(() => formularioRef.value?.resetValidation())
 }
 
 const openEditModal = async (item) => {
   isEditing.value = true
-  form.value = { ...item } // Cópia profunda para garantir carregamento correto dos dados
-  await loadFieldOptions() // Carrega opções dinâmicas
+  form.value = item
   dialog.value = true
-  nextTick(() => {
-    if (formRef.value?.resetValidation) {
-      formRef.value.resetValidation()
-    } else {
-      console.warn('resetValidation não está disponível em formRef')
-    }
-  })
+  nextTick(() => formularioRef.value?.resetValidation())
 }
 
 const closeModal = () => {
@@ -291,7 +230,6 @@ const deleteSelected = async () => {
       selectedItems.value = []
       loadItems()
     } catch (err) {
-      // Erros tratados pelo useCrud
       console.log(err)
     }
   }

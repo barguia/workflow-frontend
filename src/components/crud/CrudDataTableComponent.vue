@@ -6,28 +6,30 @@
       :items-per-page="10"
       :search="localSearch"
       show-select
-      class="elevation-1"
+      class="elevation-0 rounded-lg"
       item-key="id"
       :hide-default-header="false"
+      hover
   >
     <template v-slot:top>
-      <ToolbarComponent flat>
-        <ToolbarTitleComponent>{{ title }}</ToolbarTitleComponent>
-        <v-spacer></v-spacer>
+      <div class="table-toolbar pa-4 d-flex align-center ga-3">
+        <span class="text-subtitle-1 font-weight-semibold">{{ title }}</span>
+        <v-spacer />
         <TextFieldComponent
           v-model="localSearch"
-          append-icon="mdi-magnify"
+          prepend-inner-icon="mdi-magnify"
           label="Buscar"
           single-line
           hide-details
+          density="compact"
+          style="max-width: 280px"
+          clearable
         />
-      </ToolbarComponent>
+      </div>
     </template>
     <template v-slot:item.actions="{ item }">
       <slot name="actions" :item="item">
-        <IconComponent class="mr-2" @click="$emit('edit', item)">
-          mdi-pencil
-        </IconComponent>
+        <v-btn icon="mdi-pencil" variant="text" size="small" color="primary" @click="$emit('edit', item)" />
       </slot>
     </template>
   </v-data-table>
@@ -35,10 +37,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
-import ToolbarTitleComponent from "@/components/comuns/navigations/ToolbarTitleComponent.vue";
-import ToolbarComponent from "@/components/comuns/navigations/ToolbarComponent.vue";
 
 const props = defineProps({
   headers: { type: Array, default: () => [] },
@@ -69,10 +68,15 @@ const localSelected = computed({
 </script>
 
 <style scoped>
-.v-data-table-header {
-  display: table-header-group !important;
+.table-toolbar {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
-.v-data-table-header th {
-  font-weight: bold;
+
+:deep(.v-data-table-header__content) {
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
 }
 </style>

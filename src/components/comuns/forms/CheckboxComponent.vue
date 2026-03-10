@@ -10,18 +10,21 @@
         :rules="rules"
         :inline="inline"
         :required="required"
-        @update:modelValue="$emit('update:modelValue', $event)"
+        chips
+        multiple
     />
   </div>
 </template>
-
 <script setup>
+//       @update:modelValue="$emit('update:modelValue', $event)" chamada duplicada
 defineProps({
   label: String,
   items: Array,
   rules: Array,
   inline: Boolean,
-  required: Boolean
+  required: Boolean,
+  chips: Boolean,
+  multiple: Boolean,
 })
 
 const modelValue = defineModel()
