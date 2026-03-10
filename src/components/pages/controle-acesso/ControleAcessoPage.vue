@@ -1,82 +1,109 @@
 <template>
   <v-card>
-    <v-tabs
-        v-model="tab"
-        align-tabs="center"
-        color="primary"
-        stacked
-    >
+    <v-tabs v-model="tab" align-tabs="center" color="primary" stacked>
       <v-tab v-for="item in telas" :key="item.id" :value="item.id">
-        <v-icon :icon="item.icon"></v-icon>
-
-        {{ item.title}}
+        <v-icon :icon="item.icon" />
+        {{ item.title }}
       </v-tab>
-
     </v-tabs>
 
     <v-tabs-window v-model="tab">
-      <v-tabs-window-item value="administracao" lazy>
-        <AdministracaoPage/>
-      </v-tabs-window-item>
       <v-tabs-window-item v-for="item in telas" :key="item.id" :value="item.id" lazy>
-        <component :is="item.componente"  />
+        <component :is="item.componente" />
       </v-tabs-window-item>
     </v-tabs-window>
   </v-card>
 </template>
 
 <script setup>
+import { ref, watch, onMounted, defineAsyncComponent, markRaw } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-import {ref} from "vue";
-import { defineAsyncComponent, markRaw } from 'vue'
-import AdministracaoPage from "@/components/pages/controle-acesso/sub-pages/AdministracaoPage.vue";
+const route  = useRoute()
+const router = useRouter()
 
-const tab = ref(null)
+// ── Mapeamento bidirecional hash ↔ id da aba ──────────────────────────────
+const HASH_PARA_ABA = {
+  '#adm':          'administracao',
+  '#organizacoes': 'organizacao',
+  '#usuarios':     'user',
+  '#perfis':       'role',
+  '#permissoes':   'permission',
+  '#menus':        'menu',
+}
 
+const ABA_PARA_HASH = Object.fromEntries(
+  Object.entries(HASH_PARA_ABA).map(([h, a]) => [a, h])
+)
+
+const ABA_PADRAO = 'administracao'
+
+function resolverAba(hash)  { return HASH_PARA_ABA[hash]  ?? ABA_PADRAO }
+function resolverHash(aba)  { return ABA_PARA_HASH[aba]   ?? '#adm'     }
+
+// ── Definição das telas ───────────────────────────────────────────────────
 const telas = markRaw([
   {
     id: 'administracao',
     title: 'ADM',
-    title_page: 'Central de Administração e Governança',
     icon: 'mdi-cog-outline',
-    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/AdministracaoPage.vue')),
+    componente: defineAsyncComponent(() => import('./sub-pages/AdministracaoPage.vue')),
   },
   {
     id: 'organizacao',
     title: 'Organizações',
-    title_page: 'Gestão de Empresas e Organizações',
-    icon: 'mdi-cog-outline',
-    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/OrganizacaoPage.vue')),
+    icon: 'mdi-domain',
+    componente: defineAsyncComponent(() => import('./sub-pages/OrganizacaoPage.vue')),
   },
   {
     id: 'user',
     title: 'Usuários',
-    title_page: 'Gestão de Usuários',
     icon: 'mdi-account',
-    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/UserPage.vue'))
+    componente: defineAsyncComponent(() => import('./sub-pages/UserPage.vue')),
   },
   {
     id: 'role',
     title: 'Perfis',
-    title_page: 'Gestão de Perfis e Papéis Funcionais',
     icon: 'mdi-account-group',
-    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/RolePage.vue'))
+    componente: defineAsyncComponent(() => import('./sub-pages/RolePage.vue')),
   },
   {
     id: 'permission',
     title: 'Permissões',
-    title_page: 'Gestãos de Permissões',
     icon: 'mdi-table-key',
-    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/PermissionPage.vue'))
+    componente: defineAsyncComponent(() => import('./sub-pages/PermissionPage.vue')),
   },
   {
     id: 'menu',
     title: 'Menu',
-    title_page: 'Gestãos de Menus',
     icon: 'mdi-menu-open',
-    componente: defineAsyncComponent(() => import('@/components/pages/controle-acesso/sub-pages/MenuPage.vue'))
+    componente: defineAsyncComponent(() => import('./sub-pages/MenuPage.vue')),
   },
 ])
 
+// ── Estado reativo da aba ──────────────────────────────────────────────────
+const tab = ref(resolverAba(route.hash))
 
+// Ao trocar de aba → atualiza hash na URL
+watch(tab, (novaAba) => {
+  const novoHash = resolverHash(novaAba)
+  if (route.hash !== novoHash) {
+    router.replace({ hash: novoHash })
+  }
+})
+
+// Ao navegar com back/forward do browser → sincroniza aba
+watch(() => route.hash, (novoHash) => {
+  const novaAba = resolverAba(novoHash)
+  if (tab.value !== novaAba) {
+    tab.value = novaAba
+  }
+})
+
+// Hash ausente na entrada → redireciona para o padrão
+onMounted(() => {
+  if (!route.hash) {
+    router.replace({ hash: resolverHash(ABA_PADRAO) })
+  }
+})
 </script>
