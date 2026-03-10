@@ -3,7 +3,7 @@
     <v-tabs
         v-model="tab"
         align-tabs="center"
-        color="deep-purple-accent-4"
+        color="primary"
         stacked
     >
       <v-tab v-for="item in telas" :key="item.id" :value="item.id">

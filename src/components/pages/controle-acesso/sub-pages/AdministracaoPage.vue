@@ -106,7 +106,7 @@ const modulos = [
 
 <style scoped>
 .admin-overview {
-  background: #fbfbfb;
+  background: rgb(var(--v-theme-background));
   min-height: 100vh;
 }
 
@@ -116,16 +116,16 @@ const modulos = [
 }
 
 .modulo-card {
-  background: white;
+  background: rgb(var(--v-theme-surface));
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   transition: all 0.25s ease;
   height: 100%;
 }
 
 .modulo-card:hover {
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+  border-color: rgba(var(--v-theme-primary), 0.35);
+  box-shadow: 0 8px 25px rgba(var(--v-theme-primary), 0.08);
   transform: translateY(-2px);
 }
 </style>

@@ -1,37 +1,77 @@
 <template>
-  <AppBarComponent app>
-      <AppBarNavIconComponent v-if="authStore.isAuthenticated" @click="drawer = !drawer" data-testid="menu-toggle"/>
+  <AppBarComponent app elevation="1">
+    <AppBarNavIconComponent
+      v-if="authStore.isAuthenticated"
+      @click="drawer = !drawer"
+      data-testid="menu-toggle"
+    />
+
     <ToolbarTitleComponent>
-      <router-link to="/" class="nav-link hover:text-blue-300 text-wrap">
-        Workflow Management System
+      <router-link to="/" class="nav-link brand-title">
+        <v-icon color="primary" size="22" class="mr-1">mdi-circle-multiple-outline</v-icon>
+        Workflow
       </router-link>
     </ToolbarTitleComponent>
-    <v-spacer></v-spacer>
-    <v-menu>
-      <template v-slot:activator="{ props }">
-        <ButtonComponent v-bind="props" icon>
-          <AvatarComponent>
-            <IconComponent>mdi-account</IconComponent>
-          </AvatarComponent>
-        </ButtonComponent>
-      </template>
-      <ListComponent>
-        <template v-if="authStore.isAuthenticated">
-          <ListItemComponent title="Perfil"></ListItemComponent>
-          <ListItemComponent title="Logout" @click="efetuaLogout()"></ListItemComponent>
-        </template>
-        <template v-else>
-          <router-link to="/login" class="nav-link hover:text-blue-300">
-            <ListItemComponent title="Login"></ListItemComponent>
-          </router-link>
-        </template>
-      </ListComponent>
-    </v-menu>
 
+    <v-spacer />
+
+    <ThemeSwitcherComponent />
+
+    <v-divider vertical inset class="mx-1" style="height: 24px; align-self: center;" />
+
+    <!-- Menu de Perfil -->
+    <v-menu location="bottom end" :close-on-content-click="true">
+      <template #activator="{ props }">
+        <v-btn v-bind="props" icon variant="text" size="small">
+          <v-avatar color="primary" size="34">
+            <v-icon size="18">mdi-account</v-icon>
+          </v-avatar>
+        </v-btn>
+      </template>
+
+      <v-card min-width="200" rounded="lg" elevation="4">
+        <v-list density="compact" nav class="pa-2">
+          <v-list-subheader class="text-caption font-weight-bold text-uppercase px-2 mb-1">
+            Conta
+          </v-list-subheader>
+
+          <v-list-item
+            prepend-icon="mdi-account-circle-outline"
+            title="Perfil"
+            rounded="lg"
+          />
+
+          <v-divider class="my-1" />
+
+          <v-list-item
+            prepend-icon="mdi-logout"
+            title="Sair"
+            rounded="lg"
+            base-color="error"
+            @click="efetuaLogout"
+          />
+        </v-list>
+      </v-card>
+    </v-menu>
   </AppBarComponent>
 
-  <NavigationDrawerComponent v-model="drawer" app temporary width=340 v-if="authStore.isAuthenticated">
-    <ListComponent v-model:opened="opened">
+  <!-- Navigation Drawer -->
+  <NavigationDrawerComponent
+    v-if="authStore.isAuthenticated"
+    v-model="drawer"
+    app
+    temporary
+    width="300"
+  >
+    <!-- Cabeçalho do drawer -->
+    <div class="drawer-header pa-4 d-flex align-center gap-2">
+      <v-icon color="primary" size="26">mdi-circle-multiple-outline</v-icon>
+      <span class="text-subtitle-1 font-weight-bold">Workflow</span>
+    </div>
+
+    <v-divider />
+
+    <ListComponent v-model:opened="opened" nav density="compact" class="pa-2">
       <MenuNodeComponent
         v-for="item in authStore.getMenus"
         :key="item.id"
@@ -47,53 +87,63 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from "@/stores/authStore.js";
+import { useAuthStore } from '@/stores/authStore.js'
 
-import MenuNodeComponent from "@/components/menu/componentes/MenuNodeComponent.vue";
-import AppBarComponent from "@/components/comuns/navigations/AppBarComponent.vue";
-import AppBarNavIconComponent from "@/components/comuns/navigations/AppBarNavIconComponent.vue";
-import ToolbarTitleComponent from "@/components/comuns/navigations/ToolbarTitleComponent.vue";
-import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
-import ListComponent from "@/components/comuns/lists/ListComponent.vue";
-import ListItemComponent from "@/components/comuns/lists/ListItemComponent.vue";
-import NavigationDrawerComponent from "@/components/comuns/navigations/NavigationDrawerComponent.vue";
-import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
-import IconComponent from "@/components/comuns/icons/IconComponent.vue";
-import AvatarComponent from "@/components/comuns/containers/AvatarComponent.vue";
-
+import MenuNodeComponent from '@/components/menu/componentes/MenuNodeComponent.vue'
+import ThemeSwitcherComponent from '@/components/menu/componentes/ThemeSwitcherComponent.vue'
+import AppBarComponent from '@/components/comuns/navigations/AppBarComponent.vue'
+import AppBarNavIconComponent from '@/components/comuns/navigations/AppBarNavIconComponent.vue'
+import ToolbarTitleComponent from '@/components/comuns/navigations/ToolbarTitleComponent.vue'
+import ListComponent from '@/components/comuns/lists/ListComponent.vue'
+import NavigationDrawerComponent from '@/components/comuns/navigations/NavigationDrawerComponent.vue'
 
 const router = useRouter()
-const drawer = ref(true)
-const search = ref('')
+const drawer = ref(false)
 const openAtLevel = reactive({})
 const opened = ref([])
 const authStore = useAuthStore()
+
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
 
   Object.keys(openAtLevel)
-      .map(n => Number(n))
-      .filter(n => n > level)
-      .forEach(n => (openAtLevel[n] = null))
+    .map(n => Number(n))
+    .filter(n => n > level)
+    .forEach(n => (openAtLevel[n] = null))
 
   opened.value = Object.entries(openAtLevel)
-      .filter(([, val]) => !!val)
-      .map(([lvl, val]) => `${lvl}:${val}`)
+    .filter(([, val]) => !!val)
+    .map(([lvl, val]) => `${lvl}:${val}`)
 }
 
-async function  efetuaLogout() {
+async function efetuaLogout() {
   await authStore.logout()
   router.push('/login')
 }
 </script>
 
 <style scoped>
-.v-navigation-drawer { background-color: #fff; }
+.brand-title {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: rgb(var(--v-theme-textPrimary));
+  text-decoration: none;
+}
 
-.v-list-item--active { background-color: #212121; color: #fff !important; }
+.drawer-header {
+  background: rgb(var(--v-theme-surface));
+  min-height: 64px;
+}
 
-.v-list-item:hover {
-  background-color: #f0f0f0;   /* cor ao passar o mouse */
-  cursor: pointer;
+:deep(.v-navigation-drawer__content) {
+  background: rgb(var(--v-theme-surface));
+}
+
+:deep(.v-list-item--active) {
+  background-color: rgba(var(--v-theme-primary), 0.12) !important;
+  color: rgb(var(--v-theme-primary)) !important;
 }
 </style>

@@ -70,7 +70,7 @@
       </v-col>
 
       <!-- Seção de Destaque -->
-      <v-col cols="12" class="py-16 bg-grey-lighten-4">
+      <v-col cols="12" class="py-16" style="background: rgb(var(--v-theme-background))">
         <v-container>
           <v-row align="center">
             <v-col cols="12" md="6">
