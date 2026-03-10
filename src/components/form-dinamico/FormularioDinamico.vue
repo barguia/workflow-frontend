@@ -2,8 +2,8 @@
 <template>
   <FormComponent ref="formRef" v-model="valid" lazy-validation>
     <!-- v-show = hidden, mas ainda no DOM -->
-    <RowComponent>
-      <ColComponent v-for="field in visibleFields" :key="field.key" v-show="resolveVisible(field)" :class="'v-col-'+(field.col ?? 12)">
+    <RowComponent dense>
+      <ColComponent v-for="field in visibleFields" :key="field.key" v-show="resolveVisible(field)" :class="'v-col-'+(field.col ?? 12)" class="pb-0">
         <!-- v-if = remove do DOM -->
         <template v-if="resolveRenderIf(field)">
 

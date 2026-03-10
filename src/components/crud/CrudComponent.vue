@@ -9,13 +9,8 @@
         @edit="openEditModal"
     >
       <template #actions="{ item }">
-        <v-icon small class="mr-2" @click="openEditModal(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
-
+        <ButtonComponent icon="mdi-pencil"  variant="text" size="small" color="primary" @click="openEditModal(item)" />
+        <ButtonComponent icon="mdi-delete"  variant="text" size="small" color="error"   @click="deleteItem(item)" />
         <slot name="actionsField" :item="item"/>
       </template>
     </CrudDataTableComponent>
@@ -23,34 +18,43 @@
 
   <ButtonComponent
       color="primary"
-      fab
-      dark
-      fixed
-      bottom
-      left
+      icon="mdi-plus"
+      size="large"
+      position="fixed"
+      location="bottom right"
+      class="ma-6"
+      elevation="4"
       @click="openAddModal"
-  >
-    <v-icon>mdi-plus</v-icon>
-  </ButtonComponent>
+  />
 
-  <SnackbarComponent v-model="showMassActions" multi-line location="top" timeout="auto">
-    <RowComponent>
-      <ColComponent cols="auto">
-        {{ selectedItems.length }} item(ns) selecionado(s)
-      </ColComponent>
-      <ColComponent cols="auto">
-        <ButtonComponent text color="error" @click="deleteSelected">
-          Excluir Selecionados
-        </ButtonComponent>
-      </ColComponent>
-    </RowComponent>
+  <SnackbarComponent
+    v-model="showMassActions"
+    location="bottom"
+    timeout="-1"
+    color="surface"
+    rounded="lg"
+    elevation="6"
+    class="mass-action-bar"
+  >
+    <div class="d-flex align-center ga-3">
+      <IconComponent color="primary" size="18">mdi-checkbox-marked-circle-outline</IconComponent>
+      <span class="text-body-2 font-weight-medium">{{ selectedItems.length }} item(ns) selecionado(s)</span>
+      <v-spacer />
+      <ButtonComponent variant="text" color="error" size="small" @click="deleteSelected">
+        <IconComponent start size="16">mdi-delete-outline</IconComponent>
+        Excluir
+      </ButtonComponent>
+    </div>
   </SnackbarComponent>
 
   <!-- Modal para Adicionar/Editar Item -->
-  <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal">
-    <CardComponent>
-      <CardTitleComponent>
-        <span class="text-h5">{{ isEditing ? 'Editar ' + title.toLowerCase() : 'Adicionar ' + title.toLowerCase() }}</span>
+  <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal" scrollable>
+    <CardComponent rounded="lg">
+      <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
+        <IconComponent color="primary" size="22">{{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}</IconComponent>
+        <span class="text-h6">{{ isEditing ? 'Editar ' + title : 'Adicionar ' + title }}</span>
+        <v-spacer />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModal" />
       </CardTitleComponent>
       <CardTextComponent>
         <FormularioDinamico
@@ -63,15 +67,15 @@
             :context="props.context"
         />
       </CardTextComponent>
-      <CardActionsComponent>
-        <v-spacer></v-spacer>
-        <ButtonComponent color="blue darken-1" text @click="closeModal">
+      <CardActionsComponent class="px-6 py-4 border-t">
+        <v-spacer />
+        <ButtonComponent variant="text" @click="closeModal">
           Cancelar
         </ButtonComponent>
 
         <slot name="actions" :is-editing="isEditing" :form="form" :save-item="saveItem" :close-modal="closeModal" />
 
-        <ButtonComponent color="primary" text @click="saveItem">
+        <ButtonComponent color="primary" variant="flat" @click="saveItem">
           Salvar
         </ButtonComponent>
       </CardActionsComponent>
@@ -107,7 +111,8 @@ import ContainerComponent from "@/components/comuns/containers/ContainerComponen
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
-import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
+import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue"
+import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true },

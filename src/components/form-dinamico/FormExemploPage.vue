@@ -1,8 +1,8 @@
 <template>
-  <v-container>
-    <v-card max-width="1000" class="mx-auto">
-      <v-card-title class="text-h5">Formulário Dinâmico Completo</v-card-title>
-      <v-card-text>
+  <ContainerComponent>
+    <CardComponent max-width="1000" class="mx-auto">
+      <CardTitleComponent class="text-h5">Formulário Dinâmico Completo</CardTitleComponent>
+      <CardTextComponent>
         <FormularioDinamico
             :fields="fields"
             v-model="form"
@@ -10,27 +10,33 @@
             ref="formulario"
             @field-change="onChange"
         />
-      </v-card-text>
-      <v-card-actions>
+      </CardTextComponent>
+      <CardActionsComponent>
         <v-spacer />
-        <v-btn color="error" @click="resetar">Resetar</v-btn>
-        <v-btn color="primary" @click="salvar">Salvar</v-btn>
-      </v-card-actions>
-    </v-card>
+        <ButtonComponent color="error" @click="resetar">Resetar</ButtonComponent>
+        <ButtonComponent color="primary" @click="salvar">Salvar</ButtonComponent>
+      </CardActionsComponent>
+    </CardComponent>
 
-    <v-card class="mt-6">
-      <v-card-title>Dados do Formulário (debug)</v-card-title>
-      <v-card-text>
+    <CardComponent class="mt-6">
+      <CardTitleComponent>Dados do Formulário (debug)</CardTitleComponent>
+      <CardTextComponent>
         <pre>{{ form }}</pre>
-      </v-card-text>
-    </v-card>
-  </v-container>
+      </CardTextComponent>
+    </CardComponent>
+  </ContainerComponent>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import api from '@/services/apiMock.js'
 import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
+import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
+import CardComponent from '@/components/comuns/cards/CardComponent.vue'
+import CardTitleComponent from '@/components/comuns/cards/CardTitleComponent.vue'
+import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
+import CardActionsComponent from '@/components/comuns/cards/CardActionsComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 
 // === USUÁRIO SIMULADO (para renderIf) ===
 const user = { isAdmin: true }
@@ -120,7 +126,6 @@ const fields = computed(() => [
 // === EVENTOS ===
 const onChange = ({ field, value }) => {
   const isSelect = field.type === 'select'
-  // console.log(`Campo ${field.key} mudou:`, 'color: green', value)
   console.log(
       `%c[CHANGE] Campo ${field.key} mudou: %c${JSON.stringify(value)}`,
       `font-weight: bold;`,
@@ -149,7 +154,8 @@ const resetar = () => {
 
 <style scoped>
 pre {
-  background: #f5f5f5;
+  background: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   padding: 1rem;
   border-radius: 4px;
   max-height: 300px;

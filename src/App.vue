@@ -17,7 +17,7 @@
               >
                 {{ message }}
                 <template #actions>
-                  <v-btn color="white" variant="text" @click="clearNotification">Fechar</v-btn>
+                  <ButtonComponent color="white" variant="text" @click="clearNotification">Fechar</ButtonComponent>
                 </template>
               </SnackbarComponent>
             </div>
@@ -44,9 +44,11 @@ import { useTheme } from 'vuetify';
 import router from '@/router/router.js';
 import { useNotifications } from '@/composables/useNotifications.js';
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeStore } from '@/stores/themeStore';
 import { useLoading } from '@/composables/useLoading';
 
 import MenuCompletoComponent from "@/components/menu/MenuCompletoComponent.vue";
+import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
@@ -67,6 +69,7 @@ export default {
     SnackbarComponent,
     ColComponent,
     RowComponent,
+    ButtonComponent,
     MenuComponent: MenuCompletoComponent,
     ContainerComponent,
     FooterComponent,
@@ -74,7 +77,6 @@ export default {
   },
   data() {
     return {
-      selectedTheme: localStorage.getItem('theme') || 'light',
       todas_rotas: router.options.routes,
       isMobile: false,
       drawer: false,
@@ -82,11 +84,15 @@ export default {
     };
   },
   setup() {
-    const theme = useTheme();
+    const vuetifyTheme = useTheme();
+    const themeStore = useThemeStore();
     const { isLoading } = useLoading();
     const { message, type, showSnackbar, clearNotification } = useNotifications();
+
+    // Aplica o tema salvo ao iniciar
+    themeStore.applyTheme(themeStore.currentTheme, vuetifyTheme);
+
     return {
-      theme,
       isLoading,
       message,
       type,
@@ -100,7 +106,6 @@ export default {
     this.autenticado = authStore.isAuthenticated
   },
   created() {
-    this.theme.change(this.selectedTheme)
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
   },
