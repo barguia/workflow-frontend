@@ -8,7 +8,7 @@
 
     <ToolbarTitleComponent>
       <router-link to="/" class="nav-link brand-title">
-        <v-icon color="primary" size="22" class="mr-1">mdi-circle-multiple-outline</v-icon>
+        <IconComponent color="primary" size="22" class="mr-1">mdi-circle-multiple-outline</IconComponent>
         Workflow
       </router-link>
     </ToolbarTitleComponent>
@@ -20,22 +20,22 @@
     <v-divider vertical inset class="mx-1" style="height: 24px; align-self: center;" />
 
     <!-- Menu de Perfil -->
-    <v-menu location="bottom end" :close-on-content-click="true">
+    <MenuComponent location="bottom end" :close-on-content-click="true">
       <template #activator="{ props }">
-        <v-btn v-bind="props" icon variant="text" size="small">
-          <v-avatar color="primary" size="34">
-            <v-icon size="18">mdi-account</v-icon>
-          </v-avatar>
-        </v-btn>
+        <ButtonComponent v-bind="props" icon variant="text" size="small">
+          <AvatarComponent color="primary" size="34">
+            <IconComponent size="18">mdi-account</IconComponent>
+          </AvatarComponent>
+        </ButtonComponent>
       </template>
 
-      <v-card min-width="200" rounded="lg" elevation="4">
+      <CardComponent min-width="200" rounded="lg" elevation="4">
         <v-list density="compact" nav class="pa-2">
           <v-list-subheader class="text-caption font-weight-bold text-uppercase px-2 mb-1">
             Conta
           </v-list-subheader>
 
-          <v-list-item
+          <ListItemComponent
             prepend-icon="mdi-account-circle-outline"
             title="Perfil"
             rounded="lg"
@@ -43,7 +43,7 @@
 
           <v-divider class="my-1" />
 
-          <v-list-item
+          <ListItemComponent
             prepend-icon="mdi-logout"
             title="Sair"
             rounded="lg"
@@ -51,8 +51,8 @@
             @click="efetuaLogout"
           />
         </v-list>
-      </v-card>
-    </v-menu>
+      </CardComponent>
+    </MenuComponent>
   </AppBarComponent>
 
   <!-- Navigation Drawer -->
@@ -65,7 +65,7 @@
   >
     <!-- Cabeçalho do drawer -->
     <div class="drawer-header pa-4 d-flex align-center gap-2">
-      <v-icon color="primary" size="26">mdi-circle-multiple-outline</v-icon>
+      <IconComponent color="primary" size="26">mdi-circle-multiple-outline</IconComponent>
       <span class="text-subtitle-1 font-weight-bold">Workflow</span>
     </div>
 
@@ -95,7 +95,13 @@ import AppBarComponent from '@/components/comuns/navigations/AppBarComponent.vue
 import AppBarNavIconComponent from '@/components/comuns/navigations/AppBarNavIconComponent.vue'
 import ToolbarTitleComponent from '@/components/comuns/navigations/ToolbarTitleComponent.vue'
 import ListComponent from '@/components/comuns/lists/ListComponent.vue'
+import ListItemComponent from '@/components/comuns/lists/ListItemComponent.vue'
 import NavigationDrawerComponent from '@/components/comuns/navigations/NavigationDrawerComponent.vue'
+import MenuComponent from '@/components/comuns/navigations/MenuComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
+import AvatarComponent from '@/components/comuns/containers/AvatarComponent.vue'
+import CardComponent from '@/components/comuns/cards/CardComponent.vue'
 
 const router = useRouter()
 const drawer = ref(false)

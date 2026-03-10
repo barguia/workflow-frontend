@@ -6,7 +6,7 @@
           <CardTitleComponent class="text-h4 text-center mb-6">
             Login
           </CardTitleComponent>
-          <v-form @submit.prevent="login">
+          <FormComponent @submit.prevent="login">
             <TextFieldComponent
               v-model="email"
               label="Email"
@@ -45,7 +45,7 @@
                 </ButtonComponent>
               </ColComponent>
             </RowComponent>
-          </v-form>
+          </FormComponent>
         </CardComponent>
       </ColComponent>
     </RowComponent>
@@ -64,6 +64,7 @@ import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue";
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
+import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 
 
 const authStore = useAuthStore();

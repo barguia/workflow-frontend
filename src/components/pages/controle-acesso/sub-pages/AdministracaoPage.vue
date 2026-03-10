@@ -1,6 +1,6 @@
 <template>
   <div class="admin-overview">
-    <v-container fluid class="py-8 py-md-12">
+    <ContainerComponent fluid class="py-8 py-md-12">
       <div class="max-width-container">
 
         <div class="mb-10">
@@ -25,19 +25,19 @@
               @click="modulo.hash ? navegar(modulo.hash) : undefined"
             >
               <div class="d-flex align-start ga-4">
-                <v-icon :color="modulo.cor" size="36" class="mt-1">{{ modulo.icone }}</v-icon>
+                <IconComponent :color="modulo.cor" size="36" class="mt-1">{{ modulo.icone }}</IconComponent>
 
                 <div class="flex-grow-1">
                   <div class="d-flex align-center justify-space-between mb-2">
                     <h3 class="text-h6 font-weight-medium">{{ modulo.titulo }}</h3>
-                    <v-icon
+                    <IconComponent
                       v-if="modulo.hash"
                       size="18"
                       class="seta-acesso"
                       color="primary"
                     >
                       mdi-arrow-right
-                    </v-icon>
+                    </IconComponent>
                   </div>
                   <p class="text-body-2 mb-0" style="line-height: 1.6;">{{ modulo.descricao }}</p>
                 </div>
@@ -61,7 +61,7 @@
         </AlertComponent>
 
       </div>
-    </v-container>
+    </ContainerComponent>
   </div>
 </template>
 
@@ -70,6 +70,8 @@ import { useRouter } from 'vue-router'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
 import AlertComponent from '@/components/comuns/alerts/AlerComponent.vue'
+import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 
 const router = useRouter()
 

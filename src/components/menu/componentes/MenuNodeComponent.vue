@@ -1,12 +1,12 @@
 <template>
   <!-- Grupo: tem filhos -->
-  <v-list-group
+  <ListGroupComponent
     v-if="hasChildren"
     :value="groupKey"
     v-model:opened="opened"
   >
     <template #activator="{ props: activatorProps }">
-      <v-list-item
+      <ListItemComponent
         v-bind="activatorProps"
         :prepend-icon="node.icon"
         :title="node.title"
@@ -27,10 +27,10 @@
       :open-at-level="openAtLevel"
       @toggle="$emit('toggle', $event)"
     />
-  </v-list-group>
+  </ListGroupComponent>
 
   <!-- Folha: navega para rota -->
-  <v-list-item
+  <ListItemComponent
     v-else
     :prepend-icon="node.icon"
     :title="node.title"
@@ -45,6 +45,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import ListGroupComponent from '@/components/comuns/lists/ListGroupComponent.vue'
+import ListItemComponent from '@/components/comuns/lists/ListItemComponent.vue'
 
 defineOptions({ name: 'MenuNodeComponent' })
 

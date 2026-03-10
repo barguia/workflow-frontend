@@ -6,17 +6,17 @@
     :headers="headers"
   >
     <template #actionsField="{ item }">
-      <v-btn icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" />
+      <ButtonComponent icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" />
     </template>
   </CrudComponent>
 
   <v-dialog v-if="dialog" v-model="dialog" max-width="1200px" scrollable @keydown.esc="closeModalRole">
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <v-icon color="primary" size="22">mdi-shield-key-outline</v-icon>
+        <IconComponent color="primary" size="22">mdi-shield-key-outline</IconComponent>
         <span class="text-h6">Permissões do perfil: {{ role?.name }}</span>
         <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="closeModalRole" />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModalRole" />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-4">
@@ -72,6 +72,7 @@ import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 
 const dialog = ref(false)
 const salvando = ref(false)

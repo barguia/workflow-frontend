@@ -1,18 +1,18 @@
 <template>
-  <v-menu location="bottom end" :close-on-content-click="true">
+  <MenuComponent location="bottom end" :close-on-content-click="true">
     <template #activator="{ props }">
-      <v-btn v-bind="props" icon variant="text" size="small" :title="activeTheme?.label">
-        <v-icon size="22">{{ activeTheme?.icon }}</v-icon>
-      </v-btn>
+      <ButtonComponent v-bind="props" icon variant="text" size="small" :title="activeTheme?.label">
+        <IconComponent size="22">{{ activeTheme?.icon }}</IconComponent>
+      </ButtonComponent>
     </template>
 
-    <v-card min-width="180" elevation="4" rounded="lg">
+    <CardComponent min-width="180" elevation="4" rounded="lg">
       <v-list density="compact" nav class="pa-2">
         <v-list-subheader class="text-caption font-weight-bold text-uppercase px-2 mb-1">
           Aparência
         </v-list-subheader>
 
-        <v-list-item
+        <ListItemComponent
           v-for="tema in themeStore.themes"
           :key="tema.key"
           :active="themeStore.currentTheme === tema.key"
@@ -31,20 +31,25 @@
             {{ tema.label }}
           </v-list-item-title>
           <template #append>
-            <v-icon v-if="themeStore.currentTheme === tema.key" size="16" color="primary">
+            <IconComponent v-if="themeStore.currentTheme === tema.key" size="16" color="primary">
               mdi-check
-            </v-icon>
+            </IconComponent>
           </template>
-        </v-list-item>
+        </ListItemComponent>
       </v-list>
-    </v-card>
-  </v-menu>
+    </CardComponent>
+  </MenuComponent>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useTheme } from 'vuetify'
 import { useThemeStore } from '@/stores/themeStore.js'
+import MenuComponent from '@/components/comuns/navigations/MenuComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
+import CardComponent from '@/components/comuns/cards/CardComponent.vue'
+import ListItemComponent from '@/components/comuns/lists/ListItemComponent.vue'
 
 const vuetifyTheme = useTheme()
 const themeStore = useThemeStore()
@@ -65,6 +70,6 @@ function selectTheme(key) {
   height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(var(--v-theme-on-surface), 0.2);
 }
 </style>

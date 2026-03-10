@@ -9,14 +9,14 @@
         @edit="openEditModal"
     >
       <template #actions="{ item }">
-        <v-btn icon="mdi-pencil"  variant="text" size="small" color="primary" @click="openEditModal(item)" />
-        <v-btn icon="mdi-delete"  variant="text" size="small" color="error"   @click="deleteItem(item)" />
+        <ButtonComponent icon="mdi-pencil"  variant="text" size="small" color="primary" @click="openEditModal(item)" />
+        <ButtonComponent icon="mdi-delete"  variant="text" size="small" color="error"   @click="deleteItem(item)" />
         <slot name="actionsField" :item="item"/>
       </template>
     </CrudDataTableComponent>
   </ContainerComponent>
 
-  <v-btn
+  <ButtonComponent
       color="primary"
       icon="mdi-plus"
       size="large"
@@ -37,11 +37,11 @@
     class="mass-action-bar"
   >
     <div class="d-flex align-center ga-3">
-      <v-icon color="primary" size="18">mdi-checkbox-marked-circle-outline</v-icon>
+      <IconComponent color="primary" size="18">mdi-checkbox-marked-circle-outline</IconComponent>
       <span class="text-body-2 font-weight-medium">{{ selectedItems.length }} item(ns) selecionado(s)</span>
       <v-spacer />
       <ButtonComponent variant="text" color="error" size="small" @click="deleteSelected">
-        <v-icon start size="16">mdi-delete-outline</v-icon>
+        <IconComponent start size="16">mdi-delete-outline</IconComponent>
         Excluir
       </ButtonComponent>
     </div>
@@ -51,10 +51,10 @@
   <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal" scrollable>
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <v-icon color="primary" size="22">{{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}</v-icon>
+        <IconComponent color="primary" size="22">{{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}</IconComponent>
         <span class="text-h6">{{ isEditing ? 'Editar ' + title : 'Adicionar ' + title }}</span>
         <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="closeModal" />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModal" />
       </CardTitleComponent>
       <CardTextComponent>
         <FormularioDinamico
@@ -111,7 +111,8 @@ import ContainerComponent from "@/components/comuns/containers/ContainerComponen
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
-import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue";
+import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue"
+import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true },

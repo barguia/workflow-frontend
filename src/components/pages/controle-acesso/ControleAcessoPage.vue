@@ -1,8 +1,8 @@
 <template>
-  <v-card>
+  <CardComponent>
     <v-tabs v-model="tab" align-tabs="center" color="primary" stacked>
       <v-tab v-for="item in telas" :key="item.id" :value="item.id">
-        <v-icon :icon="item.icon" />
+        <IconComponent :icon="item.icon" />
         {{ item.title }}
       </v-tab>
     </v-tabs>
@@ -12,12 +12,14 @@
         <component :is="item.componente" />
       </v-tabs-window-item>
     </v-tabs-window>
-  </v-card>
+  </CardComponent>
 </template>
 
 <script setup>
 import { ref, watch, onMounted, defineAsyncComponent, markRaw } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CardComponent from '@/components/comuns/cards/CardComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 
 const route  = useRoute()
 const router = useRouter()

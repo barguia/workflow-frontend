@@ -17,7 +17,7 @@
               >
                 {{ message }}
                 <template #actions>
-                  <v-btn color="white" variant="text" @click="clearNotification">Fechar</v-btn>
+                  <ButtonComponent color="white" variant="text" @click="clearNotification">Fechar</ButtonComponent>
                 </template>
               </SnackbarComponent>
             </div>
@@ -48,6 +48,7 @@ import { useThemeStore } from '@/stores/themeStore';
 import { useLoading } from '@/composables/useLoading';
 
 import MenuCompletoComponent from "@/components/menu/MenuCompletoComponent.vue";
+import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
@@ -68,6 +69,7 @@ export default {
     SnackbarComponent,
     ColComponent,
     RowComponent,
+    ButtonComponent,
     MenuComponent: MenuCompletoComponent,
     ContainerComponent,
     FooterComponent,
