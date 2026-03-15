@@ -1,10 +1,10 @@
-import WorkflowPage from "@/components/pages/workflow/WorkflowPage.vue";
-import TarefaPage from "@/components/pages/workflow/TarefaPage.vue";
-import ProcessoPage from "@/components/pages/workflow/ProcessoPage.vue";
+import WorkflowPage from "@/components/pages/projeto/WorkflowPage.vue";
+import TarefaPage from "@/components/pages/projeto/TarefaPage.vue";
+import ProcessoPage from "@/components/pages/projeto/ProcessoPage.vue";
 import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
-import HierarquiaPage from "@/components/pages/workflow/HierarquiaPage.vue";
-import ProjetoPage from "@/components/pages/workflow/ProjetoPage.vue";
-import VolumetriaBacklog from "@/components/pages/workflow/VolumetriaBacklog.vue";
+import HierarquiaPage from "@/components/pages/projeto/HierarquiaPage.vue";
+import ProjetoPage from "@/components/pages/projeto/ProjetoPage.vue";
+import VolumetriaBacklog from "@/components/pages/projeto/VolumetriaBacklog.vue";
 
 const routes = [
     {

@@ -16,7 +16,7 @@
           v-for="tema in themeStore.themes"
           :key="tema.key"
           :active="themeStore.currentTheme === tema.key"
-          active-color="primary"
+          color="primary"
           rounded="lg"
           class="mb-1"
           @click="selectTheme(tema.key)"
