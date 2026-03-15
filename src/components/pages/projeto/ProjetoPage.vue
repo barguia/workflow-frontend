@@ -4,7 +4,18 @@
       title="Gestão de Projetos"
       :fields="fields"
       :headers="headers"
+      :show-select="false"
   >
+    <template #previewField="{ item }">
+      <v-btn
+        icon="mdi-eye-outline"
+        variant="text"
+        size="small"
+        color="secondary"
+        :href="`/ficha-tecnica/${item.id}`"
+        target="_blank"
+      />
+    </template>
   </CrudComponent>
 </template>
 
@@ -53,10 +64,11 @@ const fields = [
 ]
 
 const headers = [
-  {title: 'WF-id', value: 'workflow.id'},
+  { title: '', value: 'preview' },
+  { title: 'WF-id', value: 'workflow.id' },
   { title: 'Projeto', value: 'nome' },
   { title: 'Inicio', value: 'data_inicio' },
   { title: 'Término', value: 'data_fim' },
-  { title: '', value: 'actions'}
+  { title: '', value: 'actions' },
 ]
 </script>
