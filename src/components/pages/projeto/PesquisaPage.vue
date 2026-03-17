@@ -253,7 +253,7 @@ const headersResultado = [
   { title: 'Projeto',        value: 'projeto',        sortable: true },
   { title: 'Macro Processo', value: 'macro_processo', sortable: true },
   { title: 'Processo',       value: 'processo',       sortable: true },
-  { title: 'Tarefa',         value: 'tarefa',         sortable: true },
+  { title: 'tarefa',         value: 'tarefa',         sortable: true },
   { title: 'Status',         value: 'status',         sortable: true },
 ]
 

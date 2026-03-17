@@ -34,7 +34,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             const hashesValidos = ['#adm', '#organizacoes', '#usuarios', '#perfis', '#permissoes', '#menus']
             if (to.hash && !hashesValidos.includes(to.hash)) {
-                next({ path: '/administracao', hash: '#adm' })
+                next({ path: '/adm/administracao', hash: '#adm' })
             } else {
                 next()
             }

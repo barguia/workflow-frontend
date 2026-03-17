@@ -147,7 +147,7 @@ const busca     = ref('')
 
 const headers = [
   { title: '',            value: 'actions',       sortable: false },
-  { title: 'Tarefa',      value: 'tarefa',        sortable: true },
+  { title: 'tarefa',      value: 'tarefa',        sortable: true },
   { title: 'Processo',    value: 'processo',      sortable: true },
   { title: 'Status',      value: 'status_tarefa', sortable: true },
   { title: 'Responsável', value: 'user_tratamento', sortable: true },

@@ -1,70 +1,27 @@
-import WorkflowPage from "@/components/pages/projeto/WorkflowPage.vue";
-import TarefaPage from "@/components/pages/projeto/TarefaPage.vue";
-import ProcessoPage from "@/components/pages/projeto/ProcessoPage.vue";
-import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
-import HierarquiaPage from "@/components/pages/projeto/HierarquiaPage.vue";
-import ProjetoPage from "@/components/pages/projeto/ProjetoPage.vue";
-import VolumetriaBacklog from "@/components/pages/projeto/VolumetriaBacklog.vue";
-import PesquisaPage from "@/components/pages/projeto/PesquisaPage.vue";
+import GestaoProjetoPage from "@/components/pages/projeto/GestaoProjetoPage.vue";
 import FichaTecnicaPage from "@/components/pages/projeto/FichaTecnicaPage.vue";
 import FilaTarefaPage from "@/components/pages/projeto/FilaTarefaPage.vue";
+import MobilidadePage from "@/components/pages/projeto/tarefa/MobilidadePage.vue";
+
+const HASHES_VALIDOS = [
+    '#visao-geral', '#projetos', '#tarefas', '#processos',
+    '#hierarquias', '#workflows', '#pesquisa', '#backlog',
+]
 
 const routes = [
     {
-        path: '/hierarquias',
-        name: 'Hierarquia',
-        component: HierarquiaPage,
-        icon: "mdi-home",
+        path: '/adm/projetos',
+        name: 'GestaoProjetoProjeto',
+        component: GestaoProjetoPage,
+        icon: "mdi-briefcase-outline",
         meta: { requiresAuth: true },
-    },
-    {
-        path: '/tarefas',
-        name: 'Tarefa',
-        component: TarefaPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/processos',
-        name: 'Processo',
-        component: ProcessoPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/workflows',
-        name: 'Workflow',
-        component: WorkflowPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/formulario-dinamico-exemplo',
-        name: 'FormularioDinamicoExemplo',
-        component: FormExemploPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/projetos',
-        name: 'Projeto',
-        component: ProjetoPage,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/backlog',
-        name: 'backlog',
-        component: VolumetriaBacklog,
-        icon: "mdi-home",
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/pesquisa',
-        name: 'Pesquisa',
-        component: PesquisaPage,
-        icon: "mdi-magnify",
-        meta: { requiresAuth: true },
+        beforeEnter: (to, from, next) => {
+            if (to.hash && !HASHES_VALIDOS.includes(to.hash)) {
+                next({ path: '/adm/projetos', hash: '#visao-geral' })
+            } else {
+                next()
+            }
+        },
     },
     {
         path: '/ficha-tecnica/:id',
@@ -80,5 +37,13 @@ const routes = [
         icon: "mdi-format-list-checks",
         meta: { requiresAuth: true },
     },
+    {
+        path: '/mobilidade-tarefa/:id',
+        name: 'MobilidadeTarefa',
+        component: MobilidadePage,
+        icon: "mdi-transit-connection-variant",
+        meta: { requiresAuth: true },
+    },
 ]
+
 export default routes

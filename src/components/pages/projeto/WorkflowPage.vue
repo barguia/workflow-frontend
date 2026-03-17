@@ -24,7 +24,7 @@ const fields = [
   },
   {
     key: 'ctrl_default_tarefa_id',
-    label: 'Tarefa inicial',
+    label: 'tarefa inicial',
     type: 'select',
     renderIf: f => f.id,
     options: async (f) => {
@@ -52,7 +52,7 @@ const fields = [
 
 const headers = [
   { title: 'Workflow', value: 'workflow' },
-  { title: 'Tarefa inicial', value: 'tarefa_default.tarefa' },
+  { title: 'tarefa inicial', value: 'tarefa_default.tarefa' },
   { title: 'Organização', value: 'organizacao.razao_social' },
   { title: '', value: 'actions'}
 ]

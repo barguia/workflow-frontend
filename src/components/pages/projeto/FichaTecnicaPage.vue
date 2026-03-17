@@ -247,7 +247,7 @@ const totalTarefas = computed(() => tarefas.value.length)
 
 const headersTarefas = [
   { title: 'Processo',   value: 'processo',  sortable: true },
-  { title: 'Tarefa',     value: 'tarefa',    sortable: true },
+  { title: 'tarefa',     value: 'tarefa',    sortable: true },
   { title: 'Status',     value: 'status',    sortable: true },
   { title: 'Responsável', value: 'responsavel', sortable: true },
 ]

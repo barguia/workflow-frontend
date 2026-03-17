@@ -16,6 +16,16 @@
         target="_blank"
       />
     </template>
+    <template #actionsField="{ item }">
+      <ButtonComponent
+        icon="mdi-transit-connection-variant"
+        variant="text"
+        size="small"
+        color="primary"
+        :href="`/mobilidade-tarefa/${item.id}`"
+        target="_blank"
+      />
+    </template>
   </CrudComponent>
 </template>
 
@@ -63,14 +73,14 @@ const tarefaFields = [
   },
   {
     key: 'tarefa',
-    label: 'Tarefa',
+    label: 'tarefa',
     type: 'text',
-    rules: [v => !!v || 'Tarefa é obrigatório'],
+    rules: [v => !!v || 'tarefa é obrigatório'],
     optional: false
   },
   {
     key: 'descrição',
-    label: 'Descrição da Tarefa',
+    label: 'Descrição da tarefa',
     type: 'textarea',
     optional: true
   },
@@ -81,7 +91,7 @@ const userHeaders = [
   { title: '', value: 'preview' },
   { title: 'Workflow', value: 'workflow.workflow' },
   { title: 'Processo', value: 'processo.processo' },
-  { title: 'Tarefa', value: 'tarefa' },
+  { title: 'tarefa', value: 'tarefa' },
   { title: '', value: 'actions' },
 ]
 </script>
