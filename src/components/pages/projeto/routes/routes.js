@@ -5,6 +5,9 @@ import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
 import HierarquiaPage from "@/components/pages/projeto/HierarquiaPage.vue";
 import ProjetoPage from "@/components/pages/projeto/ProjetoPage.vue";
 import VolumetriaBacklog from "@/components/pages/projeto/VolumetriaBacklog.vue";
+import PesquisaPage from "@/components/pages/projeto/PesquisaPage.vue";
+import FichaTecnicaPage from "@/components/pages/projeto/FichaTecnicaPage.vue";
+import FilaTarefaPage from "@/components/pages/projeto/FilaTarefaPage.vue";
 
 const routes = [
     {
@@ -54,6 +57,27 @@ const routes = [
         name: 'backlog',
         component: VolumetriaBacklog,
         icon: "mdi-home",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/pesquisa',
+        name: 'Pesquisa',
+        component: PesquisaPage,
+        icon: "mdi-magnify",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/ficha-tecnica/:id',
+        name: 'FichaTecnica',
+        component: FichaTecnicaPage,
+        icon: "mdi-file-document-outline",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/fila-tarefa/:id',
+        name: 'FilaTarefa',
+        component: FilaTarefaPage,
+        icon: "mdi-format-list-checks",
         meta: { requiresAuth: true },
     },
 ]

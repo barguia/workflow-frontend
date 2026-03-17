@@ -26,7 +26,7 @@ const routes = [
         meta: { requiresAuth: false },
     },
     {
-        path: '/administracao',
+        path: '/adm/administracao',
         name: 'Administracao',
         component: ControleAcessoPage,
         icon: "mdi-shield-crown-outline",
@@ -40,13 +40,13 @@ const routes = [
             }
         },
     },
-    {
-        path: '/role',
-        name: 'Role',
-        component: RolePage,
-        icon: "mdi-user",
-        meta: { requiresAuth: true },
-    },
+    // {
+    //     path: '/role',
+    //     name: 'Role',
+    //     component: RolePage,
+    //     icon: "mdi-user",
+    //     meta: { requiresAuth: true },
+    // },
 ]
 
 export default routes

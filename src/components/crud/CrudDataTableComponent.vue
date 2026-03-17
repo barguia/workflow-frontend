@@ -5,7 +5,7 @@
       :items="localItems"
       :items-per-page="10"
       :search="localSearch"
-      show-select
+      :show-select="showSelect"
       class="elevation-0 rounded-lg"
       item-key="id"
       :hide-default-header="false"
@@ -27,6 +27,9 @@
         />
       </div>
     </template>
+    <template v-slot:item.preview="{ item }">
+      <slot name="preview" :item="item" />
+    </template>
     <template v-slot:item.actions="{ item }">
       <slot name="actions" :item="item">
         <v-btn icon="mdi-pencil" variant="text" size="small" color="primary" @click="$emit('edit', item)" />
@@ -44,7 +47,8 @@ const props = defineProps({
   items: { type: Array, default: () => [] },
   selected: { type: Array, default: () => [] },
   search: { type: String, default: '' },
-  title: { type: String, default: 'Lista de Itens' }
+  title: { type: String, default: 'Lista de Itens' },
+  showSelect: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(['update:selected', 'edit'])
