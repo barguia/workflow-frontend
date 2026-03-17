@@ -4,12 +4,24 @@
       title="Tarefas"
       :fields="tarefaFields"
       :headers="userHeaders"
+      :show-select="false"
   >
+    <template #previewField="{ item }">
+      <ButtonComponent
+        icon="mdi-eye-outline"
+        variant="text"
+        size="small"
+        color="secondary"
+        :href="`/fila-tarefa/${item.id}`"
+        target="_blank"
+      />
+    </template>
   </CrudComponent>
 </template>
 
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import {useCrud} from "@/services/useCrud.js";
 const { index: fetchProcessos } = useCrud('wf/processos')
 const { index: fetchWorkflow } = useCrud('wf/workflows')
@@ -66,9 +78,10 @@ const tarefaFields = [
 ]
 
 const userHeaders = [
+  { title: '', value: 'preview' },
   { title: 'Workflow', value: 'workflow.workflow' },
   { title: 'Processo', value: 'processo.processo' },
   { title: 'Tarefa', value: 'tarefa' },
-  { title: '', value: 'actions'}
+  { title: '', value: 'actions' },
 ]
 </script>

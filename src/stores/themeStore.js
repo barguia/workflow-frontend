@@ -49,7 +49,7 @@ export const useThemeStore = defineStore('theme', () => {
 
         currentTheme.value = themeKey
         localStorage.setItem('theme', themeKey)
-        vuetifyTheme.change(themeKey)
+        vuetifyTheme.global.name.value = themeKey
     }
 
     return { currentTheme, themes: THEMES, applyTheme }

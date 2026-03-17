@@ -3,7 +3,7 @@
 
     <!-- Cabeçalho -->
     <div class="d-flex align-center mb-4 gap-2">
-      <v-icon color="primary" size="22">mdi-magnify</v-icon>
+      <IconComponent color="primary" size="22">mdi-magnify</IconComponent>
       <span class="text-h6 font-weight-bold">Pesquisa de Registros</span>
     </div>
 
@@ -23,12 +23,12 @@
             density="comfortable"
             @update:model-value="onModoChange"
           >
-            <v-btn value="pendentes" prepend-icon="mdi-clock-outline">
+            <ButtonComponent value="pendentes" prepend-icon="mdi-clock-outline">
               Pendentes
-            </v-btn>
-            <v-btn value="finalizados" prepend-icon="mdi-check-circle-outline">
+            </ButtonComponent>
+            <ButtonComponent value="finalizados" prepend-icon="mdi-check-circle-outline">
               Finalizados
-            </v-btn>
+            </ButtonComponent>
           </v-btn-toggle>
         </div>
 
@@ -39,9 +39,9 @@
           Filtros
         </div>
 
-        <v-row dense>
+        <RowComponent dense>
           <!-- Projetos -->
-          <v-col cols="12" md="6">
+          <ColComponent cols="12" md="6">
             <SelectComponent
               v-model="filtros.projetos"
               label="Projetos"
@@ -52,10 +52,10 @@
               chips
               closable-chips
             />
-          </v-col>
+          </ColComponent>
 
           <!-- Macro Processo -->
-          <v-col cols="12" md="6">
+          <ColComponent cols="12" md="6">
             <SelectComponent
               v-model="filtros.macroProcessos"
               label="Macro Processo"
@@ -66,10 +66,10 @@
               chips
               closable-chips
             />
-          </v-col>
+          </ColComponent>
 
           <!-- Processo -->
-          <v-col cols="12" md="6">
+          <ColComponent cols="12" md="6">
             <SelectComponent
                 v-model="filtros.processos"
               label="Processo"
@@ -80,10 +80,10 @@
               chips
               closable-chips
             />
-          </v-col>
+          </ColComponent>
 
           <!-- Status — apenas Pendentes -->
-          <v-col v-if="modo === 'pendentes'" cols="12" md="6">
+          <ColComponent v-if="modo === 'pendentes'" cols="12" md="6">
             <SelectComponent
               v-model="filtros.status"
               label="Status"
@@ -94,10 +94,10 @@
               chips
               closable-chips
             />
-          </v-col>
+          </ColComponent>
 
           <!-- Tarefas -->
-          <v-col cols="12" md="6">
+          <ColComponent cols="12" md="6">
             <SelectComponent
               v-model="filtros.tarefas"
               label="Tarefas"
@@ -108,17 +108,17 @@
               chips
               closable-chips
             />
-          </v-col>
-        </v-row>
+          </ColComponent>
+        </RowComponent>
 
         <!-- Ações -->
         <div class="d-flex justify-end gap-3 mt-5">
           <ButtonComponent variant="text" color="default" @click="limparFiltros">
-            <v-icon start>mdi-filter-off-outline</v-icon>
+            <IconComponent start>mdi-filter-off-outline</IconComponent>
             Limpar
           </ButtonComponent>
           <ButtonComponent color="primary" :loading="pesquisando" @click="pesquisar">
-            <v-icon start>mdi-magnify</v-icon>
+            <IconComponent start>mdi-magnify</IconComponent>
             Pesquisar
           </ButtonComponent>
         </div>
@@ -157,19 +157,19 @@
           </template>
 
           <template #item.actions="{ item }">
-            <v-btn
+            <ButtonComponent
               icon="mdi-eye-outline"
               variant="text"
               size="small"
               color="secondary"
-              :href="`/ficha-tecnica/${item.id}`"
+              :href="`/ficha-tecnica/${item.pco_projeto_id}`"
               target="_blank"
             />
           </template>
 
           <template #no-data>
             <div class="py-8 text-center text-medium-emphasis">
-              <v-icon size="40" class="mb-2">mdi-inbox-outline</v-icon>
+              <IconComponent size="40" class="mb-2">mdi-inbox-outline</IconComponent>
               <div>Nenhum registro encontrado.</div>
             </div>
           </template>
@@ -178,11 +178,22 @@
     </div>
 
   </ContainerComponent>
+
+  <SnackbarComponent v-model="showErros" color="error" timeout="6000" location="top">
+    <div class="text-body-2 font-weight-medium mb-1">Erro de validação</div>
+    <div v-for="(msgs, campo) in validationErrors" :key="campo">
+      <span v-for="msg in msgs" :key="msg">· {{ msg }}</span>
+    </div>
+    <template #actions>
+      <ButtonComponent variant="text" color="white" size="small" @click="showErros = false">Fechar</ButtonComponent>
+    </template>
+  </SnackbarComponent>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
+import { useValidationErrors } from '@/composables/useValidationErrors.js'
 
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
@@ -190,6 +201,17 @@ import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
 import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue'
+import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
+import RowComponent from '@/components/comuns/layout/RowComponent.vue'
+import ColComponent from '@/components/comuns/layout/ColComponent.vue'
+
+const { validationErrors, clearErrors } = useValidationErrors()
+const showErros = ref(false)
+
+watch(validationErrors, (val) => {
+  if (val && Object.keys(val).length > 0) showErros.value = true
+})
 
 const { index: fetchProjetos }     = useCrud('wf/projetos')
 const { index: fetchProcessos }    = useCrud('wf/processos')
@@ -308,10 +330,12 @@ function limparFiltros() {
 }
 
 async function pesquisar() {
+  clearErrors()
   pesquisando.value = true
   try {
     const payload = {
-      modo:                   modo.value,
+      ctrl_workflow_id: 1,
+      finalizados:            modo.value == 'pendentes' ? false : true,
       pco_projeto_id:         filtros.value.projetos,
       ctrl_macro_processo_id: filtros.value.macroProcessos,
       ctrl_processo_id:       filtros.value.processos,

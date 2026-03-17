@@ -7,7 +7,7 @@
       :show-select="false"
   >
     <template #previewField="{ item }">
-      <v-btn
+      <ButtonComponent
         icon="mdi-eye-outline"
         variant="text"
         size="small"
@@ -21,6 +21,7 @@
 
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 
 const fields = [
   {

@@ -8,7 +8,7 @@
         O projeto com ID <strong>#{{ route.params.id }}</strong> não existe ou foi removido.
       </p>
       <ButtonComponent class="mt-6" color="primary" @click="router.back()">
-        <v-icon start>mdi-arrow-left</v-icon>
+        <IconComponent start>mdi-arrow-left</IconComponent>
         Voltar
       </ButtonComponent>
     </div>
@@ -16,7 +16,7 @@
 
   <!-- Carregando -->
   <ContainerComponent v-else-if="carregando" class="fill-height d-flex align-center justify-center" fluid>
-    <v-progress-circular indeterminate color="primary" size="48" />
+    <ProgressCircularComponent indeterminate color="primary" size="48" />
   </ContainerComponent>
 
   <!-- Conteúdo -->
@@ -24,7 +24,7 @@
 
     <!-- Cabeçalho da página -->
     <div class="d-flex align-center gap-3 mb-4">
-      <v-btn icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" />
+      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" />
       <div class="flex-1-1">
         <div class="d-flex align-center gap-2 flex-wrap">
           <span class="text-h6 font-weight-bold">{{ projeto.nome }}</span>
@@ -43,54 +43,54 @@
       </div>
     </div>
 
-    <v-row dense>
+    <RowComponent dense>
 
       <!-- Detalhes do Projeto + Workflow -->
-      <v-col cols="12" md="8">
+      <ColComponent cols="12" md="8">
         <CardComponent rounded="xl" variant="elevated" height="100%">
           <CardTextComponent class="pa-5">
             <div class="section-label mb-3">Detalhes do Projeto</div>
 
-            <v-row dense>
-              <v-col cols="12" sm="6">
+            <RowComponent dense>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Nome</div>
                 <div class="field-value">{{ projeto.nome }}</div>
-              </v-col>
-              <v-col cols="12" sm="6">
+              </ColComponent>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Prioridade</div>
                 <div class="field-value">
                   <v-chip :color="corPrioridade(projeto.prioridade)" size="small" variant="tonal" label>
                     {{ projeto.prioridade }}
                   </v-chip>
                 </div>
-              </v-col>
-              <v-col cols="12" sm="6">
+              </ColComponent>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Data de Início</div>
                 <div class="field-value">{{ formatarData(projeto.data_inicio) }}</div>
-              </v-col>
-              <v-col cols="12" sm="6">
+              </ColComponent>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Data de Término</div>
                 <div class="field-value">{{ formatarData(projeto.data_fim) }}</div>
-              </v-col>
-              <v-col v-if="projeto.duracao" cols="12" sm="6">
+              </ColComponent>
+              <ColComponent v-if="projeto.duracao" cols="12" sm="6">
                 <div class="field-label">Duração</div>
                 <div class="field-value">{{ projeto.duracao }}</div>
-              </v-col>
-              <v-col v-if="projeto.descricao" cols="12">
+              </ColComponent>
+              <ColComponent v-if="projeto.descricao" cols="12">
                 <div class="field-label">Descrição</div>
                 <div class="field-value">{{ projeto.descricao }}</div>
-              </v-col>
-            </v-row>
+              </ColComponent>
+            </RowComponent>
 
             <v-divider class="my-4" />
 
             <div class="section-label mb-3">Workflow</div>
-            <v-row dense>
-              <v-col cols="12" sm="6">
+            <RowComponent dense>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Tipo de Workflow</div>
                 <div class="field-value">{{ projeto.workflow?.ctrl_workflow?.workflow ?? '—' }}</div>
-              </v-col>
-              <v-col cols="12" sm="6">
+              </ColComponent>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Aging (dias)</div>
                 <div class="field-value">
                   <v-chip
@@ -101,22 +101,22 @@
                     {{ projeto.workflow?.aging ?? 0 }} dia{{ projeto.workflow?.aging !== 1 ? 's' : '' }}
                   </v-chip>
                 </div>
-              </v-col>
-              <v-col cols="12" sm="6">
+              </ColComponent>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Criado em</div>
                 <div class="field-value">{{ formatarDataHora(projeto.workflow?.created_at) }}</div>
-              </v-col>
-              <v-col cols="12" sm="6">
+              </ColComponent>
+              <ColComponent cols="12" sm="6">
                 <div class="field-label">Finalizado em</div>
                 <div class="field-value">{{ projeto.workflow?.finalized_at ? formatarDataHora(projeto.workflow.finalized_at) : '—' }}</div>
-              </v-col>
-            </v-row>
+              </ColComponent>
+            </RowComponent>
           </CardTextComponent>
         </CardComponent>
-      </v-col>
+      </ColComponent>
 
       <!-- Painel lateral de métricas -->
-      <v-col cols="12" md="4">
+      <ColComponent cols="12" md="4">
         <CardComponent rounded="xl" variant="elevated" height="100%">
           <CardTextComponent class="pa-5">
             <div class="section-label mb-3">Resumo</div>
@@ -141,9 +141,9 @@
             </div>
           </CardTextComponent>
         </CardComponent>
-      </v-col>
+      </ColComponent>
 
-    </v-row>
+    </RowComponent>
 
     <!-- Tarefas -->
     <div class="mt-6">
@@ -158,11 +158,11 @@
           density="compact"
           @update:model-value="buscarTarefas"
         >
-          <v-btn value="pendentes" size="small" prepend-icon="mdi-clock-outline">Pendentes</v-btn>
-          <v-btn value="finalizados" size="small" prepend-icon="mdi-check-circle-outline">Finalizadas</v-btn>
+          <ButtonComponent value="pendentes" size="small" prepend-icon="mdi-clock-outline">Pendentes</ButtonComponent>
+          <ButtonComponent value="finalizados" size="small" prepend-icon="mdi-check-circle-outline">Finalizadas</ButtonComponent>
         </v-btn-toggle>
         <ButtonComponent size="small" variant="tonal" color="primary" :loading="carregandoTarefas" @click="buscarTarefas">
-          <v-icon start>mdi-refresh</v-icon>
+          <IconComponent start>mdi-refresh</IconComponent>
           Atualizar
         </ButtonComponent>
       </div>
@@ -204,7 +204,7 @@
 
           <template #no-data>
             <div class="py-8 text-center text-medium-emphasis">
-              <v-icon size="40" class="mb-2">mdi-inbox-outline</v-icon>
+              <IconComponent size="40" class="mb-2">mdi-inbox-outline</IconComponent>
               <div>Nenhuma tarefa {{ modoTarefas === 'pendentes' ? 'pendente' : 'finalizada' }} encontrada.</div>
             </div>
           </template>
@@ -227,6 +227,9 @@ import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue'
+import RowComponent from '@/components/comuns/layout/RowComponent.vue'
+import ColComponent from '@/components/comuns/layout/ColComponent.vue'
+import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 
 const route  = useRoute()
 const router = useRouter()
