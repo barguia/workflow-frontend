@@ -6,8 +6,12 @@
         :items="items"
         :search.sync="search"
         :title="title"
+        :show-select="showSelect"
         @edit="openEditModal"
     >
+      <template #preview="{ item }">
+        <slot name="previewField" :item="item" />
+      </template>
       <template #actions="{ item }">
         <ButtonComponent icon="mdi-pencil"  variant="text" size="small" color="primary" @click="openEditModal(item)" />
         <ButtonComponent icon="mdi-delete"  variant="text" size="small" color="error"   @click="deleteItem(item)" />
@@ -126,6 +130,7 @@ const props = defineProps({
   },
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
+  showSelect: { type: Boolean, default: true },
 })
 
 const emit = defineEmits(['item-saved', 'item-deleted'])

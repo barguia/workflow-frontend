@@ -4,12 +4,34 @@
       title="Tarefas"
       :fields="tarefaFields"
       :headers="userHeaders"
+      :show-select="false"
   >
+    <template #previewField="{ item }">
+      <ButtonComponent
+        icon="mdi-eye-outline"
+        variant="text"
+        size="small"
+        color="secondary"
+        :href="`/fila-tarefa/${item.id}`"
+        target="_blank"
+      />
+    </template>
+    <template #actionsField="{ item }">
+      <ButtonComponent
+        icon="mdi-transit-connection-variant"
+        variant="text"
+        size="small"
+        color="primary"
+        :href="`/mobilidade-tarefa/${item.id}`"
+        target="_blank"
+      />
+    </template>
   </CrudComponent>
 </template>
 
 <script setup>
 import CrudComponent from '@/components/crud/CrudComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import {useCrud} from "@/services/useCrud.js";
 const { index: fetchProcessos } = useCrud('wf/processos')
 const { index: fetchWorkflow } = useCrud('wf/workflows')
@@ -51,14 +73,14 @@ const tarefaFields = [
   },
   {
     key: 'tarefa',
-    label: 'Tarefa',
+    label: 'tarefa',
     type: 'text',
-    rules: [v => !!v || 'Tarefa é obrigatório'],
+    rules: [v => !!v || 'tarefa é obrigatório'],
     optional: false
   },
   {
     key: 'descrição',
-    label: 'Descrição da Tarefa',
+    label: 'Descrição da tarefa',
     type: 'textarea',
     optional: true
   },
@@ -66,9 +88,10 @@ const tarefaFields = [
 ]
 
 const userHeaders = [
+  { title: '', value: 'preview' },
   { title: 'Workflow', value: 'workflow.workflow' },
   { title: 'Processo', value: 'processo.processo' },
-  { title: 'Tarefa', value: 'tarefa' },
-  { title: '', value: 'actions'}
+  { title: 'tarefa', value: 'tarefa' },
+  { title: '', value: 'actions' },
 ]
 </script>

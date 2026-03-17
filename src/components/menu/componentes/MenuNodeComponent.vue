@@ -4,6 +4,7 @@
     v-if="hasChildren"
     :value="groupKey"
     v-model:opened="opened"
+
   >
     <template #activator="{ props: activatorProps }">
       <ListItemComponent
@@ -12,9 +13,9 @@
         :title="node.title"
         rounded="lg"
         density="compact"
-        active-color="primary"
-        class="menu-item"
-        :style="indentStyle"
+        color="primary"
+        variant="tonal"
+        :class="['menu-item', 'menu-parent', `level-${level}`]"
         @click.stop="toggleHere"
       />
     </template>
@@ -37,9 +38,8 @@
     :to="node.path || undefined"
     rounded="lg"
     density="compact"
-    active-color="primary"
-    class="menu-item"
-    :style="indentStyle"
+    color="primary"
+    :class="['menu-item', 'menu-leaf', `level-${level}`]"
   />
 </template>
 
@@ -65,28 +65,62 @@ const hasChildren = computed(() =>
 const groupKey = computed(() => `${props.level}:${props.node.id}`)
 const opened   = computed(() => props.openAtLevel[props.level] === props.node.id)
 
-const indentStyle = computed(() => ({
-  paddingLeft: `${props.level * 10}px`,
-}))
-
 function toggleHere() {
   emit('toggle', { level: props.level, id: opened.value ? null : props.node.id })
 }
 </script>
 
 <style scoped>
+/* Base */
 .menu-item {
-  min-height: 36px !important;
   margin-bottom: 2px;
-  font-size: 0.875rem;
 }
 
-.menu-item :deep(.v-list-item__prepend .v-icon) {
-  opacity: 0.75;
+/* Pai (tem filhos) — tonal já aplicado pelo variant, reforça peso */
+.menu-parent {
+  font-weight: 600;
+}
+.menu-parent :deep(.v-list-item__prepend .v-icon) {
+  opacity: 0.85;
+}
+
+/* Folha (link) — padrão, mais suave */
+.menu-leaf {
+  font-weight: 400;
+}
+.menu-leaf :deep(.v-list-item__prepend .v-icon) {
+  opacity: 0.65;
+}
+
+/* Nível 0 */
+.menu-item.level-0 {
+  min-height: 38px !important;
+  font-size: 0.875rem;
+}
+.menu-item.level-0 :deep(.v-list-item__prepend .v-icon) {
   font-size: 18px;
 }
 
+/* Nível 1 */
+.menu-item.level-1 {
+  min-height: 32px !important;
+  font-size: 0.8125rem;
+}
+.menu-item.level-1 :deep(.v-list-item__prepend .v-icon) {
+  font-size: 15px;
+}
+
+/* Nível 2+ */
+.menu-item.level-2 {
+  min-height: 28px !important;
+  font-size: 0.775rem;
+}
+.menu-item.level-2 :deep(.v-list-item__prepend .v-icon) {
+  font-size: 13px;
+}
+
+/* Hover — destaca ícone */
 .menu-item:hover :deep(.v-list-item__prepend .v-icon) {
-  opacity: 1;
+  opacity: 1 !important;
 }
 </style>

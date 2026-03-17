@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 import controleAcessoRoutes from "@/components/pages/controle-acesso/routes/routes.js"
 import appRoutes from "@/components/pages/aplicacao/routes/routes.js"
-import workflowRoutes from "@/components/pages/workflow/routes/routes.js"
+import workflowRoutes from "@/components/pages/projeto/routes/routes.js"
 
 const pinia = createPinia();
 

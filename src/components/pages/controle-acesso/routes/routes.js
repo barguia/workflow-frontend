@@ -26,7 +26,7 @@ const routes = [
         meta: { requiresAuth: false },
     },
     {
-        path: '/administracao',
+        path: '/adm/administracao',
         name: 'Administracao',
         component: ControleAcessoPage,
         icon: "mdi-shield-crown-outline",
@@ -34,19 +34,19 @@ const routes = [
         beforeEnter: (to, from, next) => {
             const hashesValidos = ['#adm', '#organizacoes', '#usuarios', '#perfis', '#permissoes', '#menus']
             if (to.hash && !hashesValidos.includes(to.hash)) {
-                next({ path: '/administracao', hash: '#adm' })
+                next({ path: '/adm/administracao', hash: '#adm' })
             } else {
                 next()
             }
         },
     },
-    {
-        path: '/role',
-        name: 'Role',
-        component: RolePage,
-        icon: "mdi-user",
-        meta: { requiresAuth: true },
-    },
+    // {
+    //     path: '/role',
+    //     name: 'Role',
+    //     component: RolePage,
+    //     icon: "mdi-user",
+    //     meta: { requiresAuth: true },
+    // },
 ]
 
 export default routes
