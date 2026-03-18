@@ -242,8 +242,9 @@ async function carregar() {
 
     tarefa.value = resTarefa.data?.data ?? null
 
-    const destinos = resDestinos.data?.data ?? []
-    gruposDestinos.value = agruparPorProcesso(Array.isArray(destinos) ? destinos : [])
+    const mobilidade = resDestinos.data?.data ?? {}
+    gruposDestinos.value = agruparPorProcesso(mobilidade.destinos ?? [])
+    gruposOrigens.value  = agruparPorProcesso(mobilidade.origens  ?? [])
 
   } finally {
     carregando.value = false
@@ -266,8 +267,9 @@ const abrirDialogAssociacao = async () => {
     api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
   ])
 
-  const associadas = resAssociadas.data?.data ?? []
-  mobilidadesSelecionadas.value = associadas.map(t => t.id)
+  const mobilidade = resAssociadas.data?.data ?? {}
+  const destinos = mobilidade.destinos ?? []
+  mobilidadesSelecionadas.value = destinos.map(t => t.id)
 
   const todasTarefas = resTarefas.data?.data ?? []
 
