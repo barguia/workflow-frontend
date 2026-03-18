@@ -20,13 +20,12 @@
       </div>
       <v-spacer />
       <ButtonComponent
-        color="primary"
-        :loading="salvando"
-        :disabled="!houveMudanca"
-        @click="salvar"
+        color="secondary"
+        variant="tonal"
+        @click="abrirDialogAssociacao"
       >
-        <IconComponent start>mdi-content-save-outline</IconComponent>
-        Salvar
+        <IconComponent start>mdi-link-variant</IconComponent>
+        Associar
       </ButtonComponent>
     </div>
 
@@ -60,44 +59,30 @@
             <div class="painel-header pa-4 d-flex align-center gap-2">
               <IconComponent color="success" size="20">mdi-arrow-collapse-right</IconComponent>
               <span class="text-subtitle-1 font-weight-bold">De onde pode vir</span>
-              <v-spacer />
-              <v-chip size="small" color="success" variant="tonal">
-                {{ origensLocal.length }} selecionada{{ origensLocal.length !== 1 ? 's' : '' }}
-              </v-chip>
             </div>
 
             <v-divider />
 
             <div class="pa-4">
-              <div v-if="grupos.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
-                Nenhuma tarefa disponível.
+              <div v-if="gruposOrigens.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
+                Nenhuma tarefa associada.
               </div>
 
-              <div v-for="grupo in grupos" :key="grupo.grupo" class="mb-5">
+              <div v-for="grupo in gruposOrigens" :key="grupo.grupo" class="mb-5">
                 <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
                 <v-divider class="mb-2" />
-                <v-checkbox
-                  v-for="opcao in grupo.options"
-                  :key="opcao.value"
-                  v-model="origensLocal"
-                  :value="opcao.value"
-                  hide-details
-                  density="compact"
-                  color="success"
-                  class="my-1"
-                  :disabled="opcao.value === tarefaId"
-                >
-                  <template #label>
-                    <v-chip
-                      :color="origensLocal.includes(opcao.value) ? 'success' : undefined"
-                      size="small"
-                      variant="tonal"
-                      class="font-weight-medium"
-                    >
-                      {{ opcao.text }}
-                    </v-chip>
-                  </template>
-                </v-checkbox>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <v-chip
+                    v-for="opcao in grupo.options"
+                    :key="opcao.value"
+                    color="success"
+                    size="small"
+                    variant="tonal"
+                    class="font-weight-medium"
+                  >
+                    {{ opcao.text }}
+                  </v-chip>
+                </div>
               </div>
             </div>
           </CardTextComponent>
@@ -111,44 +96,30 @@
             <div class="painel-header pa-4 d-flex align-center gap-2">
               <IconComponent color="primary" size="20">mdi-arrow-expand-right</IconComponent>
               <span class="text-subtitle-1 font-weight-bold">Para onde pode ir</span>
-              <v-spacer />
-              <v-chip size="small" color="primary" variant="tonal">
-                {{ destinosLocal.length }} selecionado{{ destinosLocal.length !== 1 ? 's' : '' }}
-              </v-chip>
             </div>
 
             <v-divider />
 
             <div class="pa-4">
-              <div v-if="grupos.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
-                Nenhuma tarefa disponível.
+              <div v-if="gruposDestinos.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
+                Nenhuma tarefa associada.
               </div>
 
-              <div v-for="grupo in grupos" :key="grupo.grupo" class="mb-5">
+              <div v-for="grupo in gruposDestinos" :key="grupo.grupo" class="mb-5">
                 <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
                 <v-divider class="mb-2" />
-                <v-checkbox
-                  v-for="opcao in grupo.options"
-                  :key="opcao.value"
-                  v-model="destinosLocal"
-                  :value="opcao.value"
-                  hide-details
-                  density="compact"
-                  color="primary"
-                  class="my-1"
-                  :disabled="opcao.value === tarefaId"
-                >
-                  <template #label>
-                    <v-chip
-                      :color="destinosLocal.includes(opcao.value) ? 'primary' : undefined"
-                      size="small"
-                      variant="tonal"
-                      class="font-weight-medium"
-                    >
-                      {{ opcao.text }}
-                    </v-chip>
-                  </template>
-                </v-checkbox>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <v-chip
+                    v-for="opcao in grupo.options"
+                    :key="opcao.value"
+                    color="primary"
+                    size="small"
+                    variant="tonal"
+                    class="font-weight-medium"
+                  >
+                    {{ opcao.text }}
+                  </v-chip>
+                </div>
               </div>
             </div>
           </CardTextComponent>
@@ -158,6 +129,57 @@
     </RowComponent>
 
   </ContainerComponent>
+
+  <!-- Dialog de Associação de Tarefas -->
+  <v-dialog v-if="dialogAssociacao" v-model="dialogAssociacao" max-width="900px" scrollable @keydown.esc="fecharDialogAssociacao">
+    <CardComponent rounded="lg">
+      <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
+        <IconComponent color="primary" size="22">mdi-link-variant</IconComponent>
+        <span class="text-h6">Associar mobilidades: {{ tarefa?.tarefa }}</span>
+        <v-spacer />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="fecharDialogAssociacao" />
+      </CardTitleComponent>
+
+      <CardTextComponent class="pt-4">
+        <RowComponent>
+          <ColComponent
+            v-for="grupo in gruposAssociacao"
+            :key="grupo.grupo"
+            cols="12" sm="6" md="4"
+          >
+            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">{{ grupo.grupo }}</div>
+            <v-divider class="mb-3" />
+            <v-checkbox
+              v-for="opt in grupo.options"
+              :key="opt.value"
+              v-model="mobilidadesSelecionadas"
+              :value="opt.value"
+              :label="opt.text"
+              :disabled="opt.value === tarefaId"
+              hide-details
+              density="compact"
+              color="primary"
+              class="my-1"
+            />
+          </ColComponent>
+
+          <ColComponent v-if="gruposAssociacao.length === 0" cols="12">
+            <p class="text-body-2 text-medium-emphasis text-center py-6">
+              Carregando tarefas…
+            </p>
+          </ColComponent>
+        </RowComponent>
+      </CardTextComponent>
+
+      <CardActionsComponent class="px-6 py-4 border-t">
+        <v-spacer />
+        <ButtonComponent variant="text" @click="fecharDialogAssociacao">Cancelar</ButtonComponent>
+        <ButtonComponent color="primary" variant="flat" :loading="salvandoAssociacao" @click="salvarAssociacao">
+          Salvar
+        </ButtonComponent>
+      </CardActionsComponent>
+    </CardComponent>
+  </v-dialog>
 
   <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
     {{ snackbar.message }}
@@ -178,6 +200,8 @@ import api from '@/services/api.js'
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
+import CardTitleComponent from '@/components/comuns/cards/CardTitleComponent.vue'
+import CardActionsComponent from '@/components/comuns/cards/CardActionsComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
@@ -191,73 +215,96 @@ const router = useRouter()
 const tarefaId = computed(() => Number(route.params.id))
 
 const carregando = ref(true)
-const salvando   = ref(false)
 
-const tarefa        = ref(null)
-const grupos        = ref([])      // [{ grupo: string, options: [{ value, text }] }]
-const origensLocal  = ref([])
-const destinosLocal = ref([])
-const origensOriginal  = ref([])
-const destinosOriginal = ref([])
+const tarefa         = ref(null)
+const gruposDestinos = ref([])   // tarefas para onde esta tarefa pode ir
+const gruposOrigens  = ref([])   // tarefas de onde esta tarefa pode vir
 
 const snackbar = ref({ show: false, message: '', color: 'success' })
 
-const houveMudanca = computed(() => {
-  const sortIds = arr => [...arr].sort((a, b) => a - b)
-  return (
-    JSON.stringify(sortIds(origensLocal.value))  !== JSON.stringify(sortIds(origensOriginal.value)) ||
-    JSON.stringify(sortIds(destinosLocal.value)) !== JSON.stringify(sortIds(destinosOriginal.value))
-  )
-})
+function agruparPorProcesso(tarefas) {
+  const agrupado = {}
+  tarefas.forEach(t => {
+    const nomeGrupo = t.processo?.processo ?? t.processo ?? 'Sem processo'
+    if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
+    agrupado[nomeGrupo].push({ value: t.id, text: t.tarefa })
+  })
+  return Object.entries(agrupado).map(([grupo, options]) => ({ grupo, options }))
+}
 
 async function carregar() {
   carregando.value = true
   try {
-    const [resTarefa, resMobilidade] = await Promise.all([
+    const [resTarefa, resDestinos] = await Promise.all([
       api.get(`wf/tarefas/${tarefaId.value}`),
-      api.get(`wf/tarefa-mobilidades/${tarefaId.value}`),
+      api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
     ])
 
     tarefa.value = resTarefa.data?.data ?? null
 
-    const mobilidade = resMobilidade.data?.data ?? {}
-
-    // Monta grupos agrupados por processo a partir das tarefas disponíveis
-    const todasTarefas = mobilidade.tarefas_disponiveis ?? []
-    const agrupado = {}
-    todasTarefas.forEach(t => {
-      const nomeGrupo = t.processo ?? 'Sem processo'
-      if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
-      agrupado[nomeGrupo].push({ value: t.id, text: t.tarefa })
-    })
-    grupos.value = Object.entries(agrupado).map(([grupo, options]) => ({ grupo, options }))
-
-    // Pré-seleciona origens e destinos já configurados
-    const origens  = (mobilidade.origens  ?? []).map(t => t.id ?? t)
-    const destinos = (mobilidade.destinos ?? []).map(t => t.id ?? t)
-    origensLocal.value    = origens
-    destinosLocal.value   = destinos
-    origensOriginal.value  = [...origens]
-    destinosOriginal.value = [...destinos]
+    const mobilidade = resDestinos.data?.data ?? {}
+    gruposDestinos.value = agruparPorProcesso(mobilidade.destinos ?? [])
+    gruposOrigens.value  = agruparPorProcesso(mobilidade.origens  ?? [])
 
   } finally {
     carregando.value = false
   }
 }
 
-async function salvar() {
-  salvando.value = true
+// --- Associação de tarefas ---
+const dialogAssociacao      = ref(false)
+const salvandoAssociacao    = ref(false)
+const gruposAssociacao      = ref([])
+const mobilidadesSelecionadas = ref([])
+
+const abrirDialogAssociacao = async () => {
+  gruposAssociacao.value = []
+  mobilidadesSelecionadas.value = []
+  dialogAssociacao.value = true
+
+  const [resTarefas, resAssociadas] = await Promise.all([
+    api.get('wf/tarefas'),
+    api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
+  ])
+
+  const mobilidade = resAssociadas.data?.data ?? {}
+  const destinos = mobilidade.destinos ?? []
+  mobilidadesSelecionadas.value = destinos.map(t => t.id)
+
+  const todasTarefas = resTarefas.data?.data ?? []
+
+  const agrupado = {}
+  todasTarefas.forEach(t => {
+    const nomeGrupo = t.processo?.processo ?? 'Sem processo'
+    if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
+    agrupado[nomeGrupo].push({ value: t.id, text: t.tarefa })
+  })
+  gruposAssociacao.value = Object.entries(agrupado)
+    .map(([grupo, options]) => ({ grupo, options }))
+    .sort((a, b) => a.grupo.localeCompare(b.grupo))
+}
+
+const salvarAssociacao = async () => {
+  salvandoAssociacao.value = true
   try {
-    await api.post(`wf/tarefa-mobilidades/${tarefaId.value}`, {
-      origens:  origensLocal.value,
-      destinos: destinosLocal.value,
+    await api.post('wf/tarefas-mobilidades', {
+      ctrl_origem_tarefa_id: tarefaId.value,
+      mobilidades: mobilidadesSelecionadas.value,
     })
-    origensOriginal.value  = [...origensLocal.value]
-    destinosOriginal.value = [...destinosLocal.value]
-    snackbar.value = { show: true, message: 'Mobilidade salva com sucesso!', color: 'success' }
+    snackbar.value = { show: true, message: 'Associações salvas com sucesso!', color: 'success' }
+    fecharDialogAssociacao()
+    await carregar()
   } finally {
-    salvando.value = false
+    salvandoAssociacao.value = false
   }
+}
+
+const fecharDialogAssociacao = () => {
+  dialogAssociacao.value = false
+  setTimeout(() => {
+    gruposAssociacao.value = []
+    mobilidadesSelecionadas.value = []
+  }, 300)
 }
 
 onMounted(carregar)

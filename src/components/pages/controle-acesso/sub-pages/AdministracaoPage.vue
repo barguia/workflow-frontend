@@ -76,7 +76,7 @@ import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 const router = useRouter()
 
 function navegar(hash) {
-  router.push({ path: '/administracao', hash })
+  router.push({ path: '/adm/administracao', hash })
 }
 
 const modulos = [
