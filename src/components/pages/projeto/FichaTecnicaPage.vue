@@ -28,14 +28,14 @@
       <div class="flex-1-1">
         <div class="d-flex align-center gap-2 flex-wrap">
           <span class="text-h6 font-weight-bold">{{ projeto.nome }}</span>
-          <v-chip
+          <ChipComponent
             :color="corPrioridade(projeto.prioridade)"
             size="small"
             variant="tonal"
             label
           >
             {{ projeto.prioridade }}
-          </v-chip>
+          </ChipComponent>
         </div>
         <div class="text-caption text-medium-emphasis mt-1">
           {{ projeto.workflow?.ctrl_workflow?.workflow }} · Projeto #{{ projeto.id }}
@@ -59,9 +59,9 @@
               <ColComponent cols="12" sm="6">
                 <div class="field-label">Prioridade</div>
                 <div class="field-value">
-                  <v-chip :color="corPrioridade(projeto.prioridade)" size="small" variant="tonal" label>
+                  <ChipComponent :color="corPrioridade(projeto.prioridade)" size="small" variant="tonal" label>
                     {{ projeto.prioridade }}
-                  </v-chip>
+                  </ChipComponent>
                 </div>
               </ColComponent>
               <ColComponent cols="12" sm="6">
@@ -82,7 +82,7 @@
               </ColComponent>
             </RowComponent>
 
-            <v-divider class="my-4" />
+            <DividerComponent class="my-4" />
 
             <div class="section-label mb-3">Workflow</div>
             <RowComponent dense>
@@ -93,13 +93,13 @@
               <ColComponent cols="12" sm="6">
                 <div class="field-label">Aging (dias)</div>
                 <div class="field-value">
-                  <v-chip
+                  <ChipComponent
                     :color="projeto.workflow?.aging > 30 ? 'error' : projeto.workflow?.aging > 15 ? 'warning' : 'success'"
                     size="small"
                     variant="tonal"
                   >
                     {{ projeto.workflow?.aging ?? 0 }} dia{{ projeto.workflow?.aging !== 1 ? 's' : '' }}
-                  </v-chip>
+                  </ChipComponent>
                 </div>
               </ColComponent>
               <ColComponent cols="12" sm="6">
@@ -122,15 +122,15 @@
             <div class="section-label mb-3">Resumo</div>
             <div class="metric-row">
               <div class="metric-label">Status do projeto</div>
-              <v-chip
+              <ChipComponent
                 :color="projeto.workflow?.finalized_at ? 'success' : 'primary'"
                 size="small"
                 variant="tonal"
               >
                 {{ projeto.workflow?.finalized_at ? 'Finalizado' : 'Em andamento' }}
-              </v-chip>
+              </ChipComponent>
             </div>
-            <v-divider class="my-3" />
+            <DividerComponent class="my-3" />
             <div class="metric-row">
               <div class="metric-label">Tarefas abertas</div>
               <span class="metric-value">{{ totalTarefas }}</span>
@@ -149,7 +149,7 @@
     <div class="mt-6">
       <div class="d-flex align-center gap-3 mb-3 flex-wrap">
         <div class="text-subtitle-1 font-weight-bold">Tarefas</div>
-        <v-spacer />
+        <SpacerComponent />
         <v-btn-toggle
           v-model="modoTarefas"
           mandatory
@@ -180,9 +180,9 @@
             <div class="table-toolbar pa-4 d-flex align-center ga-3">
               <span class="text-subtitle-2 font-weight-semibold">
                 {{ modoTarefas === 'pendentes' ? 'Tarefas Pendentes' : 'Tarefas Finalizadas' }}
-                <v-chip size="x-small" color="primary" class="ml-2">{{ tarefas.length }}</v-chip>
+                <ChipComponent size="x-small" color="primary" class="ml-2">{{ tarefas.length }}</ChipComponent>
               </span>
-              <v-spacer />
+              <SpacerComponent />
               <TextFieldComponent
                 v-model="buscaTarefa"
                 prepend-inner-icon="mdi-magnify"
@@ -197,9 +197,9 @@
           </template>
 
           <template #item.status="{ item }">
-            <v-chip size="small" variant="tonal" color="primary">
+            <ChipComponent size="small" variant="tonal" color="primary">
               {{ item.status ?? '—' }}
-            </v-chip>
+            </ChipComponent>
           </template>
 
           <template #no-data>
@@ -230,6 +230,9 @@ import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
+import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 
 const route  = useRoute()
 const router = useRouter()
@@ -294,6 +297,7 @@ async function buscarTarefas() {
     const payload = {
       modo:          modoTarefas.value,
       pco_projeto_id: [projeto.value.id],
+      ctrl_workflow_id: [projeto.value.workflow.ctrl_workflow_id],
     }
     const res = await api.post('wf/projetos/pesquisa', payload)
     tarefas.value = res.data?.data ?? []

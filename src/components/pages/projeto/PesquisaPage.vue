@@ -32,7 +32,7 @@
           </v-btn-toggle>
         </div>
 
-        <v-divider class="mb-5" />
+        <DividerComponent class="mb-5" />
 
         <!-- Filtros -->
         <div class="text-caption font-weight-bold text-uppercase mb-3" style="opacity:.65; letter-spacing:.06em">
@@ -140,9 +140,9 @@
             <div class="table-toolbar pa-4 d-flex align-center ga-3">
               <span class="text-subtitle-1 font-weight-semibold">
                 Resultados
-                <v-chip size="small" color="primary" class="ml-2">{{ resultados.length }}</v-chip>
+                <ChipComponent size="small" color="primary" class="ml-2">{{ resultados.length }}</ChipComponent>
               </span>
-              <v-spacer />
+              <SpacerComponent />
               <TextFieldComponent
                 v-model="buscaLocal"
                 prepend-inner-icon="mdi-magnify"
@@ -205,6 +205,9 @@ import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
+import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 
 const { validationErrors, clearErrors } = useValidationErrors()
 const showErros = ref(false)

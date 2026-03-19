@@ -30,9 +30,9 @@
           <div class="table-toolbar pa-4 d-flex align-center ga-3">
             <span class="text-subtitle-1 font-weight-semibold">
               Tarefas
-              <v-chip size="small" color="primary" class="ml-2">{{ tarefas.length }}</v-chip>
+              <ChipComponent size="small" color="primary" class="ml-2">{{ tarefas.length }}</ChipComponent>
             </span>
-            <v-spacer />
+            <SpacerComponent />
             <TextFieldComponent
               v-model="busca"
               prepend-inner-icon="mdi-magnify"
@@ -60,37 +60,37 @@
 
         <!-- Status com chip -->
         <template #item.status_tarefa="{ item }">
-          <v-chip
+          <ChipComponent
             :color="item.finalized_at ? 'success' : 'warning'"
             size="small"
             variant="tonal"
             label
           >
             {{ item.status_tarefa }}
-          </v-chip>
+          </ChipComponent>
         </template>
 
         <!-- Prioridade com chip -->
         <template #item.prioridade="{ item }">
-          <v-chip
+          <ChipComponent
             :color="corPrioridade(item.prioridade)"
             size="small"
             variant="tonal"
             label
           >
             {{ item.prioridade }}
-          </v-chip>
+          </ChipComponent>
         </template>
 
         <!-- Aging com destaque -->
         <template #item.aging_tarefa="{ item }">
-          <v-chip
+          <ChipComponent
             :color="item.aging_tarefa > 30 ? 'error' : item.aging_tarefa > 15 ? 'warning' : 'default'"
             size="small"
             variant="tonal"
           >
             {{ item.aging_tarefa }}d
-          </v-chip>
+          </ChipComponent>
         </template>
 
         <!-- Sem dados -->
@@ -130,6 +130,8 @@ import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
+import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 
 const { validationErrors } = useValidationErrors()
 const showErros = ref(false)

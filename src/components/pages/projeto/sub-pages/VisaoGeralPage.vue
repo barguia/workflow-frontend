@@ -46,7 +46,7 @@
           </ColComponent>
         </RowComponent>
 
-        <v-divider class="my-10" />
+        <DividerComponent class="my-10" />
 
         <AlertComponent
           border="start"
@@ -73,6 +73,7 @@ import ColComponent from '@/components/comuns/layout/ColComponent.vue'
 import AlertComponent from '@/components/comuns/alerts/AlerComponent.vue'
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 
 const router = useRouter()
 

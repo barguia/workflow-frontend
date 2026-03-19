@@ -13,11 +13,11 @@
       </router-link>
     </ToolbarTitleComponent>
 
-    <v-spacer />
+    <SpacerComponent />
 
     <ThemeSwitcherComponent />
 
-    <v-divider vertical inset class="mx-1" style="height: 24px; align-self: center;" />
+    <DividerComponent vertical inset class="mx-1" style="height: 24px; align-self: center;" />
 
     <!-- Menu de Perfil -->
     <MenuComponent location="bottom end" :close-on-content-click="true">
@@ -41,7 +41,7 @@
             rounded="lg"
           />
 
-          <v-divider class="my-1" />
+          <DividerComponent class="my-1" />
 
           <ListItemComponent
             prepend-icon="mdi-logout"
@@ -69,7 +69,7 @@
       <span class="text-subtitle-1 font-weight-bold">Workflow</span>
     </div>
 
-    <v-divider />
+    <DividerComponent />
 
     <ListComponent v-model:opened="opened" nav density="compact" class="pa-2">
       <MenuNodeComponent
@@ -102,6 +102,8 @@ import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import AvatarComponent from '@/components/comuns/containers/AvatarComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 
 const router = useRouter()
 const drawer = ref(false)
