@@ -5,6 +5,7 @@
       :fields="fields"
       :headers="headers"
       :context="auxiliares"
+      :on-edit="inicializarContextoEdicao"
   >
   </CrudComponent>
 </template>
@@ -24,6 +25,24 @@ const auxiliares = computed(() => ({
   hierarquias: hierarquias.value,
   processosRelacionados: processosRelacionados.value,
 }))
+
+const inicializarContextoEdicao = async (item) => {
+  await carregarHierarquias(item.ctrl_workflow_id)
+
+  const hierarquiaAtual = hierarquias.value[item.ctrl_hierarquia_id]
+  if (!hierarquiaAtual?.ctrl_macro_hierarquia_id) return
+
+  try {
+    const data = await fetchProcesso({
+      ctrl_hierarquia_id: hierarquiaAtual.ctrl_macro_hierarquia_id,
+      ctrl_workflow_id: item.ctrl_workflow_id,
+    })
+    processosRelacionados.value[item.ctrl_hierarquia_id] = data.map(d => ({ value: d.id, text: d.processo }))
+  } catch (err) {
+    console.error('Erro ao carregar processos relacionados na edição', err)
+    processosRelacionados.value[item.ctrl_hierarquia_id] = []
+  }
+}
 
 const carregarHierarquias = async (workflowId) => {
   if (!workflowId) {
@@ -123,6 +142,7 @@ const fields = [
 
 const headers = [
   { title: 'Processo', value: 'processo' },
+  { title: 'Processo Relacionado', value: 'processo_pai.processo' },
   { title: 'Hierarquia', value: 'hierarquia.hierarquia' },
   { title: 'Workflow', value: 'workflow.workflow' },
   { title: '', value: 'actions'}
