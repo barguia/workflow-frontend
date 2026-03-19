@@ -131,6 +131,9 @@ const salvar = async () => {
     })
     emit('salvo')
     fechar()
+    window.dispatchEvent(new CustomEvent('notification', {
+      detail: { type: 'success', message: 'Associações salvas com sucesso!' },
+    }))
   } catch (erro) {
     console.error('Erro ao salvar associações:', erro)
   } finally {

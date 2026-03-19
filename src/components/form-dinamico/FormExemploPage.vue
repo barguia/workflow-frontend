@@ -12,7 +12,7 @@
         />
       </CardTextComponent>
       <CardActionsComponent>
-        <v-spacer />
+        <SpacerComponent />
         <ButtonComponent color="error" @click="resetar">Resetar</ButtonComponent>
         <ButtonComponent color="primary" @click="salvar">Salvar</ButtonComponent>
       </CardActionsComponent>
@@ -37,6 +37,7 @@ import CardTitleComponent from '@/components/comuns/cards/CardTitleComponent.vue
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import CardActionsComponent from '@/components/comuns/cards/CardActionsComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 
 // === USUÁRIO SIMULADO (para renderIf) ===
 const user = { isAdmin: true }

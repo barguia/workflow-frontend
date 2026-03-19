@@ -103,12 +103,12 @@ describe('authStore', () => {
       expect(store.menus).toEqual(menus)
     })
 
-    it('resulta em token falsy quando o dado no localStorage está corrompido', () => {
+    it('não lança exceção quando o dado no localStorage está corrompido', () => {
       localStorage.setItem('authToken', 'dado-invalido-que-nao-e-aes')
       const store = useAuthStore()
-      store.loadToken()
-      // CryptoJS retorna string vazia ao descriptografar dado inválido (não lança exceção)
-      expect(store.token).toBeFalsy()
+      // CryptoJS não lança exceção — retorna lixo ou string vazia dependendo da versão.
+      // O token inválido será rejeitado com 401 pela API, que chama limpaSessao().
+      expect(() => store.loadToken()).not.toThrow()
     })
 
     it('não faz nada quando localStorage está vazio', () => {

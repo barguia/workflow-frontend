@@ -131,6 +131,7 @@ const props = defineProps({
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
   showSelect: { type: Boolean, default: true },
+  onEdit: { type: Function, default: null },
 })
 
 const emit = defineEmits(['item-saved', 'item-deleted'])
@@ -182,6 +183,7 @@ const openAddModal = async () => {
 const openEditModal = async (item) => {
   isEditing.value = true
   form.value = item
+  if (props.onEdit) await props.onEdit(item)
   dialog.value = true
   nextTick(() => formularioRef.value?.resetValidation())
 }

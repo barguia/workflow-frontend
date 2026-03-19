@@ -135,6 +135,9 @@ const atualizarRole = async () => {
       permissions_ids: localForm.value.permissions_ids,
     })
     closeModalRole()
+    window.dispatchEvent(new CustomEvent('notification', {
+      detail: { type: 'success', message: 'Permissões atualizadas com sucesso!' },
+    }))
   } finally {
     salvando.value = false
   }
