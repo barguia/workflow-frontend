@@ -18,7 +18,7 @@
           {{ tarefa.tarefa }} · {{ tarefa.processo?.processo }}
         </div>
       </div>
-      <v-spacer />
+      <SpacerComponent />
       <ButtonComponent
         color="secondary"
         variant="tonal"
@@ -61,7 +61,7 @@
               <span class="text-subtitle-1 font-weight-bold">De onde pode vir</span>
             </div>
 
-            <v-divider />
+            <DividerComponent />
 
             <div class="pa-4">
               <div v-if="gruposOrigens.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
@@ -70,9 +70,9 @@
 
               <div v-for="grupo in gruposOrigens" :key="grupo.grupo" class="mb-5">
                 <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
-                <v-divider class="mb-2" />
+                <DividerComponent class="mb-2" />
                 <div class="d-flex flex-wrap gap-2 mt-2">
-                  <v-chip
+                  <ChipComponent
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
                     color="success"
@@ -81,7 +81,7 @@
                     class="font-weight-medium"
                   >
                     {{ opcao.text }}
-                  </v-chip>
+                  </ChipComponent>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@
               <span class="text-subtitle-1 font-weight-bold">Para onde pode ir</span>
             </div>
 
-            <v-divider />
+            <DividerComponent />
 
             <div class="pa-4">
               <div v-if="gruposDestinos.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
@@ -107,9 +107,9 @@
 
               <div v-for="grupo in gruposDestinos" :key="grupo.grupo" class="mb-5">
                 <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
-                <v-divider class="mb-2" />
+                <DividerComponent class="mb-2" />
                 <div class="d-flex flex-wrap gap-2 mt-2">
-                  <v-chip
+                  <ChipComponent
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
                     color="primary"
@@ -118,7 +118,7 @@
                     class="font-weight-medium"
                   >
                     {{ opcao.text }}
-                  </v-chip>
+                  </ChipComponent>
                 </div>
               </div>
             </div>
@@ -131,12 +131,12 @@
   </ContainerComponent>
 
   <!-- Dialog de Associação de Tarefas -->
-  <v-dialog v-if="dialogAssociacao" v-model="dialogAssociacao" max-width="900px" scrollable @keydown.esc="fecharDialogAssociacao">
+  <DialogComponent v-if="dialogAssociacao" v-model="dialogAssociacao" max-width="900px" scrollable @keydown.esc="fecharDialogAssociacao">
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
         <IconComponent color="primary" size="22">mdi-link-variant</IconComponent>
         <span class="text-h6">Associar mobilidades: {{ tarefa?.tarefa }}</span>
-        <v-spacer />
+        <SpacerComponent />
         <ButtonComponent icon="mdi-close" variant="text" size="small" @click="fecharDialogAssociacao" />
       </CardTitleComponent>
 
@@ -148,8 +148,8 @@
             cols="12" sm="6" md="4"
           >
             <div class="text-subtitle-2 font-weight-bold text-primary mb-1">{{ grupo.grupo }}</div>
-            <v-divider class="mb-3" />
-            <v-checkbox
+            <DividerComponent class="mb-3" />
+            <CheckboxItemComponent
               v-for="opt in grupo.options"
               :key="opt.value"
               v-model="mobilidadesSelecionadas"
@@ -172,14 +172,14 @@
       </CardTextComponent>
 
       <CardActionsComponent class="px-6 py-4 border-t">
-        <v-spacer />
+        <SpacerComponent />
         <ButtonComponent variant="text" @click="fecharDialogAssociacao">Cancelar</ButtonComponent>
         <ButtonComponent color="primary" variant="flat" :loading="salvandoAssociacao" @click="salvarAssociacao">
           Salvar
         </ButtonComponent>
       </CardActionsComponent>
     </CardComponent>
-  </v-dialog>
+  </DialogComponent>
 
   <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
     {{ snackbar.message }}
@@ -206,6 +206,11 @@ import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
+import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
+import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
+import CheckboxItemComponent from '@/components/comuns/forms/CheckboxItemComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 
