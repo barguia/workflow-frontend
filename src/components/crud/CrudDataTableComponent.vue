@@ -14,7 +14,7 @@
     <template v-slot:top>
       <div class="table-toolbar pa-4 d-flex align-center ga-3">
         <span class="text-subtitle-1 font-weight-semibold">{{ title }}</span>
-        <v-spacer />
+        <SpacerComponent />
         <TextFieldComponent
           v-model="localSearch"
           prepend-inner-icon="mdi-magnify"
@@ -41,6 +41,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 
 const props = defineProps({
   headers: { type: Array, default: () => [] },

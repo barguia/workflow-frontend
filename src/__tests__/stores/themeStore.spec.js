@@ -3,7 +3,9 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useThemeStore, THEMES } from '@/stores/themeStore'
 
 function makeVuetifyMock() {
-  return { global: { name: { value: 'light' } } }
+  const mock = { currentTheme: 'light' }
+  mock.change = (key) => { mock.currentTheme = key }
+  return mock
 }
 
 describe('themeStore', () => {
@@ -66,7 +68,7 @@ describe('themeStore', () => {
       const store = useThemeStore()
       const vuetify = makeVuetifyMock()
       store.applyTheme('aurora', vuetify)
-      expect(vuetify.global.name.value).toBe('aurora')
+      expect(vuetify.currentTheme).toBe('aurora')
     })
 
     it('ignora temas inválidos e não altera o estado', () => {
@@ -75,7 +77,7 @@ describe('themeStore', () => {
       store.applyTheme('light', vuetify)
       store.applyTheme('tema-inexistente', vuetify)
       expect(store.currentTheme).toBe('light')
-      expect(vuetify.global.name.value).toBe('light')
+      expect(vuetify.currentTheme).toBe('light')
     })
 
     it('aplica todos os temas do array THEMES sem erro', () => {

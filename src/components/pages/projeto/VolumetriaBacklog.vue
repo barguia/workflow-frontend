@@ -32,7 +32,7 @@
             </div>
           </div>
 
-          <v-divider class="my-3" />
+          <DividerComponent class="my-3" />
 
           <div class="d-flex align-center justify-space-between">
             <div class="text-caption text-medium-emphasis">Progresso</div>
@@ -57,6 +57,7 @@ import ProgressLinearComponent from "@/components/comuns/progress/ProgressLinear
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
 import CardComponent from "@/components/comuns/cards/CardComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import api from "@/services/api.js"; "@/services/api";
 
 const dadosPainel = ref([]);
