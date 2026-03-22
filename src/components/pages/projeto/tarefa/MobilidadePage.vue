@@ -267,16 +267,13 @@ const abrirDialogAssociacao = async () => {
   mobilidadesSelecionadas.value = []
   dialogAssociacao.value = true
 
-  const [resTarefas, resAssociadas] = await Promise.all([
-    api.get('wf/tarefas'),
-    api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
-  ])
+  const resAssociadas = await api.get(`wf/tarefas-mobilidades/${tarefaId.value}`);
 
   const mobilidade = resAssociadas.data?.data ?? {}
   const destinos = mobilidade.destinos ?? []
   mobilidadesSelecionadas.value = destinos.map(t => t.id)
 
-  const todasTarefas = resTarefas.data?.data ?? []
+  const todasTarefas = mobilidade.tarefas ?? []
 
   const agrupado = {}
   todasTarefas.forEach(t => {
