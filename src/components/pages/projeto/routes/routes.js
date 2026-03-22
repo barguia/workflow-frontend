@@ -1,6 +1,6 @@
 import GestaoProjetoPage from "@/components/pages/projeto/GestaoProjetoPage.vue";
 import FichaTecnicaPage from "@/components/pages/projeto/FichaTecnicaPage.vue";
-import FichaTecnicaTarefaPage from "@/components/pages/projeto/tarefa/FichaTecnicaTarefaPage.vue";
+import FichaTecnicaTarefaPage from "@/components/pages/projeto/tarefa/ficha-tecnica/FichaTecnicaTarefaPage.vue";
 import FilaTarefaPage from "@/components/pages/projeto/FilaTarefaPage.vue";
 import MobilidadePage from "@/components/pages/projeto/tarefa/MobilidadePage.vue";
 
