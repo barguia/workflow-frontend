@@ -29,6 +29,7 @@
           :tarefa="tarefa"
           @tratamento-salvo="onTratamentoSalvo"
           @tratamento-erro="onTratamentoErro"
+          @acao-executada="onAcaoExecutada"
         />
       </template>
     </FtCabecalho>
@@ -127,6 +128,10 @@ function onTratamentoSalvo() {
 
 function onTratamentoErro() {
   snackbar.value = { show: true, message: 'Erro ao registrar tratamento.', color: 'error' }
+}
+
+function onAcaoExecutada() {
+  Promise.all([carregarFicha(), carregarTratamentos()])
 }
 
 onMounted(async () => {
