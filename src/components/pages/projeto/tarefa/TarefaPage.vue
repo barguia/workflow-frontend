@@ -89,9 +89,10 @@ const tarefaFields = [
 
 const userHeaders = [
   { title: '', value: 'preview' },
+  { title: 'Tarefa', value: 'tarefa' },
+  { title: 'Ordem', value: 'ordenacao' },
   { title: 'Workflow', value: 'workflow.workflow' },
   { title: 'Processo', value: 'processo.processo' },
-  { title: 'tarefa', value: 'tarefa' },
   { title: '', value: 'actions' },
 ]
 </script>

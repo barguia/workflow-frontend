@@ -1,5 +1,6 @@
 import GestaoProjetoPage from "@/components/pages/projeto/GestaoProjetoPage.vue";
 import FichaTecnicaPage from "@/components/pages/projeto/FichaTecnicaPage.vue";
+import FichaTecnicaTarefaPage from "@/components/pages/projeto/tarefa/ficha-tecnica/FichaTecnicaTarefaPage.vue";
 import FilaTarefaPage from "@/components/pages/projeto/FilaTarefaPage.vue";
 import MobilidadePage from "@/components/pages/projeto/tarefa/MobilidadePage.vue";
 
@@ -28,6 +29,13 @@ const routes = [
         name: 'FichaTecnica',
         component: FichaTecnicaPage,
         icon: "mdi-file-document-outline",
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/ficha-tecnica-tarefa/:id',
+        name: 'FichaTecnicaTarefa',
+        component: FichaTecnicaTarefaPage,
+        icon: "mdi-clipboard-text-outline",
         meta: { requiresAuth: true },
     },
     {
