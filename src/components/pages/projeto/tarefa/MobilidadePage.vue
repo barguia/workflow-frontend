@@ -35,13 +35,11 @@
         <RowComponent dense>
           <ColComponent cols="12" sm="4">
             <div class="field-label">Tarefa</div>
-            <div class="field-value">{{ tarefa?.tarefa ?? '—' }}</div>
-            <div class="field-value">Ordenação: {{ tarefa?.ordenacao ?? '—' }}</div>
+            <div class="field-value">Ordem: {{ tarefa?.ordenacao ?? 0 }}. {{ tarefa?.tarefa ?? '—' }}</div>
           </ColComponent>
           <ColComponent cols="12" sm="4">
             <div class="field-label">Processo</div>
-            <div class="field-value">{{ tarefa?.processo?.processo ?? '—' }}</div>
-            <div class="field-value">Ordenação: {{ tarefa?.processo?.ordenacao ?? '—' }}</div>
+            <div class="field-value">Ordem: {{ tarefa?.processo?.ordenacao ?? 0 }}. {{ tarefa?.processo?.processo ?? '—' }}</div>
           </ColComponent>
           <ColComponent cols="12" sm="4">
             <div class="field-label">Workflow</div>
@@ -71,7 +69,8 @@
               </div>
 
               <div v-for="grupo in gruposOrigens" :key="grupo.grupo" class="mb-5">
-                <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
+                <div class="grupo-titulo-pai mb-0" v-if="grupo.processo_pai">Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}</div>
+                <div class="grupo-titulo mb-1">Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
                 <DividerComponent class="mb-2" />
                 <div class="d-flex flex-wrap gap-2 mt-2">
                   <ChipComponent
@@ -82,7 +81,7 @@
                     variant="tonal"
                     class="font-weight-medium"
                   >
-                    {{ opcao.text }}
+                    Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
                   </ChipComponent>
                 </div>
               </div>
@@ -108,7 +107,8 @@
               </div>
 
               <div v-for="grupo in gruposDestinos" :key="grupo.grupo" class="mb-5">
-                <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
+                <div class="grupo-titulo-pai mb-0" v-if="grupo.processo_pai">Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}</div>
+                <div class="grupo-titulo mb-1">Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
                 <DividerComponent class="mb-2" />
                 <div class="d-flex flex-column gap-2 mt-2">
                   <div
@@ -122,22 +122,26 @@
                       variant="tonal"
                       class="font-weight-medium flex-shrink-0"
                     >
-                      {{ opcao.text }}
+                      Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
                     </ChipComponent>
-                    <SelectComponent
+                    <v-btn-toggle
                       :model-value="opcao.tipo_id"
-                      :items="tiposMobilidade"
-                      item-title="tipo"
-                      item-value="id"
-                      placeholder="Tipo"
                       density="compact"
                       variant="outlined"
-                      hide-details
-                      clearable
-                      :loading="atualizandoTipo === opcao.mobilidade_id"
-                      style="max-width: 160px; min-width: 130px"
+                      color="primary"
+                      rounded="lg"
                       @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
-                    />
+                    >
+                      <v-btn
+                        v-for="tipo in tiposMobilidade"
+                        :key="tipo.id"
+                        :value="tipo.id"
+                        size="small"
+                        :loading="atualizandoTipo === opcao.mobilidade_id"
+                      >
+                        {{ tipo.tipo }}
+                      </v-btn>
+                    </v-btn-toggle>
                   </div>
                 </div>
               </div>
@@ -151,7 +155,7 @@
   </ContainerComponent>
 
   <!-- Dialog de Associação de Tarefas -->
-  <DialogComponent v-if="dialogAssociacao" v-model="dialogAssociacao" max-width="900px" scrollable @keydown.esc="fecharDialogAssociacao">
+  <DialogComponent v-if="dialogAssociacao" v-model="dialogAssociacao" max-width="1400px" scrollable @keydown.esc="fecharDialogAssociacao">
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
         <IconComponent color="primary" size="22">mdi-link-variant</IconComponent>
@@ -167,14 +171,17 @@
             :key="grupo.grupo"
             cols="12" sm="6" md="4"
           >
-            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">{{ grupo.grupo }}</div>
+            <div class="text-subtitle-2 font-weight-bold text-medium-emphasis mb-0" v-if="grupo.processo_pai">
+              Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
+            </div>
+            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
             <DividerComponent class="mb-3" />
             <CheckboxItemComponent
               v-for="opt in grupo.options"
               :key="opt.value"
               v-model="mobilidadesSelecionadas"
               :value="opt.value"
-              :label="opt.text"
+              :label="`${opt.ordenacao}. ${opt.text}`"
               :disabled="opt.value === tarefaId"
               hide-details
               density="compact"
@@ -231,7 +238,6 @@ import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
 import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
 import CheckboxItemComponent from '@/components/comuns/forms/CheckboxItemComponent.vue'
-import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 
@@ -253,26 +259,47 @@ const snackbar = ref({ show: false, message: '', color: 'success' })
 function agruparPorProcesso(tarefas) {
   const agrupado = {}
   tarefas.forEach(t => {
-    const nomeGrupo = t.processo?.processo ?? t.processo ?? 'Sem processo'
-    if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
-    agrupado[nomeGrupo].push({ value: t.id, text: t.tarefa })
+    const nomeGrupo = t.processo?.processo ?? 'Sem processo'
+    if (!agrupado[nomeGrupo]) {
+      agrupado[nomeGrupo] = {
+        grupo:        nomeGrupo,
+        processo_pai: t.processo?.processo_pai?.processo ?? null,
+        ordenacao_pai: t.processo?.processo_pai?.ordenacao ?? 0,
+        ordenacao:    t.processo?.ordenacao ?? 0,
+        options:      [],
+      }
+    }
+    agrupado[nomeGrupo].options.push({ value: t.id, text: t.tarefa, ordenacao: t.ordenacao ?? 0 })
   })
-  return Object.entries(agrupado).map(([grupo, options]) => ({ grupo, options }))
+  return Object.values(agrupado)
+    .sort((a, b) => a.ordenacao_pai - b.ordenacao_pai || a.ordenacao - b.ordenacao)
+    .map(g => ({ ...g, options: g.options.sort((a, b) => a.ordenacao - b.ordenacao) }))
 }
 
 function agruparDestinosPorProcesso(destinos) {
   const agrupado = {}
   destinos.forEach(t => {
-    const nomeGrupo = t.processo?.processo ?? t.processo ?? 'Sem processo'
-    if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
-    agrupado[nomeGrupo].push({
+    const nomeGrupo = t.processo?.processo ?? 'Sem processo'
+    if (!agrupado[nomeGrupo]) {
+      agrupado[nomeGrupo] = {
+        grupo:        nomeGrupo,
+        processo_pai: t.processo?.processo_pai?.processo ?? null,
+        ordenacao_pai: t.processo?.processo_pai?.ordenacao ?? 0,
+        ordenacao:    t.processo?.ordenacao ?? 0,
+        options:      [],
+      }
+    }
+    agrupado[nomeGrupo].options.push({
       value:         t.id,
       text:          t.tarefa,
+      ordenacao:     t.ordenacao ?? 0,
       mobilidade_id: t.pivot?.id ?? null,
       tipo_id:       t.pivot?.ctrl_mobilidade_tipo_id ?? null,
     })
   })
-  return Object.entries(agrupado).map(([grupo, options]) => ({ grupo, options }))
+  return Object.values(agrupado)
+    .sort((a, b) => a.ordenacao_pai - b.ordenacao_pai || a.ordenacao - b.ordenacao)
+    .map(g => ({ ...g, options: g.options.sort((a, b) => a.ordenacao - b.ordenacao) }))
 }
 
 async function atualizarTipo(mobilidadeId, tipoId) {
@@ -333,12 +360,20 @@ const abrirDialogAssociacao = async () => {
   const agrupado = {}
   todasTarefas.forEach(t => {
     const nomeGrupo = t.processo?.processo ?? 'Sem processo'
-    if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
-    agrupado[nomeGrupo].push({ value: t.id, text: t.tarefa })
+    if (!agrupado[nomeGrupo]) {
+      agrupado[nomeGrupo] = {
+        grupo:         nomeGrupo,
+        processo_pai:  t.processo?.processo_pai?.processo ?? null,
+        ordenacao_pai: t.processo?.processo_pai?.ordenacao ?? 0,
+        ordenacao:     t.processo?.ordenacao ?? 0,
+        options:       [],
+      }
+    }
+    agrupado[nomeGrupo].options.push({ value: t.id, text: t.tarefa, ordenacao: t.ordenacao ?? 0 })
   })
-  gruposAssociacao.value = Object.entries(agrupado)
-    .map(([grupo, options]) => ({ grupo, options }))
-    .sort((a, b) => a.grupo.localeCompare(b.grupo))
+  gruposAssociacao.value = Object.values(agrupado)
+    .sort((a, b) => a.ordenacao_pai - b.ordenacao_pai || a.ordenacao - b.ordenacao)
+    .map(g => ({ ...g, options: g.options.sort((a, b) => a.ordenacao - b.ordenacao) }))
 }
 
 const salvarAssociacao = async () => {
@@ -384,6 +419,14 @@ onMounted(carregar)
 
 .painel-header {
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.grupo-titulo-pai {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  opacity: 0.45;
 }
 
 .grupo-titulo {
