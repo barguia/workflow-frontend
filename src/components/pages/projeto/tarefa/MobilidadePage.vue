@@ -29,6 +29,54 @@
       </ButtonComponent>
     </div>
 
+    <!-- Funil de navegação entre tarefas -->
+    <CardComponent rounded="xl" variant="outlined" class="mb-4">
+      <CardTextComponent class="pa-3">
+        <div class="text-caption text-medium-emphasis mb-2 d-flex align-center gap-1">
+          <IconComponent size="14">mdi-swap-horizontal</IconComponent>
+          Navegar para outra tarefa
+        </div>
+        <RowComponent dense>
+          <ColComponent cols="12" sm="4">
+            <SelectComponent
+              v-model="funilMacro"
+              :items="opsMacro"
+              item-title="nome"
+              item-value="id"
+              label="Macro processo"
+              clearable
+              hide-details
+              density="compact"
+            />
+          </ColComponent>
+          <ColComponent cols="12" sm="4">
+            <SelectComponent
+              v-model="funilProcesso"
+              :items="opsProcesso"
+              item-title="nome"
+              item-value="id"
+              label="Processo"
+              clearable
+              hide-details
+              density="compact"
+            />
+          </ColComponent>
+          <ColComponent cols="12" sm="4">
+            <SelectComponent
+              v-model="funilTarefa"
+              :items="opsTarefa"
+              item-title="nome"
+              item-value="id"
+              label="Selecionar tarefa"
+              clearable
+              hide-details
+              density="compact"
+            />
+          </ColComponent>
+        </RowComponent>
+      </CardTextComponent>
+    </CardComponent>
+
     <!-- Detalhes da tarefa -->
     <CardComponent rounded="xl" variant="elevated" class="mb-4">
       <CardTextComponent class="pa-4">
@@ -72,17 +120,17 @@
                 <div class="grupo-titulo-pai mb-0" v-if="grupo.processo_pai">Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}</div>
                 <div class="grupo-titulo mb-1">Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
                 <DividerComponent class="mb-2" />
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                  <ChipComponent
-                    v-for="opcao in grupo.options"
-                    :key="opcao.value"
-                    color="success"
-                    size="small"
-                    variant="tonal"
-                    class="font-weight-medium"
-                  >
-                    Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
-                  </ChipComponent>
+                <div class="d-flex flex-column gap-2 mt-2">
+                  <div v-for="opcao in grupo.options" :key="opcao.value">
+                    <ChipComponent
+                      color="success"
+                      size="small"
+                      variant="tonal"
+                      class="font-weight-medium"
+                    >
+                      Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
+                    </ChipComponent>
+                  </div>
                 </div>
               </div>
             </div>
@@ -110,17 +158,18 @@
                 <div class="grupo-titulo-pai mb-0" v-if="grupo.processo_pai">Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}</div>
                 <div class="grupo-titulo mb-1">Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
                 <DividerComponent class="mb-2" />
-                <div class="d-flex flex-column gap-2 mt-2">
+                <div class="d-flex flex-column mt-2">
                   <div
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
-                    class="d-flex align-center gap-2"
+                    class="d-flex align-center gap-4 mb-3"
                   >
                     <ChipComponent
                       color="primary"
                       size="small"
                       variant="tonal"
-                      class="font-weight-medium flex-shrink-0"
+                      class="font-weight-medium flex-grow-1"
+                      style="min-width: 0"
                     >
                       Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
                     </ChipComponent>
@@ -128,15 +177,16 @@
                       :model-value="opcao.tipo_id"
                       density="compact"
                       variant="outlined"
-                      color="primary"
                       rounded="lg"
+                      class="flex-shrink-0"
                       @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
                     >
                       <v-btn
                         v-for="tipo in tiposMobilidade"
                         :key="tipo.id"
                         :value="tipo.id"
-                        size="small"
+                        size="x-small"
+                        :color="corTipo(tipo.tipo)"
                         :loading="atualizandoTipo === opcao.mobilidade_id"
                       >
                         {{ tipo.tipo }}
@@ -219,7 +269,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import api from '@/services/api.js'
@@ -238,6 +288,7 @@ import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
 import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
 import CheckboxItemComponent from '@/components/comuns/forms/CheckboxItemComponent.vue'
+import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 
@@ -249,12 +300,83 @@ const tarefaId = computed(() => Number(route.params.id))
 const carregando = ref(true)
 
 const tarefa           = ref(null)
-const gruposDestinos   = ref([])   // tarefas para onde esta tarefa pode ir
-const gruposOrigens    = ref([])   // tarefas de onde esta tarefa pode vir
+const gruposDestinos   = ref([])
+const gruposOrigens    = ref([])
 const tiposMobilidade  = ref([])
-const atualizandoTipo  = ref(null) // mobilidade_id sendo atualizado
+const todasTarefas     = ref([])
+const atualizandoTipo  = ref(null)
 
 const snackbar = ref({ show: false, message: '', color: 'success' })
+
+// --- Funil de navegação ---
+const funilMacro    = ref(null)
+const funilProcesso = ref(null)
+const funilTarefa   = ref(null)
+
+const opsMacro = computed(() => {
+  const map = {}
+  todasTarefas.value.forEach(t => {
+    const pai = t.processo?.processo_pai
+    if (pai && !map[pai.id]) {
+      map[pai.id] = { id: pai.id, nome: `${pai.ordenacao}. ${pai.processo}`, ordenacao: pai.ordenacao ?? 0 }
+    }
+  })
+  return Object.values(map).sort((a, b) => a.ordenacao - b.ordenacao)
+})
+
+const opsProcesso = computed(() => {
+  const map = {}
+  todasTarefas.value
+    .filter(t => !funilMacro.value || t.processo?.ctrl_processo_id === funilMacro.value)
+    .forEach(t => {
+      const p = t.processo
+      if (p && !map[p.id]) {
+        map[p.id] = { id: p.id, nome: `${p.ordenacao}. ${p.processo}`, ordenacao: p.ordenacao ?? 0 }
+      }
+    })
+  return Object.values(map).sort((a, b) => a.ordenacao - b.ordenacao)
+})
+
+const opsTarefa = computed(() => {
+  return todasTarefas.value
+    .filter(t => {
+      if (funilProcesso.value) return t.ctrl_processo_id === funilProcesso.value
+      if (funilMacro.value)    return t.processo?.ctrl_processo_id === funilMacro.value
+      return true
+    })
+    .sort((a, b) => {
+      const dPai  = (a.processo?.processo_pai?.ordenacao ?? 0) - (b.processo?.processo_pai?.ordenacao ?? 0)
+      const dProc = (a.processo?.ordenacao ?? 0) - (b.processo?.ordenacao ?? 0)
+      const dTar  = (a.ordenacao ?? 0) - (b.ordenacao ?? 0)
+      return dPai || dProc || dTar
+    })
+    .map(t => ({
+      id:   t.id,
+      nome: funilProcesso.value
+        ? `${t.ordenacao}. ${t.tarefa}`
+        : `${t.processo?.processo} › ${t.ordenacao}. ${t.tarefa}`,
+    }))
+})
+
+watch(funilMacro, () => {
+  funilProcesso.value = null
+  funilTarefa.value   = null
+})
+
+watch(funilProcesso, () => {
+  funilTarefa.value = null
+})
+
+watch(funilTarefa, (id) => {
+  if (id && id !== tarefaId.value) {
+    router.push({ name: route.name, params: { id } })
+  }
+})
+
+watch(tarefaId, () => {
+  funilTarefa.value = null
+  carregar()
+})
 
 function agruparPorProcesso(tarefas) {
   const agrupado = {}
@@ -302,6 +424,12 @@ function agruparDestinosPorProcesso(destinos) {
     .map(g => ({ ...g, options: g.options.sort((a, b) => a.ordenacao - b.ordenacao) }))
 }
 
+function corTipo(tipoNome) {
+  if (tipoNome === 'Avanço')    return 'success'
+  if (tipoNome === 'Devolução') return 'error'
+  return 'primary'
+}
+
 async function atualizarTipo(mobilidadeId, tipoId) {
   if (!mobilidadeId) return
   atualizandoTipo.value = mobilidadeId
@@ -330,6 +458,11 @@ async function carregar() {
     }
 
     const mobilidade = resMobilidades.data?.data ?? {}
+
+    if (!todasTarefas.value.length) {
+      todasTarefas.value = mobilidade.tarefas ?? []
+    }
+
     gruposDestinos.value = agruparDestinosPorProcesso(mobilidade.destinos ?? [])
     gruposOrigens.value  = agruparPorProcesso(mobilidade.origens  ?? [])
 
