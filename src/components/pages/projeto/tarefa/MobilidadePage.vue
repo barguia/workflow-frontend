@@ -36,10 +36,12 @@
           <ColComponent cols="12" sm="4">
             <div class="field-label">Tarefa</div>
             <div class="field-value">{{ tarefa?.tarefa ?? '—' }}</div>
+            <div class="field-value">Ordenação: {{ tarefa?.ordenacao ?? '—' }}</div>
           </ColComponent>
           <ColComponent cols="12" sm="4">
             <div class="field-label">Processo</div>
             <div class="field-value">{{ tarefa?.processo?.processo ?? '—' }}</div>
+            <div class="field-value">Ordenação: {{ tarefa?.processo?.ordenacao ?? '—' }}</div>
           </ColComponent>
           <ColComponent cols="12" sm="4">
             <div class="field-label">Workflow</div>
@@ -108,17 +110,35 @@
               <div v-for="grupo in gruposDestinos" :key="grupo.grupo" class="mb-5">
                 <div class="grupo-titulo mb-1">{{ grupo.grupo }}</div>
                 <DividerComponent class="mb-2" />
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                  <ChipComponent
+                <div class="d-flex flex-column gap-2 mt-2">
+                  <div
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
-                    color="primary"
-                    size="small"
-                    variant="tonal"
-                    class="font-weight-medium"
+                    class="d-flex align-center gap-2"
                   >
-                    {{ opcao.text }}
-                  </ChipComponent>
+                    <ChipComponent
+                      color="primary"
+                      size="small"
+                      variant="tonal"
+                      class="font-weight-medium flex-shrink-0"
+                    >
+                      {{ opcao.text }}
+                    </ChipComponent>
+                    <SelectComponent
+                      :model-value="opcao.tipo_id"
+                      :items="tiposMobilidade"
+                      item-title="tipo"
+                      item-value="id"
+                      placeholder="Tipo"
+                      density="compact"
+                      variant="outlined"
+                      hide-details
+                      clearable
+                      :loading="atualizandoTipo === opcao.mobilidade_id"
+                      style="max-width: 160px; min-width: 130px"
+                      @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -211,6 +231,7 @@ import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
 import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
 import CheckboxItemComponent from '@/components/comuns/forms/CheckboxItemComponent.vue'
+import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 
@@ -221,9 +242,11 @@ const tarefaId = computed(() => Number(route.params.id))
 
 const carregando = ref(true)
 
-const tarefa         = ref(null)
-const gruposDestinos = ref([])   // tarefas para onde esta tarefa pode ir
-const gruposOrigens  = ref([])   // tarefas de onde esta tarefa pode vir
+const tarefa           = ref(null)
+const gruposDestinos   = ref([])   // tarefas para onde esta tarefa pode ir
+const gruposOrigens    = ref([])   // tarefas de onde esta tarefa pode vir
+const tiposMobilidade  = ref([])
+const atualizandoTipo  = ref(null) // mobilidade_id sendo atualizado
 
 const snackbar = ref({ show: false, message: '', color: 'success' })
 
@@ -237,18 +260,50 @@ function agruparPorProcesso(tarefas) {
   return Object.entries(agrupado).map(([grupo, options]) => ({ grupo, options }))
 }
 
+function agruparDestinosPorProcesso(destinos) {
+  const agrupado = {}
+  destinos.forEach(t => {
+    const nomeGrupo = t.processo?.processo ?? t.processo ?? 'Sem processo'
+    if (!agrupado[nomeGrupo]) agrupado[nomeGrupo] = []
+    agrupado[nomeGrupo].push({
+      value:         t.id,
+      text:          t.tarefa,
+      mobilidade_id: t.pivot?.id ?? null,
+      tipo_id:       t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+    })
+  })
+  return Object.entries(agrupado).map(([grupo, options]) => ({ grupo, options }))
+}
+
+async function atualizarTipo(mobilidadeId, tipoId) {
+  if (!mobilidadeId) return
+  atualizandoTipo.value = mobilidadeId
+  try {
+    await api.put(`wf/mobilidades/${mobilidadeId}`, { ctrl_mobilidade_tipo_id: tipoId })
+    snackbar.value = { show: true, message: 'Tipo de mobilidade atualizado!', color: 'success' }
+    await carregar()
+  } finally {
+    atualizandoTipo.value = null
+  }
+}
+
 async function carregar() {
   carregando.value = true
   try {
-    const [resTarefa, resDestinos] = await Promise.all([
+    const [resTarefa, resMobilidades, resTipos] = await Promise.all([
       api.get(`wf/tarefas/${tarefaId.value}`),
       api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
+      tiposMobilidade.value.length ? Promise.resolve(null) : api.get('wf/mobilidades-tipos'),
     ])
 
     tarefa.value = resTarefa.data?.data ?? null
 
-    const mobilidade = resDestinos.data?.data ?? {}
-    gruposDestinos.value = agruparPorProcesso(mobilidade.destinos ?? [])
+    if (resTipos) {
+      tiposMobilidade.value = resTipos.data?.data ?? []
+    }
+
+    const mobilidade = resMobilidades.data?.data ?? {}
+    gruposDestinos.value = agruparDestinosPorProcesso(mobilidade.destinos ?? [])
     gruposOrigens.value  = agruparPorProcesso(mobilidade.origens  ?? [])
 
   } finally {
