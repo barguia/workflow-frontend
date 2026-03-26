@@ -181,7 +181,7 @@
                       class="flex-shrink-0"
                       @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
                     >
-                      <v-btn
+                      <ButtonComponent
                         v-for="tipo in tiposMobilidade"
                         :key="tipo.id"
                         :value="tipo.id"
@@ -190,7 +190,7 @@
                         :loading="atualizandoTipo === opcao.mobilidade_id"
                       >
                         {{ tipo.tipo }}
-                      </v-btn>
+                      </ButtonComponent>
                     </v-btn-toggle>
                   </div>
                 </div>
