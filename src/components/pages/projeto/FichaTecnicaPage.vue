@@ -196,6 +196,18 @@
             </div>
           </template>
 
+          <template #item.actions="{ item }">
+            <ButtonComponent
+              icon="mdi-clipboard-text-outline"
+              variant="text"
+              size="small"
+              color="primary"
+              :href="`/ficha-tecnica-tarefa/${item.pco_tarefa_id}`"
+              target="_blank"
+              title="Ficha técnica da tarefa"
+            />
+          </template>
+
           <template #item.status="{ item }">
             <ChipComponent size="small" variant="tonal" color="primary">
               {{ item.status ?? '—' }}
@@ -249,6 +261,7 @@ const buscaTarefa      = ref('')
 const totalTarefas = computed(() => tarefas.value.length)
 
 const headersTarefas = [
+  { title: '',        value: 'actions' },
   { title: 'Id',     value: 'pco_tarefa_id',    sortable: true },
   { title: 'Tarefa',     value: 'tarefa',    sortable: true },
   { title: 'Processo',   value: 'processo',  sortable: true },

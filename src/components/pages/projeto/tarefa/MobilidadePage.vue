@@ -8,13 +8,12 @@
 
     <!-- Cabeçalho -->
     <div class="d-flex align-center gap-3 mb-4">
-      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" />
       <div>
         <div class="d-flex align-center gap-2">
           <IconComponent color="primary" size="20">mdi-transit-connection-variant</IconComponent>
           <span class="text-h6 font-weight-bold">Mobilidade da Tarefa</span>
         </div>
-        <div v-if="tarefa" class="text-caption text-medium-emphasis mt-1">
+        <div v-if="tarefa" class="text-h5 font-weight-bold text-medium-emphasis mt-1">
           {{ tarefa.tarefa }} · {{ tarefa.processo?.processo }}
         </div>
       </div>
@@ -173,7 +172,18 @@
                     >
                       Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
                     </ChipComponent>
+                    <ChipComponent
+                      v-if="opcao.is_interrupcao"
+                      color="warning"
+                      size="small"
+                      variant="tonal"
+                      class="flex-shrink-0 font-weight-medium"
+                    >
+                      <IconComponent start size="14">mdi-lightning-bolt</IconComponent>
+                      Interrupção
+                    </ChipComponent>
                     <v-btn-toggle
+                      v-else
                       :model-value="opcao.tipo_id"
                       density="compact"
                       variant="outlined"
@@ -412,11 +422,12 @@ function agruparDestinosPorProcesso(destinos) {
       }
     }
     agrupado[nomeGrupo].options.push({
-      value:         t.id,
-      text:          t.tarefa,
-      ordenacao:     t.ordenacao ?? 0,
-      mobilidade_id: t.pivot?.id ?? null,
-      tipo_id:       t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      value:          t.id,
+      text:           t.tarefa,
+      ordenacao:      t.ordenacao ?? 0,
+      mobilidade_id:  t.pivot?.id ?? null,
+      tipo_id:        t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      is_interrupcao: t.tipo_tarefa?.tipo === 'Interrupção',
     })
   })
   return Object.values(agrupado)
