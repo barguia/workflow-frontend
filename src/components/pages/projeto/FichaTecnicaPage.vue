@@ -249,8 +249,9 @@ const buscaTarefa      = ref('')
 const totalTarefas = computed(() => tarefas.value.length)
 
 const headersTarefas = [
+  { title: 'Id',     value: 'pco_tarefa_id',    sortable: true },
+  { title: 'Tarefa',     value: 'tarefa',    sortable: true },
   { title: 'Processo',   value: 'processo',  sortable: true },
-  { title: 'tarefa',     value: 'tarefa',    sortable: true },
   { title: 'Status',     value: 'status',    sortable: true },
   { title: 'Responsável', value: 'responsavel', sortable: true },
 ]
@@ -295,7 +296,7 @@ async function buscarTarefas() {
   carregandoTarefas.value = true
   try {
     const payload = {
-      modo:          modoTarefas.value,
+      finalizados:          modoTarefas.value === 'finalizados',
       pco_projeto_id: [projeto.value.id],
       ctrl_workflow_id: [projeto.value.workflow.ctrl_workflow_id],
     }

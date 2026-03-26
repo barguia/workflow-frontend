@@ -131,11 +131,22 @@
         </div>
 
         <SelectComponent
-          v-model="form.ctrl_status_id"
-          label="Status"
-          :items="opcoesStatus"
-          :loading="carregandoStatus"
-          :rules="[v => !!v || 'Status é obrigatório']"
+          v-model="form.tratamento_id"
+          label="Tratamento"
+          :items="opcoesTratamento"
+          :loading="carregandoTratamentos"
+          :rules="[v => !!v || 'Tratamento é obrigatório']"
+          clearable
+          class="mb-4"
+          @update:model-value="form.ctrl_tarefa_destino_id = null"
+        />
+
+        <SelectComponent
+          v-if="tarefasDoTratamento.length > 0"
+          v-model="form.ctrl_tarefa_destino_id"
+          label="Tarefa Destino"
+          :items="tarefasDoTratamento"
+          :rules="[v => !!v || 'Tarefa destino é obrigatória']"
           clearable
           class="mb-4"
         />
@@ -159,7 +170,7 @@
           color="primary"
           variant="flat"
           :loading="salvando"
-          :disabled="!form.ctrl_status_id"
+          :disabled="!form.tratamento_id || (tarefasDoTratamento.length > 0 && !form.ctrl_tarefa_destino_id)"
           @click="salvar"
         >
           Salvar
@@ -170,7 +181,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 import api from '@/services/api.js'
 import { useCrud } from '@/services/useCrud.js'
@@ -263,39 +274,81 @@ async function executarAcao(acao) {
 }
 
 // --- Registrar Tratamento ---
-const dialog          = ref(false)
-const salvando        = ref(false)
-const carregandoStatus = ref(false)
-const opcoesStatus    = ref([])
-const form = ref({ ctrl_status_id: null, comentario: '' })
+const dialog               = ref(false)
+const salvando             = ref(false)
+const carregandoStatus     = ref(false)
+const carregandoTratamentos = ref(false)
+
+const todosTratamentos     = ref([])
+const tarefasDisponiveisGrupos = ref({})
+
+// Mapeamento: acao_sistemica → chave do grupo em tarefas-disponiveis
+const ACAO_TO_GRUPO = {
+  AVANÇAR:    'Avanço',
+  RETROCEDER: 'Devolução',
+  INTERROMPER: 'Interromper',
+}
+
+// Só exibe tratamentos que têm tarefas configuradas
+const opcoesTratamento = computed(() =>
+  todosTratamentos.value
+    .filter(t => {
+      const grupo = ACAO_TO_GRUPO[t.acao_sistemica]
+      return grupo && (tarefasDisponiveisGrupos.value[grupo]?.length ?? 0) > 0
+    })
+    .map(t => ({ value: t.id, text: t.tratamento }))
+)
+
+// Tarefas do tratamento selecionado
+const tarefasDoTratamento = computed(() => {
+  const tratamento = todosTratamentos.value.find(t => t.id === form.value.tratamento_id)
+  if (!tratamento) return []
+  const grupo = ACAO_TO_GRUPO[tratamento.acao_sistemica]
+  const tarefas = grupo ? (tarefasDisponiveisGrupos.value[grupo] ?? []) : []
+  return tarefas.map(t => {
+    return { value: t.id, text: t.tarefa }
+  })
+})
+
+const form = ref({ tratamento_id: null, ctrl_tarefa_destino_id: null, ctrl_status_id: null, comentario: '' })
 
 async function abrirDialog() {
-  form.value = { ctrl_status_id: null, comentario: '' }
+  form.value = { tratamento_id: null, ctrl_tarefa_destino_id: null, ctrl_status_id: null, comentario: '' }
   dialog.value = true
 
-  if (opcoesStatus.value.length === 0) {
-    carregandoStatus.value = true
-    try {
-      const data = await fetchStatus()
-      opcoesStatus.value = (data ?? []).map(s => ({ value: s.id, text: s.status ?? String(s.id) }))
-    } finally {
-      carregandoStatus.value = false
-    }
-  }
+  const promises = []
+
+  carregandoTratamentos.value = true
+  promises.push(
+    Promise.all([
+      api.get('wf/get-tratamentos'),
+      api.get(`wf/tratamento/tarefas-disponiveis/${props.tarefa.pco_tarefa_id}`),
+    ])
+      .then(([resTratamentos, resTarefas]) => {
+        todosTratamentos.value = resTratamentos.data?.data ?? []
+        tarefasDisponiveisGrupos.value = resTarefas.data?.data ?? {}
+      })
+      .finally(() => { carregandoTratamentos.value = false })
+  )
+
+  await Promise.all(promises)
 }
 
 function fecharDialog() {
   dialog.value = false
-  setTimeout(() => { form.value = { ctrl_status_id: null, comentario: '' } }, 300)
+  setTimeout(() => {
+    form.value = { tratamento_id: null, ctrl_tarefa_destino_id: null, ctrl_status_id: null, comentario: '' }
+  }, 300)
 }
 
 async function salvar() {
   salvando.value = true
   try {
-    await api.post('wf/tratamentos', {
-      pco_tarefa_id:  props.tarefa.pco_tarefa_id,
-      ctrl_status_id: form.value.ctrl_status_id,
-      comentario:     form.value.comentario || null,
+    await api.post('wf/tratamento/concluir', {
+      pco_tarefa_id:      props.tarefa.pco_tarefa_id,
+      ctrl_tratamento_id: form.value.tratamento_id,
+      ctrl_tarefa_id:     form.value.ctrl_tarefa_destino_id || null,
+      descricao: form.value.comentario || null
     })
     fecharDialog()
     emit('tratamento-salvo')
