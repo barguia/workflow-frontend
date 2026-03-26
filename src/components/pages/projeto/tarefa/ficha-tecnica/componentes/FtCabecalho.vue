@@ -27,13 +27,13 @@
         <span>Projeto #{{ tarefa.pco_projeto_id }}</span>
         <span class="text-medium-emphasis">·</span>
         <span>
-          <v-icon size="13" class="mr-1">mdi-calendar-plus-outline</v-icon>
+          <IconComponent size="13" class="mr-1">mdi-calendar-plus-outline</IconComponent>
           {{ formatarDataHora(tarefa.created_at) }}
         </span>
         <template v-if="tarefa.finalized_at">
           <span class="text-medium-emphasis">·</span>
           <span class="text-success">
-            <v-icon size="13" class="mr-1">mdi-calendar-check-outline</v-icon>
+            <IconComponent size="13" class="mr-1">mdi-calendar-check-outline</IconComponent>
             Fechado em {{ formatarDataHora(tarefa.finalized_at) }}
           </span>
         </template>
@@ -43,7 +43,7 @@
           size="x-small"
           variant="tonal"
         >
-          <v-icon start size="12">mdi-clock-outline</v-icon>
+          <IconComponent start size="12">mdi-clock-outline</IconComponent>
           Aging: {{ tarefa.aging_workflow ?? 0 }}d
         </ChipComponent>
       </div>
@@ -58,6 +58,7 @@
 <script setup>
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 
 defineProps({

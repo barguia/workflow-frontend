@@ -112,7 +112,7 @@ async function carregarFicha() {
 async function carregarTratamentos() {
   carregandoTratamentos.value = true
   try {
-    const res = await api.get(`wf/pco-tarefas/${route.params.id}/tratamentos`)
+    const res = await api.get(`wf/tratamento/get-log-tratamentos/${tarefa.value.pco_workflow_id}`)
     tratamentos.value = res.data?.data ?? []
   } catch {
     tratamentos.value = []
