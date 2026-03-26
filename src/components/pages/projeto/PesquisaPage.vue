@@ -158,6 +158,16 @@
 
           <template #item.actions="{ item }">
             <ButtonComponent
+              icon="mdi-clipboard-text-outline"
+              variant="text"
+              size="small"
+              color="primary"
+              :href="`/ficha-tecnica-tarefa/${item.pco_tarefa_id}`"
+              target="_blank"
+              title="Ficha técnica da tarefa"
+            />
+
+            <ButtonComponent
               icon="mdi-eye-outline"
               variant="text"
               size="small"
@@ -253,11 +263,11 @@ const buscaLocal  = ref('')
 
 const headersResultado = [
   { title: '',               value: 'actions',        sortable: false },
-  { title: 'Projeto',        value: 'projeto',        sortable: true },
-  { title: 'Macro Processo', value: 'macro_processo', sortable: true },
-  { title: 'Processo',       value: 'processo',       sortable: true },
+  { title: 'Projeto',        value: 'projeto_nome',   sortable: true },
   { title: 'tarefa',         value: 'tarefa',         sortable: true },
-  { title: 'Status',         value: 'status',         sortable: true },
+  { title: 'Status',         value: 'status_tarefa',  sortable: true },
+  { title: 'Processo',       value: 'processo',       sortable: true },
+  { title: 'Macro Processo', value: 'macro_processo', sortable: true },
 ]
 
 async function carregarOpcoes() {
