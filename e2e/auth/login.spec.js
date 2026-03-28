@@ -1,0 +1,38 @@
+import { test, expect } from '@playwright/test'
+
+// Estes testes NÃO usam storageState — testam o fluxo de login em si
+test.use({ storageState: { cookies: [], origins: [] } })
+
+test.describe('Login', () => {
+  test('exibe a página de login', async ({ page }) => {
+    await page.goto('/login')
+    await expect(page.getByRole('button', { name: 'Efetuar Login' })).toBeVisible()
+  })
+
+  test('redireciona para home após login válido', async ({ page }) => {
+    const email    = process.env.E2E_EMAIL    ?? 'admin@admin.com'
+    const password = process.env.E2E_PASSWORD ?? 'password'
+
+    await page.goto('/login')
+    await page.getByLabel('Email').fill(email)
+    await page.getByLabel('Senha').fill(password)
+    await page.getByRole('button', { name: 'Efetuar Login' }).click()
+
+    await page.waitForURL('/')
+    await expect(page).toHaveURL('/')
+  })
+
+  test('permanece na página de login com credenciais inválidas', async ({ page }) => {
+    await page.goto('/login')
+    await page.getByLabel('Email').fill('invalido@teste.com')
+    await page.getByLabel('Senha').fill('senha_errada')
+    await page.getByRole('button', { name: 'Efetuar Login' }).click()
+
+    await expect(page).toHaveURL('/login')
+  })
+
+  test('redireciona para /login ao acessar rota protegida sem autenticação', async ({ page }) => {
+    await page.goto('/')
+    await expect(page).toHaveURL('/login')
+  })
+})
