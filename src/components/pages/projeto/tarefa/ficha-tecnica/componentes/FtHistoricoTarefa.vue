@@ -79,7 +79,27 @@
               >
                 {{ item.tratamento }}
               </ChipComponent>
-              <span class="text-body-2 font-weight-medium">{{ item.tarefa }}</span>
+              <ChipComponent
+                v-if="item.tarefa_destino"
+                size="small"
+                color="primary"
+                variant="tonal"
+                class="font-weight-medium"
+              >
+                <span class="text-body-2 font-weight-medium" v-if="item.tarefa_destino">De: </span>
+                <span class="text-body-2 font-weight-medium">{{ item.tarefa }}</span>
+              </ChipComponent>
+
+
+              <ChipComponent
+                v-if="item.tarefa_destino"
+                size="small"
+                color="success"
+                variant="tonal"
+                class="font-weight-medium"
+              >
+                <span class="text-body-1 font-weight-medium">Para:</span> {{ item.tarefa_destino }}
+              </ChipComponent>
             </div>
 
             <div class="text-caption text-medium-emphasis mb-1">
