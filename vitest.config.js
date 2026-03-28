@@ -11,6 +11,7 @@ export default defineConfig({
         url: 'http://localhost/',
       },
     },
+    include: ['src/**/*.{test,spec}.{js,ts}'],
     setupFiles: ['src/__tests__/setup.js'],
     globals: true,
   },
