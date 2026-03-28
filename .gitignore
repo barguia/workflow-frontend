@@ -32,3 +32,6 @@ coverage
 .env
 .env.production
 .env.development
+e2e/.auth/state.json
+playwright-report/
+test-results/
