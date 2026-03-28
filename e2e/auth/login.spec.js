@@ -32,7 +32,7 @@ test.describe('Login', () => {
   })
 
   test('redireciona para /login ao acessar rota protegida sem autenticação', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('adm/administracao#adm')
     await expect(page).toHaveURL('/login')
   })
 })
