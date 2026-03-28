@@ -91,7 +91,7 @@ const telas = markRaw([
     id: 'backlog',
     title: 'Backlog',
     icon: 'mdi-chart-bar',
-    componente: defineAsyncComponent(() => import('./VolumetriaBacklog.vue')),
+    componente: defineAsyncComponent(() => import('./volumetria/VolumetriaPainel.vue')),
   },
 ])
 
