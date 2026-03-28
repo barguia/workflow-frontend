@@ -5,6 +5,7 @@
       :fields="tarefaFields"
       :headers="userHeaders"
       :show-select="false"
+      data-testid="tarefa-crud"
   >
     <template #previewField="{ item }">
       <ButtonComponent
@@ -14,6 +15,7 @@
         color="secondary"
         :href="`/fila-tarefa/${item.id}`"
         target="_blank"
+        data-testid="tarefa-btn-fila"
       />
     </template>
     <template #actionsField="{ item }">
@@ -24,6 +26,7 @@
         color="primary"
         :href="`/mobilidade-tarefa/${item.id}`"
         target="_blank"
+        data-testid="tarefa-btn-mobilidade"
       />
     </template>
   </CrudComponent>

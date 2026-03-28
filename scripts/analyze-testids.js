@@ -66,10 +66,16 @@ function findInteractiveElements(template) {
       const openTag = new RegExp(`<${tag}(\\s|>|/)`)
       if (!openTag.test(lines[i])) continue
 
-      // Coleta linhas até fechar o elemento de abertura (>)
+      // Coleta linhas até fechar o elemento de abertura.
+      // Usa linha que (após trim) seja apenas ">" ou "/>" para indicar fim da tag,
+      // evitando parar em "=>" dentro de atributos.
       let tagContent = lines[i]
       let j = i
-      while (j < lines.length - 1 && !tagContent.includes('>')) {
+      const MAX_LINES = 25
+      while (j < lines.length - 1 && j - i < MAX_LINES) {
+        const trimmed = lines[j].trim()
+        if (trimmed === '>' || trimmed === '/>') break
+        if (j > i && /^[^"'`]*>/.test(trimmed) && !trimmed.includes('=>')) break
         j++
         tagContent += ' ' + lines[j]
       }
@@ -77,7 +83,7 @@ function findInteractiveElements(template) {
       results.push({
         tag,
         line: i + 1,
-        hasTestId: tagContent.includes('data-testid'),
+        hasTestId: tagContent.includes('data-testid') || tagContent.includes(':data-testid'),
         snippet: lines[i].trim().slice(0, 70),
       })
     }

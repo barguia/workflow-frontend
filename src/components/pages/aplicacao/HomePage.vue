@@ -10,7 +10,7 @@
           <p class="text-h6 mb-6 opacity-90">
             O sistema completo para gestão inteligente de fluxos de trabalho
           </p>
-          <ButtonComponent size="large" color="white" variant="flat" class="text-primary">
+          <ButtonComponent size="large" color="white" variant="flat" class="text-primary" data-testid="home-btn-explorar">
             Explorar Recursos
           </ButtonComponent>
         </div>

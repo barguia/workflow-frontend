@@ -53,6 +53,7 @@ async function enviaEmail () {
                 prepend-inner-icon="mdi-email"
                 required
                 class="mb-4"
+                data-testid="forgot-input-email"
               />
 
               <RowComponent justify="space-between" class="mb-4">
@@ -61,6 +62,7 @@ async function enviaEmail () {
                       variant="text"
                       color="primary"
                       @click="enviaEmail()"
+                      data-testid="forgot-btn-continuar"
                   >
                     Continuar
                   </ButtonComponent>

@@ -4,6 +4,7 @@
       title="Workflows"
       :fields="fields"
       :headers="headers"
+      data-testid="workflow-crud"
   >
   </CrudComponent>
 </template>

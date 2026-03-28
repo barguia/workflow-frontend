@@ -4,15 +4,16 @@
     title="Usuários"
     :fields="userFields"
     :headers="userHeaders"
+    data-testid="usuario-crud"
   >
     <template #actions="{ isEditing, form, closeModal }">
-      <ButtonComponent v-if="isEditing" color="warning" variant="text" @click="resetPassword(form, closeModal)">
+      <ButtonComponent v-if="isEditing" color="warning" variant="text" @click="resetPassword(form, closeModal)" data-testid="usuario-btn-resetar-senha">
         Resetar Senha
       </ButtonComponent>
     </template>
 
     <template #actionsField="{ item }">
-      <v-btn icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" />
+      <v-btn icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" data-testid="usuario-btn-perfis" />
     </template>
   </CrudComponent>
 

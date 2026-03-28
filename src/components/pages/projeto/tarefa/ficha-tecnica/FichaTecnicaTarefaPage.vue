@@ -7,7 +7,7 @@
       <p class="text-body-1 mt-2 text-medium-emphasis">
         A tarefa com ID <strong>#{{ route.params.id }}</strong> não existe ou foi removida.
       </p>
-      <ButtonComponent class="mt-6" color="primary" @click="router.back()">
+      <ButtonComponent class="mt-6" color="primary" @click="router.back()" data-testid="ficha-tarefa-btn-voltar-404">
         <IconComponent start>mdi-arrow-left</IconComponent>
         Voltar
       </ButtonComponent>
