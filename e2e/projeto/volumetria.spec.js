@@ -6,7 +6,6 @@ test.describe('Volumetria — Painel', () => {
   })
 
   test('exibe os cards de macroprocesso após carregar', async ({ page }) => {
-    // Aguarda pelo menos o card totalizador aparecer
     const cards = page.locator('.row-one .v-card')
     await expect(cards.first()).toBeVisible({ timeout: 5000 })
     expect(await cards.count()).toBeGreaterThanOrEqual(2)
@@ -16,29 +15,26 @@ test.describe('Volumetria — Painel', () => {
     const cardTotal = page.locator('.row-one .v-card').first()
     await cardTotal.click()
 
-    // Nenhuma tabela de detalhe deve aparecer
-    await expect(page.locator('.v-data-table').first()).not.toBeVisible()
+    await expect(page.getByTestId('volumetria-tabela-processos')).not.toBeVisible()
   })
 
   test('clicar em um macroprocesso exibe a tabela de processos', async ({ page }) => {
     const cards = page.locator('.row-one .v-card')
     expect(await cards.count()).toBeGreaterThanOrEqual(2)
 
-    // Clica no segundo card (primeiro macroprocesso, não o totalizador)
     await cards.nth(1).click()
 
-    const tabela = page.locator('.v-data-table').first()
-    await expect(tabela).toBeVisible({ timeout: 5000 })
+    await expect(page.getByTestId('volumetria-tabela-processos')).toBeVisible({ timeout: 5000 })
   })
 
   test('fechar o painel de detalhe remove a tabela', async ({ page }) => {
     const cards = page.locator('.row-one .v-card')
     await cards.nth(1).click()
 
-    const tabela = page.locator('.v-data-table').first()
+    const tabela = page.getByTestId('volumetria-tabela-processos')
     await expect(tabela).toBeVisible({ timeout: 5000 })
 
-    await page.locator('button:has(.mdi-close)').click()
+    await page.getByTestId('volumetria-btn-fechar-painel').click()
     await expect(tabela).not.toBeVisible()
   })
 
@@ -46,23 +42,19 @@ test.describe('Volumetria — Painel', () => {
     const cards = page.locator('.row-one .v-card')
     await cards.nth(1).click()
 
-    const tabela = page.locator('.v-data-table').first()
+    const tabela = page.getByTestId('volumetria-tabela-processos')
     await expect(tabela).toBeVisible({ timeout: 5000 })
 
-    // Clica na primeira linha de dados
-    const primeiraLinha = tabela.locator('tbody tr').first()
-    await primeiraLinha.click()
+    await tabela.locator('tbody tr').first().click()
 
-    // Aguarda a expansão aparecer (sub-tabela ou mensagem vazia)
-    const subTabela = page.locator('.sub-tabela-wrapper')
-    await expect(subTabela).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('.sub-tabela-wrapper')).toBeVisible({ timeout: 5000 })
   })
 
   test('clicar na linha novamente colapsa o drill-down', async ({ page }) => {
     const cards = page.locator('.row-one .v-card')
     await cards.nth(1).click()
 
-    const tabela = page.locator('.v-data-table').first()
+    const tabela = page.getByTestId('volumetria-tabela-processos')
     await expect(tabela).toBeVisible({ timeout: 5000 })
 
     const primeiraLinha = tabela.locator('tbody tr').first()
@@ -71,20 +63,16 @@ test.describe('Volumetria — Painel', () => {
     const subTabela = page.locator('.sub-tabela-wrapper')
     await expect(subTabela).toBeVisible({ timeout: 5000 })
 
-    // Segundo clique colapsa
     await primeiraLinha.click()
     await expect(subTabela).not.toBeVisible()
   })
 
   test('filtro de status recarrega o painel', async ({ page }) => {
-    // Aguarda os cards carregarem
-    await expect(page.locator('.row-one .v-card').first()).toBeVisible({ timeout: 500000 })
+    await expect(page.locator('.row-one .v-card').first()).toBeVisible({ timeout: 10000 })
 
-    // Troca para "Finalizado"
-    await page.getByRole('button', { name: 'Finalizado' }).click()
+    await page.getByTestId('volumetria-btn-filtro-finalizado').click()
 
-    // O painel deve continuar exibindo cards (pode ter quantidades diferentes)
-    await expect(page.locator('.row-one .v-card').first()).toBeVisible({ timeout: 500000 })
+    await expect(page.locator('.row-one .v-card').first()).toBeVisible({ timeout: 10000 })
   })
 })
 
@@ -95,12 +83,12 @@ test.describe('Volumetria — Fila de Tarefas', () => {
     const cards = page.locator('.row-one .v-card')
     expect(await cards.count()).toBeGreaterThanOrEqual(2)
 
+    const tabela = page.getByTestId('volumetria-tabela-processos')
+
     // Navega pelos cards até encontrar um que exiba tarefas no drill-down
     let linkTarefa = null
     for (let i = 1; i < await cards.count(); i++) {
       await cards.nth(i).click()
-
-      const tabela = page.locator('.v-data-table').first()
       await expect(tabela).toBeVisible({ timeout: 5000 })
 
       const linhas = tabela.locator('tbody tr')

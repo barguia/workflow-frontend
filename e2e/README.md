@@ -78,11 +78,42 @@ page.locator('[data-testid^="volumetria-card-"]').nth(1)
 
 ## Como usar nos testes
 
+### Botões e elementos nativos
+
 ```js
-// Recomendado — semântico e legível
 await page.getByTestId('login-btn-entrar').click()
-await page.getByTestId('login-input-email').fill('usuario@email.com')
 await expect(page.getByTestId('volumetria-tabela-processos')).toBeVisible()
+```
+
+### Campos de texto (`TextFieldComponent`, `v-text-field`)
+
+O `data-testid` é aplicado no componente wrapper (`<div>`), não no `<input>` interno.
+Para interagir com o campo, encadeie `.locator('input')`:
+
+```js
+// ✗ Falha — tenta fazer fill no div wrapper
+await page.getByTestId('login-input-email').fill('valor')
+
+// ✓ Correto — navega até o input interno
+await page.getByTestId('login-input-email').locator('input').fill('valor')
+```
+
+### Selects (`SelectComponent`, `v-select`)
+
+O mesmo se aplica a selects — use `.locator('input')` para abrir o dropdown:
+
+```js
+await page.getByTestId('pesquisa-select-projetos').locator('input').click()
+await page.getByRole('option', { name: 'Nome do Projeto' }).click()
+```
+
+### Verificar visibilidade
+
+Para verificar se um campo ou tabela está visível, o wrapper é suficiente:
+
+```js
+await expect(page.getByTestId('login-input-email')).toBeVisible()
+await expect(page.getByTestId('fila-tarefa-tabela')).toBeVisible()
 ```
 
 ---
