@@ -10,8 +10,8 @@ setup('autenticar', async ({ page }) => {
 
   await page.goto('/login')
 
-  await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Senha').fill(password)
+  await page.getByTestId('login-input-email').locator('input').fill(email)
+  await page.getByTestId('login-input-senha').locator('input').fill(password)
 
   // Intercepta a resposta da API de login para diagnóstico imediato
   const [response] = await Promise.all([
@@ -19,7 +19,7 @@ setup('autenticar', async ({ page }) => {
       resp => resp.url().includes('/login') && resp.request().method() === 'POST',
       { timeout: 15000 }
     ),
-    page.getByRole('button', { name: 'Efetuar Login' }).click(),
+    page.getByTestId('login-btn-entrar').click(),
   ])
 
   const status = response.status()

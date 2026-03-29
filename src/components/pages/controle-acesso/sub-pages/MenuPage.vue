@@ -4,6 +4,7 @@
       title="Menus"
       :fields="menuFields"
       :headers="menuHeaders"
+      data-testid="menu-crud"
   />
 </template>
 

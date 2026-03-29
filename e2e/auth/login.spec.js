@@ -6,7 +6,7 @@ test.use({ storageState: { cookies: [], origins: [] } })
 test.describe('Login', () => {
   test('exibe a página de login', async ({ page }) => {
     await page.goto('/login')
-    await expect(page.getByRole('button', { name: 'Efetuar Login' })).toBeVisible()
+    await expect(page.getByTestId('login-btn-entrar')).toBeVisible()
   })
 
   test('redireciona para home após login válido', async ({ page }) => {
@@ -14,9 +14,9 @@ test.describe('Login', () => {
     const password = process.env.E2E_PASSWORD ?? 'password'
 
     await page.goto('/login')
-    await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Senha').fill(password)
-    await page.getByRole('button', { name: 'Efetuar Login' }).click()
+    await page.getByTestId('login-input-email').locator('input').fill(email)
+    await page.getByTestId('login-input-senha').locator('input').fill(password)
+    await page.getByTestId('login-btn-entrar').click()
 
     await page.waitForURL('/')
     await expect(page).toHaveURL('/')
@@ -24,15 +24,15 @@ test.describe('Login', () => {
 
   test('permanece na página de login com credenciais inválidas', async ({ page }) => {
     await page.goto('/login')
-    await page.getByLabel('Email').fill('invalido@teste.com')
-    await page.getByLabel('Senha').fill('senha_errada')
-    await page.getByRole('button', { name: 'Efetuar Login' }).click()
+    await page.getByTestId('login-input-email').locator('input').fill('invalido@teste.com')
+    await page.getByTestId('login-input-senha').locator('input').fill('senha_errada')
+    await page.getByTestId('login-btn-entrar').click()
 
     await expect(page).toHaveURL('/login')
   })
 
   test('redireciona para /login ao acessar rota protegida sem autenticação', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('adm/administracao#adm')
     await expect(page).toHaveURL('/login')
   })
 })

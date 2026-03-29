@@ -14,6 +14,7 @@
               prepend-inner-icon="mdi-email"
               required
               class="mb-4"
+              data-testid="login-input-email"
             />
             <TextFieldComponent
               v-model="password"
@@ -22,6 +23,7 @@
               prepend-inner-icon="mdi-lock"
               required
               class="mb-4"
+              data-testid="login-input-senha"
             />
             <RowComponent justify="space-between" class="mb-4">
               <ColComponent cols="auto">
@@ -30,6 +32,7 @@
                       variant="text"
                       color="primary"
                       @click="handleForgotPassword"
+                      data-testid="login-btn-esqueci-senha"
                   >
                     Esqueci a senha
                   </ButtonComponent>
@@ -40,6 +43,7 @@
                     color="primary"
                     type="submit"
                     :loading="loading"
+                    data-testid="login-btn-entrar"
                 >
                   Efetuar Login
                 </ButtonComponent>

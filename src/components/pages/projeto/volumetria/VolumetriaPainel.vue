@@ -2,10 +2,10 @@
   <ContainerComponent fluid class="py-4">
     <div class="d-flex align-center mb-4 gap-2">
       <span class="text-caption text-medium-emphasis font-weight-medium">Exibir:</span>
-      <v-btn-toggle v-model="statusFiltro" mandatory density="compact" rounded="lg" color="primary">
-        <v-btn value="aberto" size="small">Aberto</v-btn>
-        <v-btn value="finalizado" size="small">Finalizado</v-btn>
-        <v-btn value="todos" size="small">Todos</v-btn>
+      <v-btn-toggle v-model="statusFiltro" mandatory density="compact" rounded="lg" color="primary" data-testid="volumetria-toggle-status">
+        <v-btn value="aberto" size="small" data-testid="volumetria-btn-filtro-aberto">Aberto</v-btn>
+        <v-btn value="finalizado" size="small" data-testid="volumetria-btn-filtro-finalizado">Finalizado</v-btn>
+        <v-btn value="todos" size="small" data-testid="volumetria-btn-filtro-todos">Todos</v-btn>
       </v-btn-toggle>
     </div>
 
@@ -73,6 +73,7 @@
                 variant="text"
                 size="small"
                 @click="cardSelecionado = null"
+                data-testid="volumetria-btn-fechar-painel"
             />
           </div>
 
@@ -86,6 +87,7 @@
               class="elevation-0 rounded-lg tabela-drill"
               hover
               @click:row="clicarLinha"
+              data-testid="volumetria-tabela-processos"
           >
             <template v-slot:loading>
               <v-skeleton-loader type="table-row@5" />

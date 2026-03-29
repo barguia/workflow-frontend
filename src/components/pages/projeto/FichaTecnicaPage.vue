@@ -7,7 +7,7 @@
       <p class="text-body-1 mt-2 text-medium-emphasis">
         O projeto com ID <strong>#{{ route.params.id }}</strong> não existe ou foi removido.
       </p>
-      <ButtonComponent class="mt-6" color="primary" @click="router.back()">
+      <ButtonComponent class="mt-6" color="primary" @click="router.back()" data-testid="ficha-tecnica-btn-voltar-404">
         <IconComponent start>mdi-arrow-left</IconComponent>
         Voltar
       </ButtonComponent>
@@ -24,7 +24,7 @@
 
     <!-- Cabeçalho da página -->
     <div class="d-flex align-center gap-3 mb-4">
-      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" />
+      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" data-testid="ficha-tecnica-btn-voltar" />
       <div class="flex-1-1">
         <div class="d-flex align-center gap-2 flex-wrap">
           <span class="text-h6 font-weight-bold">{{ projeto.nome }}</span>
@@ -157,11 +157,12 @@
           color="primary"
           density="compact"
           @update:model-value="buscarTarefas"
+          data-testid="ficha-tecnica-toggle-tarefas"
         >
-          <ButtonComponent value="pendentes" size="small" prepend-icon="mdi-clock-outline">Pendentes</ButtonComponent>
-          <ButtonComponent value="finalizados" size="small" prepend-icon="mdi-check-circle-outline">Finalizadas</ButtonComponent>
+          <ButtonComponent value="pendentes" size="small" prepend-icon="mdi-clock-outline" data-testid="ficha-tecnica-btn-tarefas-pendentes">Pendentes</ButtonComponent>
+          <ButtonComponent value="finalizados" size="small" prepend-icon="mdi-check-circle-outline" data-testid="ficha-tecnica-btn-tarefas-finalizadas">Finalizadas</ButtonComponent>
         </v-btn-toggle>
-        <ButtonComponent size="small" variant="tonal" color="primary" :loading="carregandoTarefas" @click="buscarTarefas">
+        <ButtonComponent size="small" variant="tonal" color="primary" :loading="carregandoTarefas" @click="buscarTarefas" data-testid="ficha-tecnica-btn-atualizar">
           <IconComponent start>mdi-refresh</IconComponent>
           Atualizar
         </ButtonComponent>
@@ -175,6 +176,7 @@
           :loading="carregandoTarefas"
           class="elevation-0"
           hover
+          data-testid="ficha-tecnica-tabela-tarefas"
         >
           <template #top>
             <div class="table-toolbar pa-4 d-flex align-center ga-3">
@@ -192,6 +194,7 @@
                 density="compact"
                 style="max-width: 260px"
                 clearable
+                data-testid="ficha-tecnica-input-busca"
               />
             </div>
           </template>

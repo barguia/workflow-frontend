@@ -3,7 +3,7 @@
 
     <!-- Cabeçalho -->
     <div class="d-flex align-center gap-3 mb-4">
-      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" />
+      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" data-testid="fila-tarefa-btn-voltar" />
       <div>
         <div class="d-flex align-center gap-2">
           <IconComponent color="primary" size="20">mdi-format-list-checks</IconComponent>
@@ -25,6 +25,7 @@
         :search="busca"
         class="elevation-0"
         hover
+        data-testid="fila-tarefa-tabela"
       >
         <template #top>
           <div class="table-toolbar pa-4 d-flex align-center ga-3">
@@ -42,6 +43,7 @@
               density="compact"
               style="max-width: 280px"
               clearable
+              data-testid="fila-tarefa-input-busca"
             />
           </div>
         </template>

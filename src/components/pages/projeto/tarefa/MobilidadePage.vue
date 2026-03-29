@@ -22,6 +22,7 @@
         color="secondary"
         variant="tonal"
         @click="abrirDialogAssociacao"
+        data-testid="mobilidade-btn-associar"
       >
         <IconComponent start>mdi-link-variant</IconComponent>
         Associar
@@ -46,6 +47,7 @@
               clearable
               hide-details
               density="compact"
+              data-testid="mobilidade-select-macro"
             />
           </ColComponent>
           <ColComponent cols="12" sm="4">
@@ -58,6 +60,7 @@
               clearable
               hide-details
               density="compact"
+              data-testid="mobilidade-select-processo"
             />
           </ColComponent>
           <ColComponent cols="12" sm="4">
@@ -70,6 +73,7 @@
               clearable
               hide-details
               density="compact"
+              data-testid="mobilidade-select-tarefa"
             />
           </ColComponent>
         </RowComponent>
@@ -190,6 +194,7 @@
                       rounded="lg"
                       class="flex-shrink-0"
                       @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
+                      :data-testid="`mobilidade-toggle-tipo-${opcao.mobilidade_id}`"
                     >
                       <ButtonComponent
                         v-for="tipo in tiposMobilidade"
@@ -198,6 +203,7 @@
                         size="x-small"
                         :color="corTipo(tipo.tipo)"
                         :loading="atualizandoTipo === opcao.mobilidade_id"
+                        :data-testid="`mobilidade-btn-tipo-${tipo.id}`"
                       >
                         {{ tipo.tipo }}
                       </ButtonComponent>
@@ -221,7 +227,7 @@
         <IconComponent color="primary" size="22">mdi-link-variant</IconComponent>
         <span class="text-h6">Associar mobilidades: {{ tarefa?.tarefa }}</span>
         <SpacerComponent />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="fecharDialogAssociacao" />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="fecharDialogAssociacao" data-testid="mobilidade-modal-btn-fechar" />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-4">
@@ -260,8 +266,8 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <SpacerComponent />
-        <ButtonComponent variant="text" @click="fecharDialogAssociacao">Cancelar</ButtonComponent>
-        <ButtonComponent color="primary" variant="flat" :loading="salvandoAssociacao" @click="salvarAssociacao">
+        <ButtonComponent variant="text" @click="fecharDialogAssociacao" data-testid="mobilidade-modal-btn-cancelar">Cancelar</ButtonComponent>
+        <ButtonComponent color="primary" variant="flat" :loading="salvandoAssociacao" @click="salvarAssociacao" data-testid="mobilidade-modal-btn-salvar">
           Salvar
         </ButtonComponent>
       </CardActionsComponent>
@@ -271,7 +277,7 @@
   <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
     {{ snackbar.message }}
     <template #actions>
-      <ButtonComponent variant="text" color="white" size="small" @click="snackbar.show = false">
+      <ButtonComponent variant="text" color="white" size="small" @click="snackbar.show = false" data-testid="mobilidade-snackbar-btn-fechar">
         Fechar
       </ButtonComponent>
     </template>

@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex align-center gap-3 mb-4 flex-wrap">
-    <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="$emit('voltar')" />
+    <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="$emit('voltar')" data-testid="ft-cabecalho-btn-voltar" />
 
     <div class="flex-1-1">
       <div class="d-flex align-center gap-2 flex-wrap">

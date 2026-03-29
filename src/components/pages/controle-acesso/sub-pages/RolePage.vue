@@ -4,9 +4,10 @@
     title="Perfis de Acesso"
     :fields="fields"
     :headers="headers"
+    data-testid="role-crud"
   >
     <template #actionsField="{ item }">
-      <ButtonComponent icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" />
+      <ButtonComponent icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" data-testid="role-btn-permissoes" />
     </template>
   </CrudComponent>
 
@@ -16,7 +17,7 @@
         <IconComponent color="primary" size="22">mdi-shield-key-outline</IconComponent>
         <span class="text-h6">Permissões do perfil: {{ role?.name }}</span>
         <v-spacer />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModalRole" />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModalRole" data-testid="role-modal-btn-fechar" />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-4">
@@ -52,8 +53,8 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <v-spacer />
-        <ButtonComponent variant="text" @click="closeModalRole">Cancelar</ButtonComponent>
-        <ButtonComponent color="primary" variant="flat" :loading="salvando" @click="atualizarRole">
+        <ButtonComponent variant="text" @click="closeModalRole" data-testid="role-modal-btn-cancelar">Cancelar</ButtonComponent>
+        <ButtonComponent color="primary" variant="flat" :loading="salvando" @click="atualizarRole" data-testid="role-modal-btn-salvar">
           Salvar
         </ButtonComponent>
       </CardActionsComponent>

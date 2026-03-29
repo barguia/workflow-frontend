@@ -22,11 +22,12 @@
             color="primary"
             density="comfortable"
             @update:model-value="onModoChange"
+            data-testid="pesquisa-toggle-tipo"
           >
-            <ButtonComponent value="pendentes" prepend-icon="mdi-clock-outline">
+            <ButtonComponent value="pendentes" prepend-icon="mdi-clock-outline" data-testid="pesquisa-btn-pendentes">
               Pendentes
             </ButtonComponent>
-            <ButtonComponent value="finalizados" prepend-icon="mdi-check-circle-outline">
+            <ButtonComponent value="finalizados" prepend-icon="mdi-check-circle-outline" data-testid="pesquisa-btn-finalizados">
               Finalizados
             </ButtonComponent>
           </v-btn-toggle>
@@ -51,6 +52,7 @@
               clearable
               chips
               closable-chips
+              data-testid="pesquisa-select-projetos"
             />
           </ColComponent>
 
@@ -65,6 +67,7 @@
               clearable
               chips
               closable-chips
+              data-testid="pesquisa-select-macro-processo"
             />
           </ColComponent>
 
@@ -79,6 +82,7 @@
               clearable
               chips
               closable-chips
+              data-testid="pesquisa-select-processo"
             />
           </ColComponent>
 
@@ -93,6 +97,7 @@
               clearable
               chips
               closable-chips
+              data-testid="pesquisa-select-status"
             />
           </ColComponent>
 
@@ -107,17 +112,18 @@
               clearable
               chips
               closable-chips
+              data-testid="pesquisa-select-tarefas"
             />
           </ColComponent>
         </RowComponent>
 
         <!-- Ações -->
         <div class="d-flex justify-end gap-3 mt-5">
-          <ButtonComponent variant="text" color="default" @click="limparFiltros">
+          <ButtonComponent variant="text" color="default" @click="limparFiltros" data-testid="pesquisa-btn-limpar">
             <IconComponent start>mdi-filter-off-outline</IconComponent>
             Limpar
           </ButtonComponent>
-          <ButtonComponent color="primary" :loading="pesquisando" @click="pesquisar">
+          <ButtonComponent color="primary" :loading="pesquisando" @click="pesquisar" data-testid="pesquisa-btn-pesquisar">
             <IconComponent start>mdi-magnify</IconComponent>
             Pesquisar
           </ButtonComponent>
@@ -135,6 +141,7 @@
           :items-per-page="15"
           class="elevation-0"
           hover
+          data-testid="pesquisa-tabela-resultados"
         >
           <template #top>
             <div class="table-toolbar pa-4 d-flex align-center ga-3">
@@ -152,6 +159,7 @@
                 density="compact"
                 style="max-width: 280px"
                 clearable
+                data-testid="pesquisa-input-busca"
               />
             </div>
           </template>

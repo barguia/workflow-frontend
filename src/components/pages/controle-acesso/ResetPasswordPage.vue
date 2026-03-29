@@ -59,6 +59,7 @@ async function trocarPassword() {
                   prepend-inner-icon="mdi-lock"
                   required
                   class="mb-4"
+                  data-testid="reset-input-senha"
               />
 
               <TextFieldComponent
@@ -68,7 +69,7 @@ async function trocarPassword() {
                   prepend-inner-icon="mdi-lock"
                   required
                   class="mb-4"
-
+                  data-testid="reset-input-confirmar-senha"
               />
               <RowComponent justify="space-between" class="mb-4">
                 <ColComponent cols="auto">
@@ -76,6 +77,7 @@ async function trocarPassword() {
                     <ButtonComponent
                         variant="text"
                         color="primary"
+                        data-testid="reset-btn-voltar"
                     >
                       Voltar para login
                     </ButtonComponent>
@@ -85,8 +87,8 @@ async function trocarPassword() {
                   <ButtonComponent
                       color="primary"
                       type="submit"
-
                       @click="trocarPassword()"
+                      data-testid="reset-btn-trocar-senha"
                   >
                     Trocar senha
                   </ButtonComponent>
