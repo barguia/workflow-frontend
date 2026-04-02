@@ -51,6 +51,11 @@
       @atualizar="carregarTratamentos"
     />
 
+    <!-- Tarefas Abertas do mesmo Workflow -->
+    <div class="mt-6">
+      <FtTarefasAbertas :tarefa="tarefa" />
+    </div>
+
   </ContainerComponent>
 
   <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
@@ -81,7 +86,8 @@ import FtCabecalho      from './componentes/FtCabecalho.vue'
 import FtDadosProjeto   from './componentes/FtDadosProjeto.vue'
 import FtDetalhesTarefa from './componentes/FtDetalhesTarefa.vue'
 import FtAcoesTarefa    from './componentes/FtAcoesTarefa.vue'
-import FtHistoricoTarefa from './componentes/FtHistoricoTarefa.vue'
+import FtHistoricoTarefa  from './componentes/FtHistoricoTarefa.vue'
+import FtTarefasAbertas  from './componentes/FtTarefasAbertas.vue'
 
 const route  = useRoute()
 const router = useRouter()
