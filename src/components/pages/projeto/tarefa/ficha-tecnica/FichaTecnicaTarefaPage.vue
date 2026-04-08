@@ -7,7 +7,7 @@
       <p class="text-body-1 mt-2 text-medium-emphasis">
         A tarefa com ID <strong>#{{ route.params.id }}</strong> não existe ou foi removida.
       </p>
-      <ButtonComponent class="mt-6" color="primary" @click="router.back()">
+      <ButtonComponent class="mt-6" color="primary" @click="router.back()" data-testid="ficha-tarefa-btn-voltar-404">
         <IconComponent start>mdi-arrow-left</IconComponent>
         Voltar
       </ButtonComponent>
@@ -51,6 +51,11 @@
       @atualizar="carregarTratamentos"
     />
 
+    <!-- Tarefas Abertas do mesmo Workflow -->
+    <div class="mt-6">
+      <FtTarefasAbertas :tarefa="tarefa" />
+    </div>
+
   </ContainerComponent>
 
   <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
@@ -81,7 +86,8 @@ import FtCabecalho      from './componentes/FtCabecalho.vue'
 import FtDadosProjeto   from './componentes/FtDadosProjeto.vue'
 import FtDetalhesTarefa from './componentes/FtDetalhesTarefa.vue'
 import FtAcoesTarefa    from './componentes/FtAcoesTarefa.vue'
-import FtHistoricoTarefa from './componentes/FtHistoricoTarefa.vue'
+import FtHistoricoTarefa  from './componentes/FtHistoricoTarefa.vue'
+import FtTarefasAbertas  from './componentes/FtTarefasAbertas.vue'
 
 const route  = useRoute()
 const router = useRouter()

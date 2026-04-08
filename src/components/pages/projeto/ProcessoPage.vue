@@ -6,6 +6,7 @@
       :headers="headers"
       :context="auxiliares"
       :on-edit="inicializarContextoEdicao"
+      data-testid="processo-crud"
   >
   </CrudComponent>
 </template>

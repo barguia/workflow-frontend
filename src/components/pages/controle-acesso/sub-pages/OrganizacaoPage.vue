@@ -4,6 +4,7 @@
       title="Organizações"
       :fields="fields"
       :headers="headers"
+      data-testid="organizacao-crud"
   >
   </CrudComponent>
 </template>

@@ -10,8 +10,9 @@
         hide-details
         color="primary"
         class="flex-grow-0"
+        data-testid="ft-historico-switch-sistemicos"
       />
-      <ButtonComponent size="small" variant="text" color="primary" :loading="carregando" @click="$emit('atualizar')">
+      <ButtonComponent size="small" variant="text" color="primary" :loading="carregando" @click="$emit('atualizar')" data-testid="ft-historico-btn-atualizar">
         <IconComponent start>mdi-refresh</IconComponent>
         Atualizar
       </ButtonComponent>
@@ -62,7 +63,7 @@
               >
                 {{ item.tratamento }}
               </ChipComponent>
-              <span class="text-caption text-medium-emphasis">{{ item.tarefa }}</span>
+              <span class="text-caption text-medium-emphasis">{{ item.tarefa_origem }}</span>
               <SpacerComponent />
               <span class="text-caption text-medium-emphasis">{{ formatarDataHora(item.finalized_at) }}</span>
             </div>
@@ -79,7 +80,27 @@
               >
                 {{ item.tratamento }}
               </ChipComponent>
-              <span class="text-body-2 font-weight-medium">{{ item.tarefa }}</span>
+              <ChipComponent
+                v-if="item.tarefa_destino"
+                size="small"
+                color="primary"
+                variant="tonal"
+                class="font-weight-medium"
+              >
+                <span class="text-body-2 font-weight-medium" v-if="item.tarefa_destino">De: </span>
+                <span class="text-body-2 font-weight-medium">{{ item.tarefa_origem }}</span>
+              </ChipComponent>
+
+
+              <ChipComponent
+                v-if="item.tarefa_destino"
+                size="small"
+                color="success"
+                variant="tonal"
+                class="font-weight-medium"
+              >
+                <span class="text-body-1 font-weight-medium">Para:</span> {{ item.tarefa_destino }}
+              </ChipComponent>
             </div>
 
             <div class="text-caption text-medium-emphasis mb-1">

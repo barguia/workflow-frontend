@@ -5,6 +5,7 @@
       :fields="fields"
       :headers="headers"
       :show-select="false"
+      data-testid="projeto-crud"
   >
     <template #previewField="{ item }">
       <ButtonComponent
@@ -14,6 +15,7 @@
         color="secondary"
         :href="`/ficha-tecnica/${item.id}`"
         target="_blank"
+        data-testid="projeto-btn-ficha-tecnica"
       />
     </template>
   </CrudComponent>

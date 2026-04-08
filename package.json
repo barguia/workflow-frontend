@@ -14,7 +14,11 @@
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "analyze:components": "node scripts/analyze-components.js"
+    "analyze:components": "node scripts/analyze-components.js",
+    "analyze:testids": "node scripts/analyze-testids.js",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -31,10 +35,12 @@
     "flatted": "3.4.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "@vue/test-utils": "^2.4.6",
+    "dotenv": "^17.3.1",
     "jsdom": "^28.1.0",
     "vite": "^7.1.11",
     "vite-plugin-vue-devtools": "^8.0.2",

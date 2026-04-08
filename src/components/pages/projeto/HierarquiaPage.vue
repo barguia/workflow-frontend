@@ -4,6 +4,7 @@
       title="Hierarquias de Processos"
       :fields="fields"
       :headers="headers"
+      data-testid="hierarquia-crud"
   >
   </CrudComponent>
 </template>
