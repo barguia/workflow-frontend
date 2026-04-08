@@ -286,7 +286,7 @@ const tarefasDisponiveisGrupos = ref({})
 const ACAO_TO_GRUPO = {
   AVANÇAR:    'Avanço',
   RETROCEDER: 'Devolução',
-  INTERROMPER: 'Interromper',
+  INTERROMPER: 'Interrupção',
 }
 
 // Só exibe tratamentos que têm tarefas configuradas
