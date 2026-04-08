@@ -63,7 +63,7 @@
               >
                 {{ item.tratamento }}
               </ChipComponent>
-              <span class="text-caption text-medium-emphasis">{{ item.tarefa }}</span>
+              <span class="text-caption text-medium-emphasis">{{ item.tarefa_origem }}</span>
               <SpacerComponent />
               <span class="text-caption text-medium-emphasis">{{ formatarDataHora(item.finalized_at) }}</span>
             </div>
@@ -88,7 +88,7 @@
                 class="font-weight-medium"
               >
                 <span class="text-body-2 font-weight-medium" v-if="item.tarefa_destino">De: </span>
-                <span class="text-body-2 font-weight-medium">{{ item.tarefa }}</span>
+                <span class="text-body-2 font-weight-medium">{{ item.tarefa_origem }}</span>
               </ChipComponent>
 
 
