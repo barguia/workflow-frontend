@@ -8,7 +8,11 @@
           :search.sync="search"
           :title="title"
           :show-select="showSelect"
+          :total-items="totalItems"
+          :page="currentPage"
+          :items-per-page="perPage"
           @edit="openEditModal"
+          @update:options="handleTableOptions"
       >
         <template #preview="{ item }">
           <slot name="previewField" :item="item" />
@@ -148,6 +152,12 @@ const form = ref({})
 const resolvedOptions = ref({})
 const { validationErrors, clearErrors } = useValidationErrors();
 
+// Paginação server-side
+const currentPage = ref(1)
+const perPage = ref(50)
+const totalItems = ref(0)
+let skipNextOptionsEvent = true
+
 // useCrud
 const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
@@ -157,13 +167,41 @@ watch(selectedItems, (newValue) => {
   showMassActions.value = newValue.length > 0
 })
 
-// Carregar itens
+// Carregar itens com suporte a paginação server-side
 const loadItems = async () => {
-  const filterIndex = props.filter_index
+  const params = {
+    ...props.filter_index,
+    page: currentPage.value,
+    per_page: perPage.value === -1 ? 99999 : perPage.value,
+  }
   try {
-    items.value = await index(filterIndex)
+    const response = await index(params)
+    // Formato paginado do backend: { data: [...], total, current_page, per_page, ... }
+    if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
+      items.value = response.data
+      totalItems.value = response.total
+      currentPage.value = response.current_page
+      perPage.value = response.per_page
+    } else {
+      // Formato legado: array simples
+      items.value = Array.isArray(response) ? response : []
+      totalItems.value = items.value.length
+    }
   } catch (err) {
     // Erros tratados pelo useCrud
+  }
+}
+
+// Reagir à mudança de página/per_page vinda da tabela
+const handleTableOptions = ({ page, itemsPerPage }) => {
+  if (skipNextOptionsEvent) {
+    skipNextOptionsEvent = false
+    return
+  }
+  if (page !== currentPage.value || itemsPerPage !== perPage.value) {
+    currentPage.value = page
+    perPage.value = itemsPerPage
+    loadItems()
   }
 }
 

@@ -1,15 +1,23 @@
 <template>
-  <v-data-table
+  <v-data-table-server
       v-model="localSelected"
       :headers="localHeaders"
-      :items="localItems"
-      :items-per-page="10"
-      :search="localSearch"
+      :items="displayItems"
+      :items-length="displayTotal"
+      :items-per-page="itemsPerPage"
+      :page="page"
+      :items-per-page-options="[
+        { value: 50, title: '50' },
+        { value: 100, title: '100' },
+        { value: 200, title: '200' },
+        { value: 500, title: '500' },
+        { value: -1, title: 'Todos' },
+      ]"
       :show-select="showSelect"
       class="elevation-0 rounded-lg"
       item-key="id"
-      :hide-default-header="false"
       hover
+      @update:options="handleOptionsUpdate"
   >
     <template v-slot:top>
       <div class="table-toolbar pa-4 d-flex align-center ga-3">
@@ -35,7 +43,7 @@
         <v-btn icon="mdi-pencil" variant="text" size="small" color="primary" @click="$emit('edit', item)" />
       </slot>
     </template>
-  </v-data-table>
+  </v-data-table-server>
 </template>
 
 <script setup>
@@ -50,13 +58,32 @@ const props = defineProps({
   search: { type: String, default: '' },
   title: { type: String, default: 'Lista de Itens' },
   showSelect: { type: Boolean, default: true },
+  totalItems: { type: Number, default: 0 },
+  page: { type: Number, default: 1 },
+  itemsPerPage: { type: Number, default: 50 },
 })
 
-const emit = defineEmits(['update:selected', 'edit'])
+const emit = defineEmits(['update:selected', 'edit', 'update:options'])
 
 const localHeaders = computed(() => props.headers)
 const localItems = computed(() => props.items)
 const localSearch = ref(props.search)
+
+// Filtra os itens da página atual com base na busca local
+const displayItems = computed(() => {
+  if (!localSearch.value) return localItems.value
+  const q = localSearch.value.toLowerCase()
+  return localItems.value.filter(item =>
+    Object.values(item).some(v => String(v ?? '').toLowerCase().includes(q))
+  )
+})
+
+// Quando há busca ativa, usa o total filtrado (somente na página atual)
+// Quando não há busca, usa o total do servidor
+const displayTotal = computed(() => {
+  if (localSearch.value) return displayItems.value.length
+  return props.totalItems
+})
 
 watch(() => props.search, (newVal) => {
   localSearch.value = newVal
@@ -70,6 +97,10 @@ const localSelected = computed({
   get: () => props.selected,
   set: (val) => emit('update:selected', val)
 })
+
+const handleOptionsUpdate = (opts) => {
+  emit('update:options', opts)
+}
 </script>
 
 <style scoped>
