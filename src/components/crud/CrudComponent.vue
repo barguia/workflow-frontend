@@ -11,6 +11,9 @@
           :total-items="totalItems"
           :page="currentPage"
           :items-per-page="perPage"
+          :available-columns="availableColumns"
+          :selected-columns="activeSelectedColumns"
+          @update:selected-columns="selectedColumns = $event"
           @edit="openEditModal"
           @update:options="handleTableOptions"
       >
@@ -107,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors';
 
@@ -137,6 +140,7 @@ const props = defineProps({
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
   showSelect: { type: Boolean, default: true },
+  searchable: { type: Boolean, default: false },
   onEdit: { type: Function, default: null },
 })
 
@@ -159,8 +163,14 @@ const totalItems = ref(0)
 let skipNextOptionsEvent = true
 let searchDebounceTimer = null
 
+// Colunas da pesquisa
+const availableColumns = ref([])
+const selectedColumns = ref([])
+// Só expõe colunas dinâmicas quando há busca ativa
+const activeSelectedColumns = computed(() => search.value ? selectedColumns.value : [])
+
 // useCrud
-const { index, search: searchItems, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
+const { index, search: searchItems, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -177,7 +187,15 @@ const loadItems = async () => {
   }
   try {
     const response = search.value
-      ? await searchItems({ ...params, search: search.value })
+      ? await searchItems(
+          { ...props.filter_index },
+          {
+            page: currentPage.value,
+            per_page: perPage.value === -1 ? 99999 : perPage.value,
+            search: search.value,
+            ...(selectedColumns.value.length ? { columns: selectedColumns.value.filter(c => c !== 'actions').join(',') } : {}),
+          }
+        )
       : await index(params)
     // Formato paginado do backend: { data: [...], total, current_page, per_page, ... }
     if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
@@ -204,6 +222,11 @@ watch(search, () => {
   }, 400)
 })
 
+// Recarregar pesquisa ao mudar seleção de colunas
+watch(selectedColumns, () => {
+  if (search.value) loadItems()
+})
+
 // Reagir à mudança de página/per_page vinda da tabela
 const handleTableOptions = ({ page, itemsPerPage }) => {
   if (skipNextOptionsEvent) {
@@ -217,8 +240,13 @@ const handleTableOptions = ({ page, itemsPerPage }) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   loadItems()
+  if (props.searchable) {
+    const cols = await fetchColumns()
+    availableColumns.value = [...cols, 'actions']
+    selectedColumns.value  = [...availableColumns.value]
+  }
 })
 
 // Funções
