@@ -30,6 +30,11 @@ class Crud {
         const response = await this.api.delete(`${this.route}/${payload.id}`);
         return response.data;
     }
+
+    async search(payload = {}) {
+        const response = await this.api.get(`${this.route}/pesquisa`, { params: payload });
+        return response.data.data;
+    }
 }
 
 export default Crud;

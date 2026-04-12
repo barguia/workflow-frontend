@@ -2,8 +2,8 @@
   <v-data-table-server
       v-model="localSelected"
       :headers="localHeaders"
-      :items="displayItems"
-      :items-length="displayTotal"
+      :items="localItems"
+      :items-length="totalItems"
       :items-per-page="itemsPerPage"
       :page="page"
       :items-per-page-options="[
@@ -68,22 +68,6 @@ const emit = defineEmits(['update:selected', 'edit', 'update:options'])
 const localHeaders = computed(() => props.headers)
 const localItems = computed(() => props.items)
 const localSearch = ref(props.search)
-
-// Filtra os itens da página atual com base na busca local
-const displayItems = computed(() => {
-  if (!localSearch.value) return localItems.value
-  const q = localSearch.value.toLowerCase()
-  return localItems.value.filter(item =>
-    Object.values(item).some(v => String(v ?? '').toLowerCase().includes(q))
-  )
-})
-
-// Quando há busca ativa, usa o total filtrado (somente na página atual)
-// Quando não há busca, usa o total do servidor
-const displayTotal = computed(() => {
-  if (localSearch.value) return displayItems.value.length
-  return props.totalItems
-})
 
 watch(() => props.search, (newVal) => {
   localSearch.value = newVal

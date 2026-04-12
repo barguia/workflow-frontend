@@ -5,7 +5,7 @@
           v-model:selected="selectedItems"
           :headers="headers"
           :items="items"
-          :search.sync="search"
+          v-model:search="search"
           :title="title"
           :show-select="showSelect"
           :total-items="totalItems"
@@ -152,14 +152,15 @@ const form = ref({})
 const resolvedOptions = ref({})
 const { validationErrors, clearErrors } = useValidationErrors();
 
-// Paginação server-side
+// Paginação e busca server-side
 const currentPage = ref(1)
 const perPage = ref(50)
 const totalItems = ref(0)
 let skipNextOptionsEvent = true
+let searchDebounceTimer = null
 
 // useCrud
-const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
+const { index, search: searchItems, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -167,7 +168,7 @@ watch(selectedItems, (newValue) => {
   showMassActions.value = newValue.length > 0
 })
 
-// Carregar itens com suporte a paginação server-side
+// Carregar itens com suporte a paginação e busca server-side
 const loadItems = async () => {
   const params = {
     ...props.filter_index,
@@ -175,7 +176,9 @@ const loadItems = async () => {
     per_page: perPage.value === -1 ? 99999 : perPage.value,
   }
   try {
-    const response = await index(params)
+    const response = search.value
+      ? await searchItems({ ...params, search: search.value })
+      : await index(params)
     // Formato paginado do backend: { data: [...], total, current_page, per_page, ... }
     if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
       items.value = response.data
@@ -191,6 +194,15 @@ const loadItems = async () => {
     // Erros tratados pelo useCrud
   }
 }
+
+// Reagir à mudança de busca: resetar para página 1 e recarregar do backend
+watch(search, () => {
+  clearTimeout(searchDebounceTimer)
+  searchDebounceTimer = setTimeout(() => {
+    currentPage.value = 1
+    loadItems()
+  }, 400)
+})
 
 // Reagir à mudança de página/per_page vinda da tabela
 const handleTableOptions = ({ page, itemsPerPage }) => {

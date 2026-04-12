@@ -45,5 +45,14 @@ export function useCrud(route) {
             handleCrudError(error, errors, snackbarMessage, showSnackbar);
         }
     };
-    return { index, create, update, deleteItem, errors, snackbarMessage, showSnackbar };
+
+    const search = async (payload) => {
+        try {
+            return await crudService.search(payload);
+        } catch (error) {
+            handleCrudError(error, errors, snackbarMessage, showSnackbar);
+        }
+    };
+
+    return { index, create, update, deleteItem, search, errors, snackbarMessage, showSnackbar };
 }
