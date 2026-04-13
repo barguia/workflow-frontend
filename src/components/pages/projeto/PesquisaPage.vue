@@ -133,7 +133,7 @@
     </CardComponent>
 
     <!-- Resultados -->
-    <div v-if="resultados !== null" class="mt-6">
+    <div v-if="resultados !== null" class="mt-6" data-testid="pesquisa-tabela-resultados">
       <CardComponent rounded="xl" variant="elevated">
         <CrudDataTableComponent
           :headers="[{ key: 'actions', title: '', sortable: false, align: 'end' }]"
@@ -146,7 +146,6 @@
           :show-select="false"
           :show-search="false"
           title="Resultados"
-          data-testid="pesquisa-tabela-resultados"
           @update:options="handleTableOptions"
           @update:selected-columns="onSelectedColumnsChange"
         >
@@ -190,6 +189,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors.js'
+import { useColumnSelection } from '@/composables/useColumnSelection.js'
 
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
@@ -215,6 +215,7 @@ const { index: fetchProcessos } = useCrud('wf/processos')
 const { index: fetchStatus }    = useCrud('wf/status')
 const { index: fetchTarefas }   = useCrud('wf/tarefas')
 const { search: executarPesquisa, fetchColumns } = useCrud('wf/projetos')
+const { initColumns, saveColumns } = useColumnSelection('pesquisa:wf/projetos')
 
 const modo = ref('pendentes')
 
@@ -314,6 +315,7 @@ const handleTableOptions = ({ page, itemsPerPage }) => {
 
 const onSelectedColumnsChange = (cols) => {
   selectedColumns.value = cols
+  saveColumns(cols)
   if (ultimaQuery.value) loadResultados()
 }
 
@@ -383,6 +385,6 @@ onMounted(async () => {
   carregarOpcoes()
   const cols = await fetchColumns()
   availableColumns.value = [...cols, 'actions']
-  selectedColumns.value  = [...availableColumns.value]
+  selectedColumns.value  = initColumns(availableColumns.value)
 })
 </script>

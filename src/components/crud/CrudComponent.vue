@@ -11,8 +11,8 @@
           :total-items="totalItems"
           :page="currentPage"
           :items-per-page="perPage"
-          :available-columns="availableColumns"
-          :selected-columns="activeSelectedColumns"
+          :available-columns="activeAvailableColumns"
+          :selected-columns="selectedColumns"
           @update:selected-columns="selectedColumns = $event"
           @edit="openEditModal"
           @update:options="handleTableOptions"
@@ -112,7 +112,8 @@
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
-import { useValidationErrors } from '@/composables/useValidationErrors';
+import { useValidationErrors } from '@/composables/useValidationErrors'
+import { useColumnSelection } from '@/composables/useColumnSelection.js'
 
 import CrudDataTableComponent from './CrudDataTableComponent.vue'
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
@@ -166,8 +167,10 @@ let searchDebounceTimer = null
 // Colunas da pesquisa
 const availableColumns = ref([])
 const selectedColumns = ref([])
-// Só expõe colunas dinâmicas quando há busca ativa
-const activeSelectedColumns = computed(() => search.value ? selectedColumns.value : [])
+const activeAvailableColumns = computed(() => search.value ? availableColumns.value : [])
+const { initColumns, saveColumns } = useColumnSelection(props.route)
+
+watch(selectedColumns, saveColumns)
 
 // useCrud
 const { index, search: searchItems, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
@@ -245,7 +248,7 @@ onMounted(async () => {
   if (props.searchable) {
     const cols = await fetchColumns()
     availableColumns.value = [...cols, 'actions']
-    selectedColumns.value  = [...availableColumns.value]
+    selectedColumns.value  = initColumns(availableColumns.value)
   }
 })
 
