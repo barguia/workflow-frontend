@@ -2,13 +2,14 @@
   <div>
     <ContainerComponent fluid>
       <CrudDataTableComponent
+          v-bind="$attrs"
           v-model:selected="selectedItems"
           :headers="headers"
           :items="items"
           v-model:search="search"
           :title="title"
           :show-select="showSelect"
-          :total-items="totalItems"
+          :total-items="effectiveTotalItems"
           :page="currentPage"
           :items-per-page="perPage"
           :available-columns="activeAvailableColumns"
@@ -110,6 +111,7 @@
 </template>
 
 <script setup>
+defineOptions({ inheritAttrs: false })
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors'
@@ -163,29 +165,39 @@ const perPage = ref(50)
 const totalItems = ref(0)
 const currentSortBy = ref([])
 
+const filteredItems = computed(() => {
+  if (!search.value) return rawItems.value
+  const term = search.value.toLowerCase()
+  return rawItems.value.filter(item =>
+    Object.values(item).some(v => String(v ?? '').toLowerCase().includes(term))
+  )
+})
+
+const getVal = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj) ?? ''
+
 const items = computed(() => {
-  if (!currentSortBy.value.length) return rawItems.value
+  const base = filteredItems.value
+  if (!currentSortBy.value.length) return base
   const { key, order } = currentSortBy.value[0]
-  return [...rawItems.value].sort((a, b) => {
-    const aVal = a[key] ?? ''
-    const bVal = b[key] ?? ''
-    const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true, sensitivity: 'base' })
+  return [...base].sort((a, b) => {
+    const cmp = String(getVal(a, key)).localeCompare(String(getVal(b, key)), undefined, { numeric: true, sensitivity: 'base' })
     return order === 'desc' ? -cmp : cmp
   })
 })
+
+const effectiveTotalItems = computed(() => search.value ? filteredItems.value.length : totalItems.value)
 let skipNextOptionsEvent = true
-let searchDebounceTimer = null
 
 // Colunas da pesquisa
 const availableColumns = ref([])
 const selectedColumns = ref([])
-const activeAvailableColumns = computed(() => search.value ? availableColumns.value : [])
+const activeAvailableColumns = computed(() => props.searchable ? availableColumns.value : [])
 const { initColumns, saveColumns } = useColumnSelection(props.route)
 
 watch(selectedColumns, saveColumns)
 
 // useCrud
-const { index, search: searchItems, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
+const { index, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -193,7 +205,7 @@ watch(selectedItems, (newValue) => {
   showMassActions.value = newValue.length > 0
 })
 
-// Carregar itens com suporte a paginação e busca server-side
+// Carregar itens do backend (paginação server-side)
 const loadItems = async () => {
   const params = {
     ...props.filter_index,
@@ -201,25 +213,13 @@ const loadItems = async () => {
     per_page: perPage.value === -1 ? 99999 : perPage.value,
   }
   try {
-    const response = search.value
-      ? await searchItems(
-          { ...props.filter_index },
-          {
-            page: currentPage.value,
-            per_page: perPage.value === -1 ? 99999 : perPage.value,
-            search: search.value,
-            ...(selectedColumns.value.length ? { columns: selectedColumns.value.filter(c => c !== 'actions').join(',') } : {}),
-          }
-        )
-      : await index(params)
-    // Formato paginado do backend: { data: [...], total, current_page, per_page, ... }
+    const response = await index(params)
     if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
       rawItems.value = response.data
       totalItems.value = response.total
       currentPage.value = response.current_page
       perPage.value = response.per_page
     } else {
-      // Formato legado: array simples
       rawItems.value = Array.isArray(response) ? response : []
       totalItems.value = rawItems.value.length
     }
@@ -227,20 +227,6 @@ const loadItems = async () => {
     // Erros tratados pelo useCrud
   }
 }
-
-// Reagir à mudança de busca: resetar para página 1 e recarregar do backend
-watch(search, () => {
-  clearTimeout(searchDebounceTimer)
-  searchDebounceTimer = setTimeout(() => {
-    currentPage.value = 1
-    loadItems()
-  }, 400)
-})
-
-// Recarregar pesquisa ao mudar seleção de colunas
-watch(selectedColumns, () => {
-  if (search.value) loadItems()
-})
 
 // Reagir à mudança de página/per_page/sortBy vinda da tabela
 const handleTableOptions = ({ page, itemsPerPage, sortBy }) => {

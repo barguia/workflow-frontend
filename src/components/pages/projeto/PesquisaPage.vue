@@ -254,12 +254,14 @@ const totalItems     = ref(0)
 const currentSortBy  = ref([])
 let skipNextOptionsEvent = true
 
+const getVal = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj) ?? ''
+
 const resultados = computed(() => {
   if (!rawResultados.value) return null
   if (!currentSortBy.value.length) return rawResultados.value
   const { key, order } = currentSortBy.value[0]
   return [...rawResultados.value].sort((a, b) => {
-    const cmp = String(a[key] ?? '').localeCompare(String(b[key] ?? ''), undefined, { numeric: true, sensitivity: 'base' })
+    const cmp = String(getVal(a, key)).localeCompare(String(getVal(b, key)), undefined, { numeric: true, sensitivity: 'base' })
     return order === 'desc' ? -cmp : cmp
   })
 })
