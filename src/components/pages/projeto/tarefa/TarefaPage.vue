@@ -2,6 +2,7 @@
   <CrudComponent
       route="wf/tarefas"
       title="Tarefas"
+      must-sort
       :fields="tarefaFields"
       :headers="userHeaders"
       :show-select="false"

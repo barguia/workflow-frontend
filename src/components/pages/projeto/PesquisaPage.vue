@@ -133,11 +133,12 @@
     </CardComponent>
 
     <!-- Resultados -->
-    <div v-if="resultados !== null" class="mt-6" data-testid="pesquisa-tabela-resultados">
+    <div v-if="rawResultados !== null" class="mt-6" data-testid="pesquisa-tabela-resultados">
       <CardComponent rounded="xl" variant="elevated">
         <CrudDataTableComponent
           :headers="[{ key: 'actions', title: '', sortable: false, align: 'end' }]"
           :items="resultados"
+          must-sort
           :items-per-page="perPage"
           :page="currentPage"
           :total-items="totalItems"
@@ -186,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors.js'
 import { useColumnSelection } from '@/composables/useColumnSelection.js'
@@ -243,14 +244,25 @@ const carregando = ref({
   tarefas:       false,
 })
 
-const pesquisando  = ref(false)
-const resultados   = ref(null)
+const pesquisando     = ref(false)
+const rawResultados   = ref(null)
 
 // Paginação server-side
-const currentPage  = ref(1)
-const perPage      = ref(50)
-const totalItems   = ref(0)
+const currentPage    = ref(1)
+const perPage        = ref(50)
+const totalItems     = ref(0)
+const currentSortBy  = ref([])
 let skipNextOptionsEvent = true
+
+const resultados = computed(() => {
+  if (!rawResultados.value) return null
+  if (!currentSortBy.value.length) return rawResultados.value
+  const { key, order } = currentSortBy.value[0]
+  return [...rawResultados.value].sort((a, b) => {
+    const cmp = String(a[key] ?? '').localeCompare(String(b[key] ?? ''), undefined, { numeric: true, sensitivity: 'base' })
+    return order === 'desc' ? -cmp : cmp
+  })
+})
 
 // Colunas
 const availableColumns = ref([])
@@ -268,21 +280,20 @@ async function loadResultados() {
       {
         page: currentPage.value,
         per_page: perPage.value === -1 ? 99999 : perPage.value,
-        ...(selectedColumns.value.length ? { columns: selectedColumns.value.filter(c => c !== 'actions').join(',') } : {}),
       }
     )
     if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
-      resultados.value  = response.data
-      totalItems.value  = response.total
-      currentPage.value = response.current_page
-      perPage.value     = response.per_page
+      rawResultados.value = response.data
+      totalItems.value    = response.total
+      currentPage.value   = response.current_page
+      perPage.value       = response.per_page
     } else {
-      resultados.value = Array.isArray(response) ? response : []
-      totalItems.value = resultados.value.length
+      rawResultados.value = Array.isArray(response) ? response : []
+      totalItems.value    = rawResultados.value.length
     }
   } catch {
-    resultados.value = []
-    totalItems.value = 0
+    rawResultados.value = []
+    totalItems.value    = 0
   } finally {
     pesquisando.value = false
   }
@@ -299,13 +310,15 @@ async function pesquisar() {
     ctrl_tarefa_id:         filtros.value.tarefas,
     ...(modo.value === 'pendentes' ? { ctrl_status_id: filtros.value.status } : {}),
   }
-  currentPage.value = 1
+  currentPage.value   = 1
+  currentSortBy.value = []
   skipNextOptionsEvent = true
   await loadResultados()
 }
 
-const handleTableOptions = ({ page, itemsPerPage }) => {
+const handleTableOptions = ({ page, itemsPerPage, sortBy }) => {
   if (skipNextOptionsEvent) { skipNextOptionsEvent = false; return }
+  currentSortBy.value = sortBy ?? []
   if (page !== currentPage.value || itemsPerPage !== perPage.value) {
     currentPage.value = page
     perPage.value = itemsPerPage
@@ -321,8 +334,8 @@ const onSelectedColumnsChange = (cols) => {
 
 function limparFiltros() {
   filtros.value = { projetos: [], macroProcessos: [], processos: [], status: [], tarefas: [] }
-  resultados.value  = null
-  ultimaQuery.value = null
+  rawResultados.value = null
+  ultimaQuery.value   = null
   totalItems.value  = 0
   currentPage.value = 1
 }

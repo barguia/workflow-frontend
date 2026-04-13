@@ -147,7 +147,7 @@ const props = defineProps({
 
 const emit = defineEmits(['item-saved', 'item-deleted'])
 
-const items = ref([])
+const rawItems = ref([])
 const selectedItems = ref([])
 const search = ref('')
 const dialog = ref(false)
@@ -161,6 +161,18 @@ const { validationErrors, clearErrors } = useValidationErrors();
 const currentPage = ref(1)
 const perPage = ref(50)
 const totalItems = ref(0)
+const currentSortBy = ref([])
+
+const items = computed(() => {
+  if (!currentSortBy.value.length) return rawItems.value
+  const { key, order } = currentSortBy.value[0]
+  return [...rawItems.value].sort((a, b) => {
+    const aVal = a[key] ?? ''
+    const bVal = b[key] ?? ''
+    const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true, sensitivity: 'base' })
+    return order === 'desc' ? -cmp : cmp
+  })
+})
 let skipNextOptionsEvent = true
 let searchDebounceTimer = null
 
@@ -202,14 +214,14 @@ const loadItems = async () => {
       : await index(params)
     // Formato paginado do backend: { data: [...], total, current_page, per_page, ... }
     if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
-      items.value = response.data
+      rawItems.value = response.data
       totalItems.value = response.total
       currentPage.value = response.current_page
       perPage.value = response.per_page
     } else {
       // Formato legado: array simples
-      items.value = Array.isArray(response) ? response : []
-      totalItems.value = items.value.length
+      rawItems.value = Array.isArray(response) ? response : []
+      totalItems.value = rawItems.value.length
     }
   } catch (err) {
     // Erros tratados pelo useCrud
@@ -230,11 +242,16 @@ watch(selectedColumns, () => {
   if (search.value) loadItems()
 })
 
-// Reagir à mudança de página/per_page vinda da tabela
-const handleTableOptions = ({ page, itemsPerPage }) => {
+// Reagir à mudança de página/per_page/sortBy vinda da tabela
+const handleTableOptions = ({ page, itemsPerPage, sortBy }) => {
   if (skipNextOptionsEvent) {
     skipNextOptionsEvent = false
     return
+  }
+  const newSortBy = sortBy ?? []
+  const sortChanged = JSON.stringify(newSortBy) !== JSON.stringify(currentSortBy.value)
+  if (sortChanged) {
+    currentSortBy.value = newSortBy
   }
   if (page !== currentPage.value || itemsPerPage !== perPage.value) {
     currentPage.value = page
