@@ -213,7 +213,7 @@
 
           <template #item.status="{ item }">
             <ChipComponent size="small" variant="tonal" color="primary">
-              {{ item.status ?? '—' }}
+              {{ item.status_tarefa ?? '—' }}
             </ChipComponent>
           </template>
 
@@ -265,11 +265,13 @@ const totalTarefas = computed(() => tarefas.value.length)
 
 const headersTarefas = [
   { title: '',        value: 'actions' },
-  { title: 'Id',     value: 'pco_tarefa_id',    sortable: true },
+  // { title: 'Id',     value: 'pco_tarefa_id',    sortable: true },
   { title: 'Tarefa',     value: 'tarefa',    sortable: true },
   { title: 'Processo',   value: 'processo',  sortable: true },
   { title: 'Status',     value: 'status',    sortable: true },
-  { title: 'Responsável', value: 'responsavel', sortable: true },
+  { title: 'Responsável', value: 'user_tratamento', sortable: true },
+  { title: 'Inicio', value: 'data_inicio_tarefa', sortable: true },
+  { title: 'Fim', value: 'data_fim_tarefa', sortable: true },
 ]
 
 function corPrioridade(prioridade) {
@@ -311,10 +313,11 @@ async function buscarTarefas() {
   if (!projeto.value) return
   carregandoTarefas.value = true
   try {
+    const ctrlWorkflowId = projeto.value.workflow.ctrl_workflow_id ?? null
     const payload = {
-      finalizados:          modoTarefas.value === 'finalizados',
+      finalizados:    modoTarefas.value === 'finalizados',
       pco_projeto_id: [projeto.value.id],
-      ctrl_workflow_id: [projeto.value.workflow.ctrl_workflow_id],
+      ctrl_workflow_id: ctrlWorkflowId,
     }
     const res = await api.post('wf/projetos/pesquisa', payload)
     tarefas.value = res.data?.data ?? []
