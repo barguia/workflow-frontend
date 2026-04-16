@@ -4,6 +4,7 @@
       title="Hierarquias de Processos"
       :fields="fields"
       :headers="headers"
+      must-sort
       data-testid="hierarquia-crud"
   >
   </CrudComponent>
@@ -86,10 +87,10 @@ const fields = [
 ]
 
 const headers = [
-  { title: 'Hierarquia', value: 'hierarquia' },
-  { title: 'Hierarquia Macro', value: 'macro_hierarquia.hierarquia' },
-  { title: 'Hierarquia Sub', value: 'sub_hierarquia.hierarquia' },
-  { title: 'Workflow', value: 'workflow.workflow' },
-  { title: '', value: 'actions'}
+  { title: 'Hierarquia',       key: 'hierarquia' },
+  { title: 'Hierarquia Macro', key: 'macro_hierarquia.hierarquia' },
+  { title: 'Hierarquia Sub',   key: 'sub_hierarquia.hierarquia' },
+  { title: 'Workflow',         key: 'workflow.workflow' },
+  { title: '',                 key: 'actions', sortable: false },
 ]
 </script>
