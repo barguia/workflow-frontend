@@ -30,6 +30,16 @@ class Crud {
         const response = await this.api.delete(`${this.route}/${payload.id}`);
         return response.data;
     }
+
+    async search(body = {}, queryParams = {}) {
+        const response = await this.api.post(`${this.route}/pesquisa`, body, { params: queryParams });
+        return response.data.data;
+    }
+
+    async columns() {
+        const response = await this.api.get(`${this.route}/colunas-pesquisa`);
+        return response.data.data;
+    }
 }
 
 export default Crud;

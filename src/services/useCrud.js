@@ -45,5 +45,22 @@ export function useCrud(route) {
             handleCrudError(error, errors, snackbarMessage, showSnackbar);
         }
     };
-    return { index, create, update, deleteItem, errors, snackbarMessage, showSnackbar };
+
+    const search = async (body, queryParams) => {
+        try {
+            return await crudService.search(body, queryParams);
+        } catch (error) {
+            handleCrudError(error, errors, snackbarMessage, showSnackbar);
+        }
+    };
+
+    const fetchColumns = async () => {
+        try {
+            return await crudService.columns();
+        } catch {
+            return [];
+        }
+    };
+
+    return { index, create, update, deleteItem, search, fetchColumns, errors, snackbarMessage, showSnackbar };
 }

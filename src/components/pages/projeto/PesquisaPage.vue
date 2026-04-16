@@ -133,38 +133,24 @@
     </CardComponent>
 
     <!-- Resultados -->
-    <div v-if="resultados !== null" class="mt-6">
+    <div v-if="rawResultados !== null" class="mt-6" data-testid="pesquisa-tabela-resultados">
       <CardComponent rounded="xl" variant="elevated">
-        <v-data-table
-          :headers="headersResultado"
+        <CrudDataTableComponent
+          :headers="[{ key: 'actions', title: '', sortable: false, align: 'end' }]"
           :items="resultados"
-          :items-per-page="15"
-          class="elevation-0"
-          hover
-          data-testid="pesquisa-tabela-resultados"
+          must-sort
+          :items-per-page="perPage"
+          :page="currentPage"
+          :total-items="totalItems"
+          :available-columns="availableColumns"
+          :selected-columns="selectedColumns"
+          :show-select="false"
+          :show-search="false"
+          title="Resultados"
+          @update:options="handleTableOptions"
+          @update:selected-columns="onSelectedColumnsChange"
         >
-          <template #top>
-            <div class="table-toolbar pa-4 d-flex align-center ga-3">
-              <span class="text-subtitle-1 font-weight-semibold">
-                Resultados
-                <ChipComponent size="small" color="primary" class="ml-2">{{ resultados.length }}</ChipComponent>
-              </span>
-              <SpacerComponent />
-              <TextFieldComponent
-                v-model="buscaLocal"
-                prepend-inner-icon="mdi-magnify"
-                label="Buscar nos resultados"
-                single-line
-                hide-details
-                density="compact"
-                style="max-width: 280px"
-                clearable
-                data-testid="pesquisa-input-busca"
-              />
-            </div>
-          </template>
-
-          <template #item.actions="{ item }">
+          <template #actions="{ item }">
             <ButtonComponent
               icon="mdi-clipboard-text-outline"
               variant="text"
@@ -174,7 +160,6 @@
               target="_blank"
               title="Ficha técnica da tarefa"
             />
-
             <ButtonComponent
               icon="mdi-eye-outline"
               variant="text"
@@ -184,14 +169,7 @@
               target="_blank"
             />
           </template>
-
-          <template #no-data>
-            <div class="py-8 text-center text-medium-emphasis">
-              <IconComponent size="40" class="mb-2">mdi-inbox-outline</IconComponent>
-              <div>Nenhum registro encontrado.</div>
-            </div>
-          </template>
-        </v-data-table>
+        </CrudDataTableComponent>
       </CardComponent>
     </div>
 
@@ -209,23 +187,22 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors.js'
+import { useColumnSelection } from '@/composables/useColumnSelection.js'
 
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
-import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue'
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
 import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
-import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
-import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
+import CrudDataTableComponent from '@/components/crud/CrudDataTableComponent.vue'
 
 const { validationErrors, clearErrors } = useValidationErrors()
 const showErros = ref(false)
@@ -234,17 +211,19 @@ watch(validationErrors, (val) => {
   if (val && Object.keys(val).length > 0) showErros.value = true
 })
 
-const { index: fetchProjetos }     = useCrud('wf/projetos')
-const { index: fetchProcessos }    = useCrud('wf/processos')
-const { index: fetchStatus }       = useCrud('wf/status')
-const { index: fetchTarefas }      = useCrud('wf/tarefas')
+const { index: fetchProjetos }  = useCrud('wf/projetos')
+const { index: fetchProcessos } = useCrud('wf/processos')
+const { index: fetchStatus }    = useCrud('wf/status')
+const { index: fetchTarefas }   = useCrud('wf/tarefas')
+const { search: executarPesquisa, fetchColumns } = useCrud('wf/projetos')
+const { initColumns, saveColumns } = useColumnSelection('pesquisa:wf/projetos')
 
 const modo = ref('pendentes')
 
 const filtros = ref({
   projetos:      [],
   macroProcessos: [],
-  ctrl_processo_id:     [],
+  processos:     [],
   status:        [],
   tarefas:       [],
 })
@@ -252,7 +231,7 @@ const filtros = ref({
 const opcoes = ref({
   projetos:      [],
   macroProcessos: [],
-  ctrl_processo_id:     [],
+  processos:     [],
   status:        [],
   tarefas:       [],
 })
@@ -265,18 +244,103 @@ const carregando = ref({
   tarefas:       false,
 })
 
-const pesquisando = ref(false)
-const resultados  = ref(null)
-const buscaLocal  = ref('')
+const pesquisando     = ref(false)
+const rawResultados   = ref(null)
 
-const headersResultado = [
-  { title: '',               value: 'actions',        sortable: false },
-  { title: 'Projeto',        value: 'projeto_nome',   sortable: true },
-  { title: 'tarefa',         value: 'tarefa',         sortable: true },
-  { title: 'Status',         value: 'status_tarefa',  sortable: true },
-  { title: 'Processo',       value: 'processo',       sortable: true },
-  { title: 'Macro Processo', value: 'macro_processo', sortable: true },
-]
+// Paginação server-side
+const currentPage    = ref(1)
+const perPage        = ref(50)
+const totalItems     = ref(0)
+const currentSortBy  = ref([])
+let skipNextOptionsEvent = true
+
+const getVal = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj) ?? ''
+
+const resultados = computed(() => {
+  if (!rawResultados.value) return null
+  if (!currentSortBy.value.length) return rawResultados.value
+  const { key, order } = currentSortBy.value[0]
+  return [...rawResultados.value].sort((a, b) => {
+    const cmp = String(getVal(a, key)).localeCompare(String(getVal(b, key)), undefined, { numeric: true, sensitivity: 'base' })
+    return order === 'desc' ? -cmp : cmp
+  })
+})
+
+// Colunas
+const availableColumns = ref([])
+const selectedColumns  = ref([])
+
+// Guarda os filtros da última pesquisa para reuso na paginação
+const ultimaQuery = ref(null)
+
+async function loadResultados() {
+  if (!ultimaQuery.value) return
+  pesquisando.value = true
+  try {
+    const response = await executarPesquisa(
+      ultimaQuery.value,
+      {
+        page: currentPage.value,
+        per_page: perPage.value === -1 ? 99999 : perPage.value,
+      }
+    )
+    if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
+      rawResultados.value = response.data
+      totalItems.value    = response.total
+      currentPage.value   = response.current_page
+      perPage.value       = response.per_page
+    } else {
+      rawResultados.value = Array.isArray(response) ? response : []
+      totalItems.value    = rawResultados.value.length
+    }
+  } catch {
+    rawResultados.value = []
+    totalItems.value    = 0
+  } finally {
+    pesquisando.value = false
+  }
+}
+
+async function pesquisar() {
+  clearErrors()
+  ultimaQuery.value = {
+    ctrl_workflow_id:       1,
+    finalizados:            modo.value === 'finalizados',
+    pco_projeto_id:         filtros.value.projetos,
+    ctrl_macro_processo_id: filtros.value.macroProcessos,
+    ctrl_processo_id:       filtros.value.processos,
+    ctrl_tarefa_id:         filtros.value.tarefas,
+    ...(modo.value === 'pendentes' ? { ctrl_status_id: filtros.value.status } : {}),
+  }
+  currentPage.value   = 1
+  currentSortBy.value = []
+  skipNextOptionsEvent = true
+  await loadResultados()
+}
+
+const handleTableOptions = ({ page, itemsPerPage, sortBy }) => {
+  if (skipNextOptionsEvent) { skipNextOptionsEvent = false; return }
+  currentSortBy.value = sortBy ?? []
+  if (page !== currentPage.value || itemsPerPage !== perPage.value) {
+    currentPage.value = page
+    perPage.value = itemsPerPage
+    loadResultados()
+  }
+}
+
+const onSelectedColumnsChange = (cols) => {
+  selectedColumns.value = cols
+  saveColumns(cols)
+  if (ultimaQuery.value) loadResultados()
+}
+
+function limparFiltros() {
+  filtros.value = { projetos: [], macroProcessos: [], processos: [], status: [], tarefas: [] }
+  rawResultados.value = null
+  ultimaQuery.value   = null
+  totalItems.value  = 0
+  currentPage.value = 1
+}
 
 async function carregarOpcoes() {
   await Promise.all([
@@ -292,9 +356,7 @@ async function carregarProjetos() {
   try {
     const data = await fetchProjetos()
     opcoes.value.projetos = (data ?? []).map(p => ({ value: p.id, text: p.nome ?? p.projeto ?? String(p.id) }))
-  } finally {
-    carregando.value.projetos = false
-  }
+  } finally { carregando.value.projetos = false }
 }
 
 async function carregarProcessos() {
@@ -316,9 +378,7 @@ async function carregarStatus() {
   try {
     const data = await fetchStatus()
     opcoes.value.status = (data ?? []).map(s => ({ value: s.id, text: s.status ?? s.nome ?? String(s.id) }))
-  } finally {
-    carregando.value.status = false
-  }
+  } finally { carregando.value.status = false }
 }
 
 async function carregarTarefas() {
@@ -326,9 +386,7 @@ async function carregarTarefas() {
   try {
     const data = await fetchTarefas()
     opcoes.value.tarefas = (data ?? []).map(t => ({ value: t.id, text: t.tarefa ?? String(t.id) }))
-  } finally {
-    carregando.value.tarefas = false
-  }
+  } finally { carregando.value.tarefas = false }
 }
 
 async function onModoChange() {
@@ -338,57 +396,10 @@ async function onModoChange() {
   }
 }
 
-function limparFiltros() {
-  filtros.value = {
-    projetos:      [],
-    macroProcessos: [],
-    processos:     [],
-    status:        [],
-    tarefas:       [],
-  }
-  resultados.value = null
-  buscaLocal.value = ''
-}
-
-async function pesquisar() {
-  clearErrors()
-  pesquisando.value = true
-  try {
-    const payload = {
-      ctrl_workflow_id: 1,
-      finalizados:            modo.value == 'pendentes' ? false : true,
-      pco_projeto_id:         filtros.value.projetos,
-      ctrl_macro_processo_id: filtros.value.macroProcessos,
-      ctrl_processo_id:       filtros.value.processos,
-      ctrl_tarefa_id:         filtros.value.tarefas,
-    }
-    if (modo.value === 'pendentes') {
-      payload.ctrl_status_id = filtros.value.status
-    }
-
-    const { default: api } = await import('@/services/api.js')
-    const res = await api.post('wf/projetos/pesquisa', payload)
-    resultados.value = res.data?.data ?? []
-  } catch {
-    resultados.value = []
-  } finally {
-    pesquisando.value = false
-  }
-}
-
-onMounted(carregarOpcoes)
+onMounted(async () => {
+  carregarOpcoes()
+  const cols = await fetchColumns()
+  availableColumns.value = [...cols, 'actions']
+  selectedColumns.value  = initColumns(availableColumns.value)
+})
 </script>
-
-<style scoped>
-.table-toolbar {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-}
-
-:deep(.v-data-table-header__content) {
-  font-weight: 600;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  opacity: 0.7;
-}
-</style>

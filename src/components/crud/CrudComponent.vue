@@ -2,15 +2,19 @@
   <div>
     <ContainerComponent fluid>
       <CrudDataTableComponent
+          v-bind="$attrs"
           v-model:selected="selectedItems"
           :headers="headers"
           :items="items"
-          :search.sync="search"
+          v-model:search="search"
           :title="title"
           :show-select="showSelect"
-          :total-items="totalItems"
+          :total-items="effectiveTotalItems"
           :page="currentPage"
           :items-per-page="perPage"
+          :available-columns="activeAvailableColumns"
+          :selected-columns="selectedColumns"
+          @update:selected-columns="selectedColumns = $event"
           @edit="openEditModal"
           @update:options="handleTableOptions"
       >
@@ -107,9 +111,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+defineOptions({ inheritAttrs: false })
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
-import { useValidationErrors } from '@/composables/useValidationErrors';
+import { useValidationErrors } from '@/composables/useValidationErrors'
+import { useColumnSelection } from '@/composables/useColumnSelection.js'
 
 import CrudDataTableComponent from './CrudDataTableComponent.vue'
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
@@ -137,12 +143,13 @@ const props = defineProps({
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
   showSelect: { type: Boolean, default: true },
+  searchable: { type: Boolean, default: false },
   onEdit: { type: Function, default: null },
 })
 
 const emit = defineEmits(['item-saved', 'item-deleted'])
 
-const items = ref([])
+const rawItems = ref([])
 const selectedItems = ref([])
 const search = ref('')
 const dialog = ref(false)
@@ -152,14 +159,45 @@ const form = ref({})
 const resolvedOptions = ref({})
 const { validationErrors, clearErrors } = useValidationErrors();
 
-// Paginação server-side
+// Paginação e busca server-side
 const currentPage = ref(1)
 const perPage = ref(50)
 const totalItems = ref(0)
+const currentSortBy = ref([])
+
+const filteredItems = computed(() => {
+  if (!search.value) return rawItems.value
+  const term = search.value.toLowerCase()
+  return rawItems.value.filter(item =>
+    Object.values(item).some(v => String(v ?? '').toLowerCase().includes(term))
+  )
+})
+
+const getVal = (obj, path) => path.split('.').reduce((o, k) => o?.[k], obj) ?? ''
+
+const items = computed(() => {
+  const base = filteredItems.value
+  if (!currentSortBy.value.length) return base
+  const { key, order } = currentSortBy.value[0]
+  return [...base].sort((a, b) => {
+    const cmp = String(getVal(a, key)).localeCompare(String(getVal(b, key)), undefined, { numeric: true, sensitivity: 'base' })
+    return order === 'desc' ? -cmp : cmp
+  })
+})
+
+const effectiveTotalItems = computed(() => search.value ? filteredItems.value.length : totalItems.value)
 let skipNextOptionsEvent = true
 
+// Colunas da pesquisa
+const availableColumns = ref([])
+const selectedColumns = ref([])
+const activeAvailableColumns = computed(() => props.searchable ? availableColumns.value : [])
+const { initColumns, saveColumns } = useColumnSelection(props.route)
+
+watch(selectedColumns, saveColumns)
+
 // useCrud
-const { index, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
+const { index, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -167,7 +205,7 @@ watch(selectedItems, (newValue) => {
   showMassActions.value = newValue.length > 0
 })
 
-// Carregar itens com suporte a paginação server-side
+// Carregar itens do backend (paginação server-side)
 const loadItems = async () => {
   const params = {
     ...props.filter_index,
@@ -176,27 +214,30 @@ const loadItems = async () => {
   }
   try {
     const response = await index(params)
-    // Formato paginado do backend: { data: [...], total, current_page, per_page, ... }
     if (response && !Array.isArray(response) && 'data' in response && 'total' in response) {
-      items.value = response.data
+      rawItems.value = response.data
       totalItems.value = response.total
       currentPage.value = response.current_page
       perPage.value = response.per_page
     } else {
-      // Formato legado: array simples
-      items.value = Array.isArray(response) ? response : []
-      totalItems.value = items.value.length
+      rawItems.value = Array.isArray(response) ? response : []
+      totalItems.value = rawItems.value.length
     }
   } catch (err) {
     // Erros tratados pelo useCrud
   }
 }
 
-// Reagir à mudança de página/per_page vinda da tabela
-const handleTableOptions = ({ page, itemsPerPage }) => {
+// Reagir à mudança de página/per_page/sortBy vinda da tabela
+const handleTableOptions = ({ page, itemsPerPage, sortBy }) => {
   if (skipNextOptionsEvent) {
     skipNextOptionsEvent = false
     return
+  }
+  const newSortBy = sortBy ?? []
+  const sortChanged = JSON.stringify(newSortBy) !== JSON.stringify(currentSortBy.value)
+  if (sortChanged) {
+    currentSortBy.value = newSortBy
   }
   if (page !== currentPage.value || itemsPerPage !== perPage.value) {
     currentPage.value = page
@@ -205,8 +246,13 @@ const handleTableOptions = ({ page, itemsPerPage }) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   loadItems()
+  if (props.searchable) {
+    const cols = await fetchColumns()
+    availableColumns.value = [...cols, 'actions']
+    selectedColumns.value  = initColumns(availableColumns.value)
+  }
 })
 
 // Funções
