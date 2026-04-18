@@ -10,6 +10,14 @@
   >
     <template #actionsField="{ item }">
       <v-btn
+          icon="mdi-eye-outline"
+          variant="text"
+          size="small"
+          color="secondary"
+          title="Visualizar formulário"
+          @click="abrirPreview(item)"
+      />
+      <v-btn
           icon="mdi-format-list-checks"
           variant="text"
           size="small"
@@ -32,15 +40,23 @@
       :todos-itens="todosCampos"
       @salvo="fecharModal"
   />
+
+  <PreviewFormularioDialog
+      v-if="dialogPreview"
+      v-model="dialogPreview"
+      :formulario="formularioSelecionado"
+  />
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import UmParaMuitosComponent2 from '@/components/comuns/associacao/UmParaMuitosComponent2.vue'
+import PreviewFormularioDialog from './PreviewFormularioDialog.vue'
 import api from '@/services/api.js'
 
 const dialog = ref(false)
+const dialogPreview = ref(false)
 const formularioSelecionado = ref(null)
 const camposSelecionados = ref([])
 const todosCampos = ref([])
@@ -66,6 +82,11 @@ const headers = [
   { title: 'Descrição',  value: 'descricao',  key: 'descricao'  },
   { title: '',           value: 'actions'                        },
 ]
+
+const abrirPreview = (formulario) => {
+  formularioSelecionado.value = formulario
+  dialogPreview.value = true
+}
 
 const abrirModalCampos = async (formulario) => {
   const [resTodos, resAssociados] = await Promise.all([
