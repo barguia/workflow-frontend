@@ -9,7 +9,7 @@
 
     <v-tabs-window v-model="tab">
       <v-tabs-window-item v-for="item in telas" :key="item.id" :value="item.id" lazy>
-        <component :is="item.componente" />
+        <component :is="item.componente" v-if="tab === item.id"/>
       </v-tabs-window-item>
     </v-tabs-window>
   </CardComponent>

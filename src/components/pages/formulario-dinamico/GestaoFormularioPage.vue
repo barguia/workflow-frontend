@@ -8,8 +8,8 @@
     </v-tabs>
 
     <v-tabs-window v-model="tab">
-      <v-tabs-window-item v-for="item in telas" :key="item.id" :value="item.id" lazy>
-        <component :is="item.componente" />
+      <v-tabs-window-item v-for="item in telas" :key="item.id" :value="item.id">
+        <component :is="item.componente" v-if="tab === item.id" />
       </v-tabs-window-item>
     </v-tabs-window>
   </CardComponent>
@@ -25,14 +25,10 @@ const route  = useRoute()
 const router = useRouter()
 
 const HASH_PARA_ABA = {
-  '#visao-geral':  'visao-geral',
-  '#projetos':     'projetos',
-  '#tarefas':      'tarefas',
-  '#processos':    'processos',
-  '#hierarquias':  'hierarquias',
-  '#workflows':    'workflows',
-  '#pesquisa':     'pesquisa',
-  '#backlog':      'backlog',
+  '#visao-geral':    'visao-geral',
+  '#formularios':    'formularios',
+  '#campos':         'campos',
+  '#regras-campos':  'regras-campos',
 }
 
 const ABA_PARA_HASH = Object.fromEntries(
@@ -45,23 +41,29 @@ function resolverAba(hash)  { return HASH_PARA_ABA[hash] ?? ABA_PADRAO }
 function resolverHash(aba)  { return ABA_PARA_HASH[aba]  ?? '#visao-geral' }
 
 const telas = markRaw([
-  // {
-  //   id: 'visao-geral',
-  //   title: 'Visão Geral',
-  //   icon: 'mdi-view-dashboard-outline',
-  //   componente: defineAsyncComponent(() => import('./sub-pages/VisaoGeralPage.vue')),
-  // },
-  // {
-  //   id: 'Formulários',
-  //   title: 'Formulários Dinâmicos',
-  //   icon: 'mdi-briefcase-outline',
-  //   componente: defineAsyncComponent(() => import('./ProjetoPage.vue')),
-  // },
+  {
+    id: 'visao-geral',
+    title: 'Visão Geral',
+    icon: 'mdi-view-dashboard-outline',
+    componente: defineAsyncComponent(() => import('./sub-pages/VisaoGeralPage.vue')),
+  },
+  {
+    id: 'formularios',
+    title: 'Formulários',
+    icon: 'mdi-text-box-multiple-outline',
+    componente: defineAsyncComponent(() => import('./sub-pages/FormularioPage.vue')),
+  },
   {
     id: 'campos',
     title: 'Campos',
-    icon: 'mdi-checkbox-marked-circle-outline',
+    icon: 'mdi-form-textbox',
     componente: defineAsyncComponent(() => import('./sub-pages/CampoPage.vue')),
+  },
+  {
+    id: 'regras-campos',
+    title: 'Regras de Campos',
+    icon: 'mdi-code-braces',
+    componente: defineAsyncComponent(() => import('./sub-pages/RegrasCampoPage.vue')),
   },
 ])
 
