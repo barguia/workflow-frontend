@@ -14,7 +14,7 @@
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import api from "@/services/api.js";
 import {upperCase} from "lodash-es";
-
+const tiposSelecionais = ['checkbox', 'select', 'radio']
 const fields = [
   {
     key: 'campo',
@@ -45,12 +45,16 @@ const fields = [
     key: 'placeholder',
     label: 'Placeholder',
     type: 'text',
+    disabled: f => tiposSelecionais.includes(f.tipo),
+    visible: f => ! tiposSelecionais.includes(f.tipo),
     optional: true
   },
   {
     key: 'mascara',
     label: 'Máscara',
     type: 'text',
+    disabled: f => tiposSelecionais.includes(f.tipo),
+    visible: f => ! tiposSelecionais.includes(f.tipo),
     optional: true
   },
   {

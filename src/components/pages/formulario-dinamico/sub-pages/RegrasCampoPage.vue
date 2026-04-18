@@ -47,7 +47,7 @@ const fields = [
     type: 'select',
     options: async () => {
       const rows = await fetchExpressoes()
-      return rows.map(r => ({ value: r.id, text: r.expressao ?? r.nome ?? r.operador ?? r.id }))
+      return rows.map(r => ({ value: r.id, text: r.expressao ?? r.nome ?? r.comando ?? r.id }))
     },
     rules: [v => !!v || 'Expressão é obrigatória'],
     optional: false,
