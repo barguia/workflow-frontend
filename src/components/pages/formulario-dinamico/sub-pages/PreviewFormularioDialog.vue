@@ -1,14 +1,14 @@
 <template>
-  <v-dialog v-model="dialog" max-width="700" scrollable>
-    <v-card>
-      <v-card-title class="d-flex align-center justify-space-between pa-4">
+  <DialogComponent v-model="dialog" max-width="700" scrollable>
+    <CardComponent>
+      <CardTitleComponent class="d-flex align-center justify-space-between pa-4">
         <span class="text-h6">{{ titulo }}</span>
         <v-btn icon="mdi-close" variant="text" size="small" @click="dialog = false" />
-      </v-card-title>
+      </CardTitleComponent>
 
       <v-divider />
 
-      <v-card-text class="pa-4">
+      <CardTextComponent class="pa-4">
         <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-4" />
 
         <v-alert v-else-if="erro" type="error" variant="tonal" class="mb-4">
@@ -19,84 +19,36 @@
           Este formulário não possui campos associados.
         </v-alert>
 
-        <template v-else>
-          <v-form ref="formRef">
-            <v-row dense>
-              <v-col v-for="campo in campos" :key="campo.id" cols="12">
-                <v-text-field
-                    v-if="isType(campo, ['text', 'email', 'date', 'password', 'number'])"
-                    v-model="form[campo.id]"
-                    :label="campo.label || campo.campo"
-                    :placeholder="campo.placeholder || ''"
-                    :type="campo.tipo"
-                    :hint="campo.descricao || ''"
-                    :rules="campo.obrigatorio ? [v => !!v || `${campo.label || campo.campo} é obrigatório`] : []"
-                    persistent-hint
-                />
-                <v-textarea
-                    v-else-if="isType(campo, 'textarea')"
-                    v-model="form[campo.id]"
-                    :label="campo.label || campo.campo"
-                    :placeholder="campo.placeholder || ''"
-                    :hint="campo.descricao || ''"
-                    :rules="campo.obrigatorio ? [v => !!v || `${campo.label || campo.campo} é obrigatório`] : []"
-                    persistent-hint
-                />
-                <v-select
-                    v-else-if="isType(campo, 'select')"
-                    v-model="form[campo.id]"
-                    :label="campo.label || campo.campo"
-                    :placeholder="campo.placeholder || ''"
-                    :hint="campo.descricao || ''"
-                    :rules="campo.obrigatorio ? [v => !!v || `${campo.label || campo.campo} é obrigatório`] : []"
-                    :items="[]"
-                    persistent-hint
-                />
-                <v-radio-group
-                    v-else-if="isType(campo, 'radio')"
-                    v-model="form[campo.id]"
-                    :label="campo.label || campo.campo"
-                    :hint="campo.descricao || ''"
-                    :rules="campo.obrigatorio ? [v => !!v || `${campo.label || campo.campo} é obrigatório`] : []"
-                    persistent-hint
-                />
-                <v-checkbox
-                    v-else-if="isType(campo, 'checkbox')"
-                    v-model="form[campo.id]"
-                    :label="campo.label || campo.campo"
-                    :hint="campo.descricao || ''"
-                    :rules="campo.obrigatorio ? [v => !!v || `${campo.label || campo.campo} é obrigatório`] : []"
-                    persistent-hint
-                />
-                <v-text-field
-                    v-else
-                    v-model="form[campo.id]"
-                    :label="campo.label || campo.campo"
-                    :placeholder="campo.placeholder || ''"
-                    :hint="campo.descricao || ''"
-                    :rules="campo.obrigatorio ? [v => !!v || `${campo.label || campo.campo} é obrigatório`] : []"
-                    persistent-hint
-                />
-              </v-col>
-            </v-row>
-          </v-form>
-        </template>
-      </v-card-text>
+        <FormularioDinamico
+            v-else
+            ref="formRef"
+            :fields="fields"
+            v-model="form"
+            :validation-errors="{}"
+        />
+      </CardTextComponent>
 
       <v-divider />
 
-      <v-card-actions class="pa-3">
+      <CardActionsComponent class="pa-3">
         <v-spacer />
-        <v-btn variant="text" @click="dialog = false">Fechar</v-btn>
-        <v-btn v-if="campos.length" color="primary" @click="validar">Validar</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        <ButtonComponent variant="text" @click="dialog = false">Fechar</ButtonComponent>
+        <ButtonComponent v-if="campos.length" color="primary" @click="validar">Validar</ButtonComponent>
+      </CardActionsComponent>
+    </CardComponent>
+  </DialogComponent>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import api from '@/services/api.js'
+import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
+import CardComponent from '@/components/comuns/cards/CardComponent.vue'
+import CardTitleComponent from '@/components/comuns/cards/CardTitleComponent.vue'
+import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
+import CardActionsComponent from '@/components/comuns/cards/CardActionsComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import FormularioDinamico from '@/components/form-dinamico/FormularioDinamico.vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -115,6 +67,20 @@ const form = ref({})
 
 watch(() => props.modelValue, (v) => { dialog.value = v })
 watch(dialog, (v) => emit('update:modelValue', v))
+
+const fields = computed(() =>
+  campos.value.map(campo => ({
+    key: String(campo.id),
+    label: campo.label || campo.campo,
+    type: campo.tipo,
+    mask: campo.mascara || undefined,
+    placeholder: campo.placeholder || '',
+    optional: !campo.obrigatorio,
+    rules: campo.obrigatorio
+      ? [v => !!v || `${campo.label || campo.campo} é obrigatório`]
+      : [],
+  }))
+)
 
 const carregarCampos = async (id) => {
   loading.value = true
@@ -137,12 +103,5 @@ watch(() => props.formulario, async (formulario) => {
   await carregarCampos(formulario.id)
 }, { immediate: true })
 
-const isType = (campo, tipos) => {
-  const arr = Array.isArray(tipos) ? tipos : [tipos]
-  return arr.includes(campo.tipo)
-}
-
-const validar = async () => {
-  await formRef.value?.validate()
-}
+const validar = () => formRef.value?.validate?.()
 </script>

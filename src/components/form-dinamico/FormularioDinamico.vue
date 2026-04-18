@@ -13,6 +13,7 @@
               v-model="localForm[field.key]"
               :label="field.label"
               :type="field.type || 'text'"
+              :mask="field.mask || undefined"
               :rules="resolveRules(field)"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
@@ -262,5 +263,6 @@ const isType = (field, types) => {
    7. EXPOR
    ------------------------------------------------- */
 const resetValidation = () => nextTick(() => formRef.value?.resetValidation?.())
-defineExpose({ resetValidation, loadOptions })
+const validate = () => nextTick(() => formRef.value?.validate?.())
+defineExpose({ resetValidation, validate, loadOptions })
 </script>
