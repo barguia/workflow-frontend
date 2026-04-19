@@ -84,6 +84,7 @@ const fields = computed(() =>
       key: String(campo.id),
       label: campo.label || campo.campo,
       type: campo.tipo,
+      col: campo.pivot?.cols ?? 12,
       mask: campo.mascara || undefined,
       placeholder: campo.placeholder || '',
       optional: !campo.obrigatorio,
@@ -104,7 +105,7 @@ const carregarCampos = async (id) => {
   form.value = {}
   try {
     const res = await api.get(`wf/forms/formularios-campos/${id}`)
-    campos.value = res.data.data ?? []
+    campos.value = (res.data.data ?? []).slice().sort((a, b) => (a.pivot?.ordem ?? 0) - (b.pivot?.ordem ?? 0))
   } catch {
     erro.value = true
   } finally {
