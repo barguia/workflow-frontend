@@ -192,6 +192,19 @@ const fields = [
     optional: false,
   },
   {
+    key: 'grupo',
+    label: 'Grupo de Controle',
+    default: 'Padrão',
+    type: 'text',
+    optional: true
+  },
+  {
+    key: 'valor_default',
+    label: 'Valor Padrão',
+    type: 'text',
+    optional: true
+  },
+  {
     key: 'descricao',
     label: 'Descrição do campo',
     type: 'textarea',
@@ -203,9 +216,9 @@ const headers = [
   { title: '', value: 'preview', key: 'preview' },
   { title: 'Campo', value: 'campo', key: 'campo' },
   { title: 'Tipo', value: 'tipo', key: 'tipo' },
-  { title: 'Label', value: 'label', key: 'label' },
-  { title: 'Placeholder', value: 'placeholder', key: 'placeholder' },
   { title: 'Máscara', value: 'mascara', key: 'mascara' },
+  { title: 'Grupo', value: 'grupo', key: 'grupo' },
+  { title: 'Valor Padrão', value: 'valor_default', key: 'valor_default' },
   { title: '', value: 'actions' },
 ]
 
