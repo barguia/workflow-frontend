@@ -68,18 +68,33 @@ const form = ref({})
 watch(() => props.modelValue, (v) => { dialog.value = v })
 watch(dialog, (v) => emit('update:modelValue', v))
 
+const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox']
+
 const fields = computed(() =>
-  campos.value.map(campo => ({
-    key: String(campo.id),
-    label: campo.label || campo.campo,
-    type: campo.tipo,
-    mask: campo.mascara || undefined,
-    placeholder: campo.placeholder || '',
-    optional: !campo.obrigatorio,
-    rules: campo.obrigatorio
-      ? [v => !!v || `${campo.label || campo.campo} é obrigatório`]
-      : [],
-  }))
+  campos.value.map(campo => {
+    const opcoes = (campo.campos_opcoes ?? [])
+      .slice()
+      .sort((a, b) =>
+        Number(a.ordem) - Number(b.ordem) ||
+        a.valor.localeCompare(b.valor) ||
+        a.opcao.localeCompare(b.opcao)
+      )
+      .map(o => ({ value: o.valor, text: o.opcao }))
+    return {
+      key: String(campo.id),
+      label: campo.label || campo.campo,
+      type: campo.tipo,
+      mask: campo.mascara || undefined,
+      placeholder: campo.placeholder || '',
+      optional: !campo.obrigatorio,
+      rules: campo.obrigatorio
+        ? [v => (v !== null && v !== undefined && v !== '') || `${campo.label || campo.campo} é obrigatório`]
+        : [],
+      ...(tiposSelecionais.includes(campo.tipo) && {
+        options: async () => opcoes,
+      }),
+    }
+  })
 )
 
 const carregarCampos = async (id) => {

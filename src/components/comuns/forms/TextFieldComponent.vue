@@ -1,5 +1,5 @@
 <template>
-  <v-text-field ref="fieldRef" v-bind="attrsWithoutMask" />
+  <v-text-field ref="fieldRef" autocomplete="off" v-bind="attrsWithoutMask" />
 </template>
 
 <script setup>
