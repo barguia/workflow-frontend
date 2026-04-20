@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
-    "axios": "^1.13.5",
+    "axios": "^1.15.1",
     "crypto-js": "^4.2.0",
     "lodash-es": "^4.17.21",
     "maska": "^3.2.0",
