@@ -3,21 +3,21 @@
     <CardComponent>
       <CardTitleComponent class="d-flex align-center justify-space-between pa-4">
         <span class="text-h6">{{ titulo }}</span>
-        <v-btn icon="mdi-close" variant="text" size="small" data-testid="preview-fechar-topo" @click="dialog = false" />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" data-testid="preview-fechar-topo" @click="dialog = false" />
       </CardTitleComponent>
 
-      <v-divider />
+      <DividerComponent />
 
       <CardTextComponent class="pa-4">
-        <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-4" />
+        <ProgressLinearComponent v-if="loading" indeterminate color="primary" class="mb-4" />
 
-        <v-alert v-else-if="erro" type="error" variant="tonal" class="mb-4">
+        <AlerComponent v-else-if="erro" type="error" variant="tonal" class="mb-4">
           Não foi possível carregar os campos do formulário.
-        </v-alert>
+        </AlerComponent>
 
-        <v-alert v-else-if="!loading && campos.length === 0" type="info" variant="tonal">
+        <AlerComponent v-else-if="!loading && campos.length === 0" type="info" variant="tonal">
           Este formulário não possui campos associados.
-        </v-alert>
+        </AlerComponent>
 
         <FormularioDinamico
             v-else
@@ -28,10 +28,10 @@
         />
       </CardTextComponent>
 
-      <v-divider />
+      <DividerComponent />
 
       <CardActionsComponent class="pa-3">
-        <v-spacer />
+        <SpacerComponent />
         <ButtonComponent variant="text" data-testid="preview-fechar" @click="dialog = false">Fechar</ButtonComponent>
         <ButtonComponent v-if="campos.length" color="primary" data-testid="preview-validar" @click="validar">Validar</ButtonComponent>
       </CardActionsComponent>
@@ -48,6 +48,10 @@ import CardTitleComponent from '@/components/comuns/cards/CardTitleComponent.vue
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import CardActionsComponent from '@/components/comuns/cards/CardActionsComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
+import ProgressLinearComponent from '@/components/comuns/progress/ProgressLinearComponent.vue'
+import AlerComponent from '@/components/comuns/alerts/AlerComponent.vue'
 import FormularioDinamico from '@/components/form-dinamico/FormularioDinamico.vue'
 
 const props = defineProps({
@@ -87,8 +91,8 @@ const fields = computed(() =>
       col: campo.pivot?.cols ?? 12,
       mask: campo.mascara || undefined,
       placeholder: campo.placeholder || '',
-      optional: !campo.obrigatorio,
-      rules: campo.obrigatorio
+      optional: !campo.pivot?.obrigatorio,
+      rules: campo.pivot?.obrigatorio
         ? [v => (v !== null && v !== undefined && v !== '') || `${campo.label || campo.campo} é obrigatório`]
         : [],
       ...(tiposSelecionais.includes(campo.tipo) && {

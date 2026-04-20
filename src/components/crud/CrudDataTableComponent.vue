@@ -35,7 +35,7 @@
           style="max-width: 280px"
           clearable
         />
-        <v-btn
+        <ButtonComponent
           v-if="availableColumns.length > 0"
           icon="mdi-table-column"
           variant="text"
@@ -51,7 +51,7 @@
     </template>
     <template v-slot:item.actions="{ item }">
       <slot name="actions" :item="item">
-        <v-btn icon="mdi-pencil" variant="text" size="small" color="primary" @click="$emit('edit', item)" />
+        <ButtonComponent icon="mdi-pencil" variant="text" size="small" color="primary" @click="$emit('edit', item)" />
       </slot>
     </template>
   </v-data-table-server>
@@ -148,6 +148,7 @@ import { ref, watch, computed } from 'vue'
 defineOptions({ inheritAttrs: false })
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
 import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 
 const props = defineProps({
   headers: { type: Array, default: () => [] },

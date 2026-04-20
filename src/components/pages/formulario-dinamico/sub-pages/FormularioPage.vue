@@ -9,7 +9,7 @@
       data-testid="formulario-crud"
   >
     <template #actionsField="{ item }">
-      <v-btn
+      <ButtonComponent
           icon="mdi-eye-outline"
           variant="text"
           size="small"
@@ -18,7 +18,7 @@
           data-testid="formulario-btn-preview"
           @click="abrirPreview(item)"
       />
-      <v-btn
+      <ButtonComponent
           icon="mdi-format-list-checks"
           variant="text"
           size="small"
@@ -27,7 +27,7 @@
           data-testid="formulario-btn-campos"
           @click="abrirModalCampos(item)"
       />
-      <v-btn
+      <ButtonComponent
           icon="mdi-tune"
           variant="text"
           size="small"
@@ -62,14 +62,14 @@
   <v-dialog v-model="dialogPivot" max-width="900px" scrollable @keydown.esc="dialogPivot = false" @before-leave="() => document.activeElement?.blur()">
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <v-icon color="teal" size="22">mdi-tune</v-icon>
+        <IconComponent color="teal" size="22">mdi-tune</IconComponent>
         <span class="text-h6">Configurar campos: {{ formularioSelecionado?.formulario }}</span>
-        <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="dialogPivot = false" />
+        <SpacerComponent />
+        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="dialogPivot = false" />
       </CardTitleComponent>
 
       <CardTextComponent class="pa-0" style="max-height: 560px; overflow-y: auto">
-        <v-progress-linear v-if="carregandoPivot" indeterminate color="teal" />
+        <ProgressLinearComponent v-if="carregandoPivot" indeterminate color="teal" />
 
         <p v-else-if="camposPivot.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
           Nenhum campo associado a este formulário.
@@ -84,6 +84,7 @@
               <th style="width:90px">Ordem</th>
               <th style="width:200px">Valor default</th>
               <th class="text-center" style="width:90px">Múltiplo</th>
+              <th class="text-center" style="width:100px">Obrigatório</th>
             </tr>
           </thead>
           <tbody>
@@ -131,6 +132,16 @@
                     color="teal"
                 />
               </td>
+              <td class="text-center">
+                <v-checkbox
+                    v-model="campo.pivot.obrigatorio"
+                    :true-value="1"
+                    :false-value="0"
+                    hide-details
+                    density="compact"
+                    color="teal"
+                />
+              </td>
             </tr>
           </tbody>
         </v-table>
@@ -157,6 +168,9 @@ import CardTitleComponent from '@/components/comuns/cards/CardTitleComponent.vue
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import CardActionsComponent from '@/components/comuns/cards/CardActionsComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import IconComponent from '@/components/comuns/icons/IconComponent.vue'
+import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
+import ProgressLinearComponent from '@/components/comuns/progress/ProgressLinearComponent.vue'
 import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue'
 import api from '@/services/api.js'
 
@@ -250,6 +264,7 @@ const salvarTodosPivots = async () => {
           ordem:           campo.pivot.ordem,
           valor_default:   campo.pivot.valor_default,
           select_multiplo: campo.pivot.select_multiplo,
+          obrigatorio:     campo.pivot.obrigatorio,
         })
       )
     )
