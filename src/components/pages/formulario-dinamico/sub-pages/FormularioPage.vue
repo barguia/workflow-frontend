@@ -15,6 +15,7 @@
           size="small"
           color="secondary"
           title="Visualizar formulário"
+          data-testid="formulario-btn-preview"
           @click="abrirPreview(item)"
       />
       <v-btn
@@ -23,6 +24,7 @@
           size="small"
           color="primary"
           title="Associar campos"
+          data-testid="formulario-btn-campos"
           @click="abrirModalCampos(item)"
       />
       <v-btn
@@ -31,6 +33,7 @@
           size="small"
           color="teal"
           title="Configurar campos associados"
+          data-testid="formulario-btn-pivot"
           @click="abrirModalPivot(item)"
       />
     </template>

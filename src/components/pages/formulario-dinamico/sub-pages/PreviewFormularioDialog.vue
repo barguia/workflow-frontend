@@ -3,7 +3,7 @@
     <CardComponent>
       <CardTitleComponent class="d-flex align-center justify-space-between pa-4">
         <span class="text-h6">{{ titulo }}</span>
-        <v-btn icon="mdi-close" variant="text" size="small" @click="dialog = false" />
+        <v-btn icon="mdi-close" variant="text" size="small" data-testid="preview-fechar-topo" @click="dialog = false" />
       </CardTitleComponent>
 
       <v-divider />
@@ -32,8 +32,8 @@
 
       <CardActionsComponent class="pa-3">
         <v-spacer />
-        <ButtonComponent variant="text" @click="dialog = false">Fechar</ButtonComponent>
-        <ButtonComponent v-if="campos.length" color="primary" @click="validar">Validar</ButtonComponent>
+        <ButtonComponent variant="text" data-testid="preview-fechar" @click="dialog = false">Fechar</ButtonComponent>
+        <ButtonComponent v-if="campos.length" color="primary" data-testid="preview-validar" @click="validar">Validar</ButtonComponent>
       </CardActionsComponent>
     </CardComponent>
   </DialogComponent>

@@ -16,6 +16,7 @@
           size="small"
           color="secondary"
           title="Gerenciar opções"
+          data-testid="campo-btn-opcoes"
           @click="openOpcoesDialog(item)"
       />
     </template>
