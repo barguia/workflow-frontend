@@ -42,7 +42,7 @@
 
       <!-- Loading -->
       <div v-if="carregando" class="d-flex justify-center py-10" data-testid="ft-tarefas-abertas-loading">
-        <v-progress-circular indeterminate color="primary" size="36" />
+        <ProgressCircularComponent indeterminate color="primary" size="36" />
       </div>
 
       <!-- Tabela -->
@@ -109,6 +109,7 @@ import IconComponent       from '@/components/comuns/icons/IconComponent.vue'
 import SpacerComponent     from '@/components/comuns/layout/SpacerComponent.vue'
 import ChipComponent       from '@/components/comuns/chips/ChipComponent.vue'
 import TextFieldComponent  from '@/components/comuns/forms/TextFieldComponent.vue'
+import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 
 const props = defineProps({
   tarefa: { type: Object, required: true },

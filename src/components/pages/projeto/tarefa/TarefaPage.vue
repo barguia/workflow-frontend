@@ -2,6 +2,7 @@
   <CrudComponent
       route="wf/tarefas"
       title="Tarefas"
+      must-sort
       :fields="tarefaFields"
       :headers="userHeaders"
       :show-select="false"
@@ -110,12 +111,12 @@ const tarefaFields = [
 ]
 
 const userHeaders = [
-  { title: '', value: 'preview' },
-  { title: 'Tarefa', value: 'tarefa' },
-  { title: 'Tipo', value: 'tipo_tarefa.tipo' },
-  { title: 'Ordem', value: 'ordenacao' },
-  { title: 'Workflow', value: 'workflow.workflow' },
-  { title: 'Processo', value: 'processo.processo' },
+  { title: '', value: 'preview',  key: 'preview' },
+  { title: 'Tarefa', value: 'tarefa',  key: 'tarefa' },
+  { title: 'Tipo', value: 'tipo_tarefa.tipo',  key: 'tipo_tarefa.tipo' },
+  { title: 'Ordem', value: 'ordenacao',  key: 'ordenacao' },
+  { title: 'Workflow', value: 'workflow.workflow',  key: 'workflow.workflow' },
+  { title: 'Processo', value: 'processo.processo',  key: 'processo.processo' },
   { title: '', value: 'actions' },
 ]
 </script>

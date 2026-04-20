@@ -3,9 +3,9 @@
     <div class="d-flex align-center mb-4 gap-2">
       <span class="text-caption text-medium-emphasis font-weight-medium">Exibir:</span>
       <v-btn-toggle v-model="statusFiltro" mandatory density="compact" rounded="lg" color="primary" data-testid="volumetria-toggle-status">
-        <v-btn value="aberto" size="small" data-testid="volumetria-btn-filtro-aberto">Aberto</v-btn>
-        <v-btn value="finalizado" size="small" data-testid="volumetria-btn-filtro-finalizado">Finalizado</v-btn>
-        <v-btn value="todos" size="small" data-testid="volumetria-btn-filtro-todos">Todos</v-btn>
+        <ButtonComponent value="aberto" size="small" data-testid="volumetria-btn-filtro-aberto">Aberto</ButtonComponent>
+        <ButtonComponent value="finalizado" size="small" data-testid="volumetria-btn-filtro-finalizado">Finalizado</ButtonComponent>
+        <ButtonComponent value="todos" size="small" data-testid="volumetria-btn-filtro-todos">Todos</ButtonComponent>
       </v-btn-toggle>
     </div>
 
@@ -68,7 +68,7 @@
               <div class="text-subtitle-1 font-weight-bold">{{ cardSelecionado.processo }}</div>
               <div class="text-caption text-medium-emphasis">Expanda os processos para ver os sub-níveis e tarefas</div>
             </div>
-            <v-btn
+            <ButtonComponent
                 icon="mdi-close"
                 variant="text"
                 size="small"
@@ -152,6 +152,7 @@ import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue"
 import CardComponent from "@/components/comuns/cards/CardComponent.vue"
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue"
 import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
+import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import api from "@/services/api.js"
 
 const WORKFLOW_ID = 1

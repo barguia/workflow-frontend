@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Pesquisa de Registros', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/adm/projetos#pesquisa')
+    await page.evaluate(() => localStorage.removeItem('col-sel:pesquisa:wf/projetos'))
     await expect(page.getByTestId('pesquisa-toggle-tipo')).toBeVisible({ timeout: 15000 })
   })
 
@@ -29,8 +30,58 @@ test.describe('Pesquisa de Registros', () => {
 
   test('botão pesquisar exibe a tabela de resultados', async ({ page }) => {
     await page.getByTestId('pesquisa-btn-pesquisar').click()
-
     await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+  })
+
+  test('tabela de resultados não exibe campo de busca interno', async ({ page }) => {
+    await page.getByTestId('pesquisa-btn-pesquisar').click()
+    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+    // showSearch="false" — o campo de busca interno foi removido da tabela de resultados
+    await expect(page.getByTestId('pesquisa-input-busca')).not.toBeAttached()
+  })
+
+  test('tabela de resultados exibe paginação server-side', async ({ page }) => {
+    await page.getByTestId('pesquisa-btn-pesquisar').click()
+    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.v-data-table-footer')).toBeVisible()
+  })
+
+  test('botão de seleção de colunas aparece após colunas carregarem', async ({ page }) => {
+    await page.getByTestId('pesquisa-btn-pesquisar').click()
+    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId('column-selector-btn')).toBeVisible({ timeout: 5000 })
+  })
+
+  test('dialog de colunas abre com seções Visíveis e Ocultas', async ({ page }) => {
+    await page.getByTestId('pesquisa-btn-pesquisar').click()
+    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+
+    await page.getByTestId('column-selector-btn').click({ timeout: 5000 })
+
+    await expect(page.getByText('Gerenciar colunas')).toBeVisible()
+    await expect(page.getByText(/Visíveis/)).toBeVisible()
+  })
+
+  test('colunas são persistidas no cache após aplicar seleção', async ({ page }) => {
+    await page.getByTestId('pesquisa-btn-pesquisar').click()
+    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+
+    await page.getByTestId('column-selector-btn').click({ timeout: 5000 })
+    await expect(page.getByText('Gerenciar colunas')).toBeVisible()
+
+    // Oculta todas e aplica para gerar uma seleção diferente do padrão
+    await page.getByRole('button', { name: 'Nenhuma' }).click()
+    await page.getByRole('button', { name: 'Aplicar' }).click()
+
+    // Recarrega a página e verifica que a seleção foi salva
+    await page.reload()
+    await expect(page.getByTestId('pesquisa-toggle-tipo')).toBeVisible({ timeout: 15000 })
+    await page.getByTestId('pesquisa-btn-pesquisar').click()
+    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
+
+    await page.getByTestId('column-selector-btn').click({ timeout: 5000 })
+    // Nenhuma coluna visível — a seleção vazia deve ter sido persistida
+    await expect(page.getByText(/Visíveis \(0\)/)).toBeVisible()
   })
 
   test('botão limpar remove os resultados', async ({ page }) => {
@@ -39,12 +90,5 @@ test.describe('Pesquisa de Registros', () => {
 
     await page.getByTestId('pesquisa-btn-limpar').click()
     await expect(page.getByTestId('pesquisa-tabela-resultados')).not.toBeVisible()
-  })
-
-  test('campo de busca nos resultados está visível após pesquisar', async ({ page }) => {
-    await page.getByTestId('pesquisa-btn-pesquisar').click()
-    await expect(page.getByTestId('pesquisa-tabela-resultados')).toBeVisible({ timeout: 10000 })
-
-    await expect(page.getByTestId('pesquisa-input-busca')).toBeVisible()
   })
 })
