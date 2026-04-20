@@ -41,7 +41,7 @@ const fields = [
     options: async () => [
       { text: 'Baixa', value: 'baixa' },
       { text: 'Média', value: 'media' },
-      { text: 'Alta', value: 'Alta' },
+      { text: 'Alta', value: 'alta' },
     ],
     optional: false,
     col: 4,

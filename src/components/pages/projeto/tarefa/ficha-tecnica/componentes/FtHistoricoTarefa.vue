@@ -30,7 +30,7 @@
 
       <!-- Loading -->
       <div v-if="carregando" class="d-flex justify-center py-10">
-        <v-progress-circular indeterminate color="primary" size="36" />
+        <ProgressCircularComponent indeterminate color="primary" size="36" />
       </div>
 
       <!-- Vazio -->
@@ -137,6 +137,7 @@ import ButtonComponent  from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent    from '@/components/comuns/icons/IconComponent.vue'
 import SpacerComponent  from '@/components/comuns/layout/SpacerComponent.vue'
 import ChipComponent    from '@/components/comuns/chips/ChipComponent.vue'
+import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 
 const props = defineProps({
   tratamentos: { type: Array,   default: () => [] },

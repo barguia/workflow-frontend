@@ -11,6 +11,7 @@
     titulo             String    required    Título exibido no cabeçalho do dialog
     entidadeId         Number|String required ID da entidade principal (ex: id do usuário)
     endpointApi        String    required    Endpoint da API para salvar (ex: 'app/roles-user')
+    campoEntidadeId    String   'id'         Chave do payload para o ID da entidade
     campoIdsAssociados String   'ids_associados'  Chave do payload com o array de IDs
     selecionados       Array     []          IDs já associados (pré-selecionados)
     todosItens         Array     required    Grupos de itens disponíveis para seleção
@@ -94,6 +95,7 @@ const props = defineProps({
   titulo:              { type: String,  required: true },
   entidadeId:          { type: [Number, String], required: true },
   endpointApi:         { type: String,  required: true },
+  campoEntidadeId:     { type: String,  default: 'id' },
   campoIdsAssociados:  { type: String,  default: 'ids_associados' },
   selecionados:        { type: Array,   default: () => [] },
   todosItens:          { type: Array,   required: true },
@@ -125,7 +127,7 @@ const salvar = async () => {
       method: props.metodoAtualizacao,
       url: props.endpointApi,
       data: {
-        id: props.entidadeId,
+        [props.campoEntidadeId]: props.entidadeId,
         [props.campoIdsAssociados]: selecionadosLocal.value,
       },
     })
