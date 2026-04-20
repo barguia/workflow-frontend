@@ -56,7 +56,7 @@
   />
 
   <!-- Dialog de configuração do pivot -->
-  <v-dialog v-model="dialogPivot" max-width="900px" scrollable @keydown.esc="dialogPivot = false">
+  <v-dialog v-model="dialogPivot" max-width="900px" scrollable @keydown.esc="dialogPivot = false" @before-leave="() => document.activeElement?.blur()">
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
         <v-icon color="teal" size="22">mdi-tune</v-icon>
@@ -65,68 +65,72 @@
         <v-btn icon="mdi-close" variant="text" size="small" @click="dialogPivot = false" />
       </CardTitleComponent>
 
-      <CardTextComponent style="max-height: 560px; overflow-y: auto">
-        <v-progress-linear v-if="carregandoPivot" indeterminate color="teal" class="mb-4" />
+      <CardTextComponent class="pa-0" style="max-height: 560px; overflow-y: auto">
+        <v-progress-linear v-if="carregandoPivot" indeterminate color="teal" />
 
-        <p v-else-if="camposPivot.length === 0" class="text-body-2 text-medium-emphasis text-center py-6">
+        <p v-else-if="camposPivot.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
           Nenhum campo associado a este formulário.
         </p>
 
-        <template v-else>
-          <!-- Cabeçalho -->
-          <div class="d-flex align-center ga-2 px-2 mb-2">
-            <span class="text-caption font-weight-bold text-uppercase text-medium-emphasis flex-grow-1">Campo</span>
-            <span class="text-caption font-weight-bold text-uppercase text-medium-emphasis" style="width:70px">Cols</span>
-            <span class="text-caption font-weight-bold text-uppercase text-medium-emphasis" style="width:80px">Ordem</span>
-            <span class="text-caption font-weight-bold text-uppercase text-medium-emphasis" style="width:160px">Valor default</span>
-            <span class="text-caption font-weight-bold text-uppercase text-medium-emphasis" style="width:90px">Múltiplo</span>
-          </div>
-          <v-divider class="mb-3" />
-
-          <div
-              v-for="campo in camposPivot"
-              :key="campo.pivot.id"
-              class="d-flex align-center ga-2 mb-2"
-          >
-            <span class="text-body-2 flex-grow-1">
-              <span class="font-weight-medium">{{ campo.label }}</span>
-              <span class="text-medium-emphasis text-caption ml-1">({{ campo.campo }})</span>
-            </span>
-
-            <TextFieldComponent
-                v-model.number="campo.pivot.cols"
-                density="compact"
-                hide-details
-                type="number"
-                min="1"
-                max="12"
-                style="width:70px"
-            />
-            <TextFieldComponent
-                v-model.number="campo.pivot.ordem"
-                density="compact"
-                hide-details
-                type="number"
-                style="width:80px"
-            />
-            <TextFieldComponent
-                v-model="campo.pivot.valor_default"
-                density="compact"
-                hide-details
-                style="width:160px"
-            />
-            <div style="width:90px" class="d-flex justify-center">
-              <v-checkbox
-                  v-model="campo.pivot.select_multiplo"
-                  :true-value="1"
-                  :false-value="0"
-                  hide-details
-                  density="compact"
-                  color="teal"
-              />
-            </div>
-          </div>
-        </template>
+        <v-table v-else density="comfortable">
+          <thead>
+            <tr>
+              <th class="text-left">Campo</th>
+              <th style="width:100px">Tipo</th>
+              <th style="width:80px">Cols</th>
+              <th style="width:90px">Ordem</th>
+              <th style="width:200px">Valor default</th>
+              <th class="text-center" style="width:90px">Múltiplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="campo in camposPivot" :key="campo.pivot.id">
+              <td>
+                <span class="font-weight-medium text-body-2">{{ campo.label }}</span>
+                <span class="text-caption text-medium-emphasis ml-1">{{ campo.campo }}</span>
+              </td>
+              <td>
+                <v-chip size="x-small" variant="tonal" color="teal">{{ campo.tipo }}</v-chip>
+              </td>
+              <td>
+                <TextFieldComponent
+                    v-model.number="campo.pivot.cols"
+                    density="compact"
+                    hide-details
+                    type="number"
+                    min="1"
+                    max="12"
+                />
+              </td>
+              <td>
+                <TextFieldComponent
+                    v-model.number="campo.pivot.ordem"
+                    density="compact"
+                    hide-details
+                    type="number"
+                />
+              </td>
+              <td>
+                <TextFieldComponent
+                    v-model="campo.pivot.valor_default"
+                    density="compact"
+                    hide-details
+                />
+              </td>
+              <td class="text-center">
+                <v-checkbox
+                    v-if="campo.tipo === 'select'"
+                    v-model="campo.pivot.select_multiplo"
+                    :true-value="1"
+                    :false-value="0"
+                    hide-details
+                    density="compact"
+                    color="teal"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
       </CardTextComponent>
 
       <CardActionsComponent class="px-6 py-4 border-t">

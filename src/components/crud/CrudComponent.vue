@@ -61,7 +61,7 @@
     </SnackbarComponent>
 
     <!-- Modal para Adicionar/Editar Item -->
-    <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal" scrollable>
+    <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal" scrollable @before-leave="() => document.activeElement?.blur()">
       <CardComponent rounded="lg">
         <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
           <IconComponent color="primary" size="22">{{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}</IconComponent>

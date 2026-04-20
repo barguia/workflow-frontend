@@ -22,7 +22,7 @@
   </CrudComponent>
 
   <!-- Dialog de gerenciamento de opções -->
-  <v-dialog v-model="opcoesDialog" max-width="620px" scrollable @keydown.esc="opcoesDialog = false">
+  <v-dialog v-model="opcoesDialog" max-width="820px" scrollable @keydown.esc="opcoesDialog = false" @before-leave="() => document.activeElement?.blur()">
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
         <IconComponent color="secondary" size="22">mdi-format-list-bulleted</IconComponent>
@@ -31,86 +31,141 @@
         <ButtonComponent icon="mdi-close" variant="text" size="small" @click="opcoesDialog = false" />
       </CardTitleComponent>
 
-      <CardTextComponent style="max-height: 480px; overflow-y: auto">
-        <!-- Lista de opções existentes -->
-        <v-list lines="one" class="pa-0">
-          <v-list-item
-              v-for="opcao in opcoes"
-              :key="opcao.id"
-              class="px-0"
-          >
-            <template v-if="editandoId === opcao.id">
-              <div class="d-flex align-start ga-2 py-1">
+      <CardTextComponent class="pa-0" style="max-height: 520px; overflow-y: auto">
+        <!-- Lista de opções -->
+        <v-table density="compact" class="opcoes-table">
+          <thead>
+            <tr>
+              <th class="text-left">Opção</th>
+              <th style="width:120px">Valor</th>
+              <th style="width:80px">Ordem</th>
+              <th style="width:140px">Filtro</th>
+              <th style="width:84px" />
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="opcoes.length === 0">
+              <td colspan="5" class="text-center text-medium-emphasis text-body-2 py-6">
+                Nenhuma opção cadastrada.
+              </td>
+            </tr>
+            <tr v-for="opcao in opcoes" :key="opcao.id">
+              <template v-if="editandoId === opcao.id">
+                <td>
+                  <TextFieldComponent
+                      v-model="editForm.opcao"
+                      variant="plain"
+                      density="compact"
+                      :error-messages="validationErrors.opcao"
+                      hide-details="auto"
+                      @input="clearErrors"
+                  />
+                </td>
+                <td>
+                  <TextFieldComponent
+                      v-model="editForm.valor"
+                      variant="plain"
+                      density="compact"
+                      :error-messages="validationErrors.valor"
+                      hide-details="auto"
+                      @input="clearErrors"
+                  />
+                </td>
+                <td>
+                  <TextFieldComponent
+                      v-model.number="editForm.ordem"
+                      variant="plain"
+                      density="compact"
+                      hide-details
+                      type="number"
+                      min="0"
+                  />
+                </td>
+                <td>
+                  <TextFieldComponent
+                      v-model="editForm.filtro"
+                      variant="plain"
+                      density="compact"
+                      hide-details
+                  />
+                </td>
+                <td>
+                  <ButtonComponent icon="mdi-check" variant="text" size="small" color="success" @click="salvarEdicao(opcao)" />
+                  <ButtonComponent icon="mdi-close" variant="text" size="small" @click="cancelarEdicao" />
+                </td>
+              </template>
+              <template v-else>
+                <td class="text-body-2">{{ opcao.opcao }}</td>
+                <td><v-chip size="x-small" variant="tonal" color="secondary">{{ opcao.valor }}</v-chip></td>
+                <td class="text-body-2">{{ opcao.ordem }}</td>
+                <td class="text-body-2 text-medium-emphasis">{{ opcao.filtro || '—' }}</td>
+                <td class="text-no-wrap">
+                  <ButtonComponent icon="mdi-pencil" variant="text" size="small" color="primary" @click="iniciarEdicao(opcao)" />
+                  <ButtonComponent icon="mdi-delete" variant="text" size="small" color="error" @click="removerOpcao(opcao)" />
+                </td>
+              </template>
+            </tr>
+
+            <!-- Linha de adição -->
+            <tr class="add-row">
+              <td>
                 <TextFieldComponent
-                    v-model="editForm.opcao"
-                    label="Opção"
+                    v-model="novaOpcao.opcao"
+                    placeholder="Nova opção"
+                    variant="plain"
                     density="compact"
                     :error-messages="validationErrors.opcao"
-                    class="flex-grow-1"
+                    hide-details="auto"
+                    @keydown.enter="adicionarOpcao"
                     @input="clearErrors"
                 />
+              </td>
+              <td>
                 <TextFieldComponent
-                    v-model="editForm.valor"
-                    label="Valor"
+                    v-model="novaOpcao.valor"
+                    placeholder="Valor"
+                    variant="plain"
                     density="compact"
                     :error-messages="validationErrors.valor"
-                    style="max-width: 120px"
+                    hide-details="auto"
+                    @keydown.enter="adicionarOpcao"
                     @input="clearErrors"
                 />
-                <ButtonComponent icon="mdi-check" variant="text" size="small" color="success" class="mt-1" @click="salvarEdicao(opcao)" />
-                <ButtonComponent icon="mdi-close" variant="text" size="small" class="mt-1" @click="cancelarEdicao" />
-              </div>
-            </template>
-            <template v-else>
-              <div class="d-flex align-center ga-2">
-                <span class="flex-grow-1 text-body-2">{{ opcao.opcao }}</span>
-                <v-chip size="x-small" variant="tonal" color="secondary">{{ opcao.valor }}</v-chip>
-                <ButtonComponent icon="mdi-pencil" variant="text" size="small" color="primary" @click="iniciarEdicao(opcao)" />
-                <ButtonComponent icon="mdi-delete" variant="text" size="small" color="error" @click="removerOpcao(opcao)" />
-              </div>
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="opcoes.length === 0" class="px-0">
-            <span class="text-body-2 text-medium-emphasis">Nenhuma opção cadastrada.</span>
-          </v-list-item>
-        </v-list>
-
-        <v-divider class="my-4" />
-
-        <!-- Formulário para adicionar nova opção -->
-        <div class="text-caption font-weight-bold text-uppercase mb-3 text-medium-emphasis">
-          Adicionar opção
-        </div>
-        <div class="d-flex align-start ga-2">
-          <TextFieldComponent
-              v-model="novaOpcao.opcao"
-              label="Opção"
-              density="compact"
-              :error-messages="validationErrors.opcao"
-              class="flex-grow-1"
-              @keydown.enter="adicionarOpcao"
-              @input="clearErrors"
-          />
-          <TextFieldComponent
-              v-model="novaOpcao.valor"
-              label="Valor"
-              density="compact"
-              :error-messages="validationErrors.valor"
-              style="max-width: 120px"
-              @keydown.enter="adicionarOpcao"
-              @input="clearErrors"
-          />
-          <ButtonComponent
-              icon="mdi-plus"
-              variant="flat"
-              color="primary"
-              size="small"
-              class="mt-1"
-              :disabled="!novaOpcao.opcao || !novaOpcao.valor"
-              @click="adicionarOpcao"
-          />
-        </div>
+              </td>
+              <td>
+                <TextFieldComponent
+                    v-model.number="novaOpcao.ordem"
+                    variant="plain"
+                    density="compact"
+                    hide-details
+                    type="number"
+                    min="0"
+                    @keydown.enter="adicionarOpcao"
+                />
+              </td>
+              <td>
+                <TextFieldComponent
+                    v-model="novaOpcao.filtro"
+                    placeholder="Filtro"
+                    variant="plain"
+                    density="compact"
+                    hide-details
+                    @keydown.enter="adicionarOpcao"
+                />
+              </td>
+              <td>
+                <ButtonComponent
+                    icon="mdi-plus"
+                    variant="flat"
+                    color="primary"
+                    size="small"
+                    :disabled="!novaOpcao.opcao || !novaOpcao.valor"
+                    @click="adicionarOpcao"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
       </CardTextComponent>
 
       <CardActionsComponent class="px-6 py-4 border-t">
@@ -229,14 +284,14 @@ const { validationErrors, clearErrors } = useValidationErrors()
 const opcoesDialog = ref(false)
 const campoAtivo = ref(null)
 const opcoes = ref([])
-const novaOpcao = ref({ opcao: '', valor: '' })
+const novaOpcao = ref({ opcao: '', valor: '', ordem: 0, filtro: '' })
 const editandoId = ref(null)
-const editForm = ref({ opcao: '', valor: '' })
+const editForm = ref({ opcao: '', valor: '', ordem: 0, filtro: '' })
 
 const openOpcoesDialog = async (item) => {
   campoAtivo.value = item
   editandoId.value = null
-  novaOpcao.value = { opcao: '', valor: '' }
+  novaOpcao.value = { opcao: '', valor: '', ordem: 0, filtro: '' }
   clearErrors()
   const response = await api.get(`wf/forms/campos/${item.id}`)
   opcoes.value = response.data.data.campos_opcoes ?? []
@@ -247,19 +302,21 @@ const adicionarOpcao = async () => {
   if (!novaOpcao.value.opcao || !novaOpcao.value.valor) return
   const result = await criarOpcao({
     ctrl_campo_id: campoAtivo.value.id,
-    opcao: novaOpcao.value.opcao,
-    valor: novaOpcao.value.valor,
+    opcao:  novaOpcao.value.opcao,
+    valor:  novaOpcao.value.valor,
+    ordem:  novaOpcao.value.ordem ?? 0,
+    filtro: novaOpcao.value.filtro ?? '',
   })
   if (result?.data) {
     opcoes.value.push(result.data)
-    novaOpcao.value = { opcao: '', valor: '' }
+    novaOpcao.value = { opcao: '', valor: '', ordem: 0, filtro: '' }
   }
 }
 
 const iniciarEdicao = (opcao) => {
   clearErrors()
   editandoId.value = opcao.id
-  editForm.value = { opcao: opcao.opcao, valor: opcao.valor }
+  editForm.value = { opcao: opcao.opcao, valor: opcao.valor, ordem: opcao.ordem ?? 0, filtro: opcao.filtro ?? '' }
 }
 
 const cancelarEdicao = () => {
@@ -269,10 +326,12 @@ const cancelarEdicao = () => {
 
 const salvarEdicao = async (opcao) => {
   const result = await atualizarOpcao({
-    id: opcao.id,
+    id:            opcao.id,
     ctrl_campo_id: campoAtivo.value.id,
-    opcao: editForm.value.opcao,
-    valor: editForm.value.valor,
+    opcao:         editForm.value.opcao,
+    valor:         editForm.value.valor,
+    ordem:         editForm.value.ordem ?? 0,
+    filtro:        editForm.value.filtro ?? '',
   })
   if (result) {
     const idx = opcoes.value.findIndex(o => o.id === opcao.id)
@@ -287,3 +346,25 @@ const removerOpcao = async (opcao) => {
   opcoes.value = opcoes.value.filter(o => o.id !== opcao.id)
 }
 </script>
+
+<style scoped>
+.opcoes-table :deep(td) {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+.opcoes-table .add-row {
+  border-top: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
+}
+
+.opcoes-table .add-row td {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+.opcoes-table :deep(.v-field__input) {
+  padding-top: 0;
+  padding-bottom: 0;
+  min-height: unset;
+}
+</style>

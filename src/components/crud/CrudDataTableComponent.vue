@@ -57,7 +57,7 @@
   </v-data-table-server>
 
   <!-- Seletor de colunas -->
-  <v-dialog v-model="columnDialog" max-width="520" scrollable>
+  <v-dialog v-model="columnDialog" max-width="520" scrollable @before-leave="() => document.activeElement?.blur()">
     <v-card rounded="lg">
       <v-card-title class="d-flex align-center py-3 px-4">
         <v-icon start size="18" color="primary">mdi-table-column</v-icon>

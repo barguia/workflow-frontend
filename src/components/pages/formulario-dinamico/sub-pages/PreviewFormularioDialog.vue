@@ -93,6 +93,7 @@ const fields = computed(() =>
         : [],
       ...(tiposSelecionais.includes(campo.tipo) && {
         options: async () => opcoes,
+        multiple: campo.tipo === 'select' ? campo.pivot?.select_multiplo === 1 : false,
       }),
     }
   })
