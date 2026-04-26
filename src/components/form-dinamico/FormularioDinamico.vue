@@ -41,6 +41,7 @@
               :items="fieldOptions[field.key] || []"
               :rules="resolveRules(field)"
               :multiple="field.multiple ?? false"
+              :sorted="field.sorted ?? false"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
@@ -55,6 +56,7 @@
               :items="fieldOptions[field.key] || []"
               :rules="resolveRules(field)"
               :inline="field.inline ?? false"
+              :sorted="field.sorted ?? false"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
@@ -71,6 +73,23 @@
               :multiple="field.multiple ?? false"
               :chips="field.chips ?? false"
               :inline="field.inline ?? false"
+              :sorted="field.sorted ?? false"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- AUTOCOMPLETE -->
+          <AutocompleteComponent
+              v-else-if="isType(field, 'autocomplete')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :items="fieldOptions[field.key] || []"
+              :rules="resolveRules(field)"
+              :multiple="field.multiple ?? false"
+              :no-filter="field.noFilter ?? false"
+              :sorted="field.sorted ?? false"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
@@ -111,6 +130,7 @@ import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 import ComboboxComponent from "@/components/comuns/forms/ComboboxComponent.vue";
+import AutocompleteComponent from "@/components/comuns/forms/AutocompleteComponent.vue";
 
 const props = defineProps({
   fields: { type: Array, required: true },

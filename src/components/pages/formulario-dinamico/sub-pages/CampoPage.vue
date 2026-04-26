@@ -208,6 +208,7 @@ const fields = [
     key: 'tipo',
     label: 'Tipo de campo',
     type: 'select',
+    sorted: true,
     options: async () => {
       const request = await api.get('wf/forms/tipos-campos')
       const opcoes = request.data.data

@@ -1,5 +1,5 @@
 <template>
-  <v-select
+  <v-autocomplete
       v-bind="$attrs"
       v-model="modelValue"
       :items="sortedItems"
@@ -8,6 +8,7 @@
       :multiple="multiple"
       :required="required"
       :clearable="clearable"
+      :no-filter="noFilter"
       item-title="text"
       item-value="value"
       :return-object="false"
@@ -24,7 +25,7 @@ const props = defineProps({
   multiple: Boolean,
   required: Boolean,
   clearable: { type: Boolean, default: true },
-  emptyOption: { type: Object, default: null },
+  noFilter: { type: Boolean, default: false },
   sorted: { type: Boolean, default: false },
 })
 
