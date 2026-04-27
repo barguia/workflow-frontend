@@ -94,6 +94,7 @@
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
               @update:modelValue="onFieldChange(field, $event)"
+              @update:search="onAutocompleteSearch(field, $event)"
           />
 
           <!-- COMBOBOX -->
@@ -120,7 +121,7 @@
 
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { isEqual } from 'lodash-es'
+import { isEqual, debounce } from 'lodash-es'
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
@@ -277,6 +278,26 @@ const onFieldChange = async (field, value) => {
 const isType = (field, types) => {
   const arr = Array.isArray(types) ? types : [types]
   return arr.includes(field.type || 'text')
+}
+
+/* -------------------------------------------------
+   6b. BUSCA REMOTA (autocomplete com onSearch)
+   ------------------------------------------------- */
+const _searchers = {}
+
+const onAutocompleteSearch = (field, search) => {
+  if (typeof field.onSearch !== 'function') return
+  if (!_searchers[field.key]) {
+    _searchers[field.key] = debounce(async (s) => {
+      try {
+        const opts = await field.onSearch(s)
+        fieldOptions.value[field.key] = Array.isArray(opts) ? opts : []
+      } catch (e) {
+        console.warn(`[FormularioDinamico] busca remota falhou: ${field.key}`, e)
+      }
+    }, 350)
+  }
+  _searchers[field.key](search ?? '')
 }
 
 /* -------------------------------------------------

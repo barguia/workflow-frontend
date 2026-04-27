@@ -77,16 +77,23 @@ const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox', 'autocomple
 const fields = computed(() =>
   campos.value.map(campo => {
     let optionsLoader = undefined
+    const extraProps = {}
 
     if (tiposSelecionais.includes(campo.tipo)) {
       if (campo.opcoes_por_uri === 1) {
-        optionsLoader = async () => {
-          const res = await api.get(campo.options_uri)
+        const fetchOptions = async (search = '') => {
+          const params = search ? { [campo.options_uri_text]: search } : {}
+          const res = await api.get(campo.options_uri, { params })
           const list = Array.isArray(res.data?.data) ? res.data.data : []
           return list.map(item => ({
             value: item[campo.options_uri_value],
             text: item[campo.options_uri_text],
           }))
+        }
+        optionsLoader = () => fetchOptions()
+        if (campo.tipo === 'autocomplete') {
+          extraProps.noFilter = true
+          extraProps.onSearch = fetchOptions
         }
       } else {
         const opcoes = (campo.campos_opcoes ?? [])
@@ -115,6 +122,7 @@ const fields = computed(() =>
       ...(optionsLoader && {
         options: optionsLoader,
         multiple: campo.tipo === 'select' ? campo.pivot?.select_multiplo === 1 : false,
+        ...extraProps,
       }),
     }
   })
