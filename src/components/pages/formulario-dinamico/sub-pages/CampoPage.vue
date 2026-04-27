@@ -10,7 +10,7 @@
   >
     <template #actionsField="{ item }">
       <ButtonComponent
-          v-if="tiposSelecionais.includes(item.tipo)"
+          v-if="tiposSelecionais.includes(item.tipo) && item.opcoes_por_uri === 0"
           icon="mdi-format-list-bulleted"
           variant="text"
           size="small"
@@ -198,6 +198,7 @@ const tiposSelecionais = ['checkbox', 'select', 'radio', 'autocomplete']
 
 const fields = [
   {
+    col: 3,
     key: 'campo',
     label: 'Campo',
     type: 'text',
@@ -205,6 +206,15 @@ const fields = [
     optional: false
   },
   {
+    col: 3,
+    key: 'label',
+    label: 'Label',
+    type: 'text',
+    rules: [v => !!v || 'Label é obrigatório'],
+    optional: false
+  },
+  {
+    col: 3,
     key: 'tipo',
     label: 'Tipo de campo',
     type: 'select',
@@ -216,13 +226,15 @@ const fields = [
     },
   },
   {
-    key: 'label',
-    label: 'Label',
+    col: 3,
+    key: 'grupo',
+    label: 'Grupo de Controle',
+    value: 'Padrão',
     type: 'text',
-    rules: [v => !!v || 'Label é obrigatório'],
-    optional: false
+    optional: true
   },
   {
+    col: 6,
     key: 'placeholder',
     label: 'Placeholder',
     type: 'text',
@@ -231,6 +243,7 @@ const fields = [
     optional: true
   },
   {
+    col: 6,
     key: 'mascara',
     label: 'Máscara',
     type: 'text',
@@ -239,6 +252,7 @@ const fields = [
     optional: true
   },
   {
+    col: 3,
     key: 'opcoes_por_uri',
     label: 'Opções por API',
     type: 'radio',
@@ -252,6 +266,7 @@ const fields = [
     optional: false,
   },
   {
+    col: 3,
     key: 'opcoes_uri',
     label: 'URI para Options',
     type: 'text',
@@ -260,6 +275,7 @@ const fields = [
     optional: true
   },
   {
+    col: 3,
     key: 'opcoes_uri_value',
     label: 'Options Value',
     default: 'id',
@@ -269,24 +285,12 @@ const fields = [
     optional: true
   },
   {
+    col: 3,
     key: 'opcoes_uri_text',
     label: 'Options text',
     type: 'text',
     disabled: f => f.opcoes_por_uri !== 1,
     visible: f => f.opcoes_por_uri === 1,
-    optional: true
-  },
-  {
-    key: 'grupo',
-    label: 'Grupo de Controle',
-    default: 'Padrão',
-    type: 'text',
-    optional: true
-  },
-  {
-    key: 'valor_default',
-    label: 'Valor Padrão',
-    type: 'text',
     optional: true
   },
   {
