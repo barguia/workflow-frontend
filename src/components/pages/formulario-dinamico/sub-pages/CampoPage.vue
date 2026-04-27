@@ -252,7 +252,7 @@ const fields = [
     optional: false,
   },
   {
-    key: 'options_uri',
+    key: 'opcoes_uri',
     label: 'URI para Options',
     type: 'text',
     disabled: f => f.opcoes_por_uri !== 1,
@@ -260,7 +260,7 @@ const fields = [
     optional: true
   },
   {
-    key: 'options_uri_value',
+    key: 'opcoes_uri_value',
     label: 'Options Value',
     default: 'id',
     type: 'text',
@@ -269,7 +269,7 @@ const fields = [
     optional: true
   },
   {
-    key: 'options_uri_text',
+    key: 'opcoes_uri_text',
     label: 'Options text',
     type: 'text',
     disabled: f => f.opcoes_por_uri !== 1,

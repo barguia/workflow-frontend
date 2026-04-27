@@ -82,12 +82,12 @@ const fields = computed(() =>
     if (tiposSelecionais.includes(campo.tipo)) {
       if (campo.opcoes_por_uri === 1) {
         const fetchOptions = async (search = '') => {
-          const params = search ? { [campo.options_uri_text]: search } : {}
-          const res = await api.get(campo.options_uri, { params })
+          const params = search ? { [campo.opcoes_uri_text]: search } : {}
+          const res = await api.get(campo.opcoes_uri, { params })
           const list = Array.isArray(res.data?.data) ? res.data.data : []
           return list.map(item => ({
-            value: item[campo.options_uri_value],
-            text: item[campo.options_uri_text],
+            value: item[campo.opcoes_uri_value],
+            text: item[campo.opcoes_uri_text],
           }))
         }
         optionsLoader = () => fetchOptions()
@@ -136,6 +136,17 @@ const carregarCampos = async (id) => {
   try {
     const res = await api.get(`wf/forms/formularios-campos/${id}`)
     campos.value = (res.data.data ?? []).slice().sort((a, b) => (a.pivot?.ordem ?? 0) - (b.pivot?.ordem ?? 0))
+    form.value = Object.fromEntries(
+      campos.value.map(campo => {
+        const raw = campo.pivot?.valor_default ?? null
+        let val = raw
+        if (raw !== null && raw !== '' && campo.opcoes_por_uri === 1) {
+          const n = Number(raw)
+          if (Number.isFinite(n)) val = n
+        }
+        return [String(campo.id), val]
+      })
+    )
   } catch {
     erro.value = true
   } finally {
