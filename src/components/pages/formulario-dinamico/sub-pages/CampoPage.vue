@@ -194,7 +194,7 @@ import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors.js'
 import { upperCase } from 'lodash-es'
 
-const tiposSelecionais = ['checkbox', 'select', 'radio']
+const tiposSelecionais = ['checkbox', 'select', 'radio', 'autocomplete']
 
 const fields = [
   {
@@ -239,14 +239,42 @@ const fields = [
     optional: true
   },
   {
-    key: 'obrigatorio',
-    label: 'Obrigatório',
+    key: 'opcoes_por_uri',
+    label: 'Opções por API',
     type: 'radio',
+    default: 0,
+    disabled: f => !tiposSelecionais.includes(f.tipo),
+    visible: f => tiposSelecionais.includes(f.tipo),
     options: async () => [
       { value: 1, text: 'Sim' },
       { value: 0, text: 'Não' }
     ],
     optional: false,
+  },
+  {
+    key: 'options_uri',
+    label: 'URI para Options',
+    type: 'text',
+    disabled: f => f.opcoes_por_uri !== 1,
+    visible: f => f.opcoes_por_uri === 1,
+    optional: true
+  },
+  {
+    key: 'options_uri_value',
+    label: 'Options Value',
+    default: 'id',
+    type: 'text',
+    disabled: f => f.opcoes_por_uri !== 1,
+    visible: f => f.opcoes_por_uri === 1,
+    optional: true
+  },
+  {
+    key: 'options_uri_text',
+    label: 'Options text',
+    type: 'text',
+    disabled: f => f.opcoes_por_uri !== 1,
+    visible: f => f.opcoes_por_uri === 1,
+    optional: true
   },
   {
     key: 'grupo',

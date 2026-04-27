@@ -72,18 +72,35 @@ const form = ref({})
 watch(() => props.modelValue, (v) => { dialog.value = v })
 watch(dialog, (v) => emit('update:modelValue', v))
 
-const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox']
+const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox', 'autocomplete']
 
 const fields = computed(() =>
   campos.value.map(campo => {
-    const opcoes = (campo.campos_opcoes ?? [])
-      .slice()
-      .sort((a, b) =>
-        Number(a.ordem) - Number(b.ordem) ||
-        a.valor.localeCompare(b.valor) ||
-        a.opcao.localeCompare(b.opcao)
-      )
-      .map(o => ({ value: o.valor, text: o.opcao }))
+    let optionsLoader = undefined
+
+    if (tiposSelecionais.includes(campo.tipo)) {
+      if (campo.opcoes_por_uri === 1) {
+        optionsLoader = async () => {
+          const res = await api.get(campo.options_uri)
+          const list = Array.isArray(res.data?.data) ? res.data.data : []
+          return list.map(item => ({
+            value: item[campo.options_uri_value],
+            text: item[campo.options_uri_text],
+          }))
+        }
+      } else {
+        const opcoes = (campo.campos_opcoes ?? [])
+          .slice()
+          .sort((a, b) =>
+            Number(a.ordem) - Number(b.ordem) ||
+            a.valor.localeCompare(b.valor) ||
+            a.opcao.localeCompare(b.opcao)
+          )
+          .map(o => ({ value: o.valor, text: o.opcao }))
+        optionsLoader = async () => opcoes
+      }
+    }
+
     return {
       key: String(campo.id),
       label: campo.label || campo.campo,
@@ -95,8 +112,8 @@ const fields = computed(() =>
       rules: campo.pivot?.obrigatorio
         ? [v => (v !== null && v !== undefined && v !== '') || `${campo.label || campo.campo} é obrigatório`]
         : [],
-      ...(tiposSelecionais.includes(campo.tipo) && {
-        options: async () => opcoes,
+      ...(optionsLoader && {
+        options: optionsLoader,
         multiple: campo.tipo === 'select' ? campo.pivot?.select_multiplo === 1 : false,
       }),
     }
