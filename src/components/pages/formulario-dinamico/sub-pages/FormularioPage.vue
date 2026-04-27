@@ -102,14 +102,32 @@
         </p>
 
         <v-expansion-panels v-else multiple variant="accordion" class="rounded-0">
+          <Draggable
+              v-model="camposPivot"
+              :item-key="c => c.pivot.id"
+              handle=".drag-handle"
+              :animation="200"
+              :disabled="!!busca"
+              ghost-class="drag-ghost"
+              tag="div"
+              class="d-contents"
+              @end="renumerarOrdem"
+          >
+            <template #item="{ element: campo }">
           <v-expansion-panel
-              v-for="campo in camposFiltrados"
-              :key="campo.pivot.id"
+              v-show="campoCorresponde(campo)"
               elevation="0"
           >
             <!-- Cabeçalho do painel -->
             <v-expansion-panel-title class="px-5 py-3">
               <div class="d-flex align-center gap-3 flex-grow-1 mr-4 min-width-0">
+                <v-icon
+                    class="drag-handle flex-shrink-0"
+                    size="18"
+                    :color="busca ? 'disabled' : 'medium-emphasis'"
+                    :style="busca ? 'cursor:default' : 'cursor:grab'"
+                    @click.stop
+                >mdi-drag-vertical</v-icon>
                 <v-chip size="x-small" variant="tonal" color="teal" class="flex-shrink-0">{{ campo.tipo }}</v-chip>
                 <div class="min-width-0">
                   <div class="text-body-2 font-weight-medium text-truncate">{{ campo.label }}</div>
@@ -264,6 +282,8 @@
               </div>
             </v-expansion-panel-text>
           </v-expansion-panel>
+            </template>
+          </Draggable>
         </v-expansion-panels>
       </CardTextComponent>
 
@@ -289,6 +309,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import Draggable from 'vuedraggable'
 import CrudComponent from '@/components/crud/CrudComponent.vue'
 import UmParaMuitosComponent2 from '@/components/comuns/associacao/UmParaMuitosComponent2.vue'
 import PreviewFormularioDialog from './PreviewFormularioDialog.vue'
@@ -322,6 +343,18 @@ const camposFiltrados = computed(() => {
     c.tipo?.toLowerCase().includes(q)
   )
 })
+
+const campoCorresponde = (c) => {
+  const q = busca.value.trim().toLowerCase()
+  if (!q) return true
+  return c.label?.toLowerCase().includes(q) ||
+    c.campo?.toLowerCase().includes(q) ||
+    c.tipo?.toLowerCase().includes(q)
+}
+
+const renumerarOrdem = () => {
+  camposPivot.value.forEach((c, i) => { c.pivot.ordem = i })
+}
 
 const fields = [
   {
@@ -386,7 +419,7 @@ const abrirModalPivot = async (formulario) => {
   dialogPivot.value = true
   try {
     const res = await api.get(`wf/forms/formularios-campos/${formulario.id}`)
-    camposPivot.value = res.data.data ?? []
+    camposPivot.value = (res.data.data ?? []).sort((a, b) => (a.pivot?.ordem ?? 0) - (b.pivot?.ordem ?? 0))
   } finally {
     carregandoPivot.value = false
   }
@@ -427,6 +460,15 @@ const salvarTodosPivots = async () => {
 <style scoped>
 .min-width-0 { min-width: 0; }
 .lh-sm { line-height: 1.2; }
+.d-contents { display: contents; }
+
+.drag-handle { cursor: grab; }
+.drag-handle:active { cursor: grabbing; }
+
+:global(.drag-ghost) {
+  opacity: 0.45;
+  background: rgb(var(--v-theme-teal), 0.06) !important;
+}
 
 /* Remove padding padrão do v-expansion-panel-text */
 :deep(.v-expansion-panel-text__wrapper) {
