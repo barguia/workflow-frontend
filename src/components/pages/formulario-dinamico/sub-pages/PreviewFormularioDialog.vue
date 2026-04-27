@@ -72,18 +72,55 @@ const form = ref({})
 watch(() => props.modelValue, (v) => { dialog.value = v })
 watch(dialog, (v) => emit('update:modelValue', v))
 
-const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox']
+const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox', 'autocomplete']
 
 const fields = computed(() =>
   campos.value.map(campo => {
-    const opcoes = (campo.campos_opcoes ?? [])
-      .slice()
-      .sort((a, b) =>
-        Number(a.ordem) - Number(b.ordem) ||
-        a.valor.localeCompare(b.valor) ||
-        a.opcao.localeCompare(b.opcao)
-      )
-      .map(o => ({ value: o.valor, text: o.opcao }))
+    let optionsLoader = undefined
+    const extraProps = {}
+
+    if (tiposSelecionais.includes(campo.tipo)) {
+      if (campo.opcoes_por_uri === 1) {
+        const fetchOptions = async (search = '') => {
+          const params = search ? { [campo.opcoes_uri_text]: search } : {}
+          const res = await api.get(campo.opcoes_uri, { params })
+          const list = Array.isArray(res.data?.data) ? res.data.data : []
+          return list.map(item => ({
+            value: item[campo.opcoes_uri_value],
+            text: item[campo.opcoes_uri_text],
+          }))
+        }
+        optionsLoader = () => fetchOptions()
+        if (campo.tipo === 'autocomplete') {
+          extraProps.noFilter = true
+          extraProps.onSearch = fetchOptions
+        }
+      } else {
+        const opcoes = (campo.campos_opcoes ?? [])
+          .slice()
+          .sort((a, b) =>
+            Number(a.ordem) - Number(b.ordem) ||
+            a.valor.localeCompare(b.valor) ||
+            a.opcao.localeCompare(b.opcao)
+          )
+          .map(o => ({ value: o.valor, text: o.opcao }))
+        optionsLoader = async () => opcoes
+      }
+    }
+
+    if (campo.tipo === 'range') {
+      extraProps.min  = campo.pivot?.range_minimo  ?? 0
+      extraProps.max  = campo.pivot?.range_maximo  ?? 100
+      extraProps.step = campo.pivot?.range_step     ?? 1
+    }
+
+    if (campo.tipo === 'switch') {
+      extraProps.trueLabel  = campo.pivot?.switch_true_label  || 'Sim'
+      extraProps.falseLabel = campo.pivot?.switch_false_label || 'Não'
+      extraProps.trueValue  = campo.pivot?.switch_true_value  ?? true
+      extraProps.falseValue = campo.pivot?.switch_false_value ?? false
+    }
+
     return {
       key: String(campo.id),
       label: campo.label || campo.campo,
@@ -95,10 +132,11 @@ const fields = computed(() =>
       rules: campo.pivot?.obrigatorio
         ? [v => (v !== null && v !== undefined && v !== '') || `${campo.label || campo.campo} é obrigatório`]
         : [],
-      ...(tiposSelecionais.includes(campo.tipo) && {
-        options: async () => opcoes,
+      ...(optionsLoader && {
+        options: optionsLoader,
         multiple: campo.tipo === 'select' ? campo.pivot?.select_multiplo === 1 : false,
       }),
+      ...extraProps,
     }
   })
 )
@@ -111,6 +149,19 @@ const carregarCampos = async (id) => {
   try {
     const res = await api.get(`wf/forms/formularios-campos/${id}`)
     campos.value = (res.data.data ?? []).slice().sort((a, b) => (a.pivot?.ordem ?? 0) - (b.pivot?.ordem ?? 0))
+    form.value = Object.fromEntries(
+      campos.value.map(campo => {
+        const raw = campo.pivot?.valor_default ?? null
+        let val = raw
+        if (raw !== null && raw !== '' && campo.opcoes_por_uri === 1) {
+          const n = Number(raw)
+          if (Number.isFinite(n)) val = n
+        }
+        if (campo.tipo === 'switch' && val === null) val = campo.pivot?.switch_false_value ?? false
+        if (campo.tipo === 'range' && val === null) val = campo.pivot?.range_minimo ?? 0
+        return [String(campo.id), val]
+      })
+    )
   } catch {
     erro.value = true
   } finally {

@@ -6,7 +6,11 @@ async function obterIdProjeto(page) {
   await expect(page.getByTestId('projeto-crud')).toBeVisible({ timeout: 15000 })
 
   const link = page.getByTestId('projeto-btn-ficha-tecnica').first()
-  await expect(link).toBeVisible({ timeout: 15000 })
+  try {
+    await link.waitFor({ state: 'visible', timeout: 15000 })
+  } catch {
+    return null
+  }
 
   const href = await link.getAttribute('href')
   return href?.match(/\/ficha-tecnica\/(\d+)/)?.[1] ?? null

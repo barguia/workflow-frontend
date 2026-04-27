@@ -6,6 +6,7 @@ import controleAcessoRoutes from "@/components/pages/controle-acesso/routes/rout
 import appRoutes from "@/components/pages/aplicacao/routes/routes.js"
 import workflowRoutes from "@/components/pages/projeto/routes/routes.js"
 import formDinamicoRoutes from "@/components/pages/formulario-dinamico/routes/routes.js"
+import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
 
 const pinia = createPinia();
 
@@ -15,6 +16,11 @@ const routes = [
     ...workflowRoutes,
     ...formDinamicoRoutes,
 
+    {
+        path: '/form-dinamico-exemplo',
+        name: 'Formulario Dinâmico Exemplo',
+        component: FormExemploPage,
+    },
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
