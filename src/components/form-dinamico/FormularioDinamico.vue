@@ -7,9 +7,9 @@
         <!-- v-if = remove do DOM -->
         <template v-if="resolveRenderIf(field)">
 
-          <!-- TEXT / EMAIL / DATE / PASSWORD -->
+          <!-- TEXT / DATE / PASSWORD -->
           <TextFieldComponent
-              v-if="isType(field, ['text','email','date','password'])"
+              v-if="isType(field, ['text','date','password'])"
               v-model="localForm[field.key]"
               :label="field.label"
               :type="field.type || 'text'"
@@ -113,6 +113,73 @@
               :disabled="resolveDisabled(field)"
               @update:modelValue="onFieldChange(field, $event)"
           />
+
+          <!-- EMAIL -->
+          <EmailComponent
+              v-else-if="isType(field, 'email')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- DATETIME -->
+          <DatetimeComponent
+              v-else-if="isType(field, 'datetime')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- TIME -->
+          <TimeComponent
+              v-else-if="isType(field, 'time')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- RANGE -->
+          <RangeComponent
+              v-else-if="isType(field, 'range')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :min="field.min ?? 0"
+              :max="field.max ?? 100"
+              :step="field.step ?? 1"
+              :thumb-label="field.thumbLabel ?? true"
+              :show-ticks="field.showTicks ?? false"
+              :rules="resolveRules(field)"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- SWITCH -->
+          <SwitchComponent
+              v-else-if="isType(field, 'switch')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :true-label="field.trueLabel ?? 'Sim'"
+              :false-label="field.falseLabel ?? 'Não'"
+              :true-value="field.trueValue ?? true"
+              :false-value="field.falseValue ?? false"
+              :rules="resolveRules(field)"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
         </template>
       </ColComponent>
     </RowComponent>
@@ -132,6 +199,11 @@ import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 import ComboboxComponent from "@/components/comuns/forms/ComboboxComponent.vue";
 import AutocompleteComponent from "@/components/comuns/forms/AutocompleteComponent.vue";
+import EmailComponent from "@/components/comuns/forms/EmailComponent.vue";
+import DatetimeComponent from "@/components/comuns/forms/DatetimeComponent.vue";
+import TimeComponent from "@/components/comuns/forms/TimeComponent.vue";
+import RangeComponent from "@/components/comuns/forms/RangeComponent.vue";
+import SwitchComponent from "@/components/comuns/forms/SwitchComponent.vue";
 
 const props = defineProps({
   fields: { type: Array, required: true },

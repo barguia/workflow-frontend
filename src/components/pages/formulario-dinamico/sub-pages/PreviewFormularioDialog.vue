@@ -144,6 +144,8 @@ const carregarCampos = async (id) => {
           const n = Number(raw)
           if (Number.isFinite(n)) val = n
         }
+        if (campo.tipo === 'switch' && val === null) val = false
+        if (campo.tipo === 'range' && val === null) val = 0
         return [String(campo.id), val]
       })
     )
