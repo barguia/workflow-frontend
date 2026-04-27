@@ -108,6 +108,19 @@ const fields = computed(() =>
       }
     }
 
+    if (campo.tipo === 'range') {
+      extraProps.min  = campo.pivot?.range_minimo  ?? 0
+      extraProps.max  = campo.pivot?.range_maximo  ?? 100
+      extraProps.step = campo.pivot?.range_step     ?? 1
+    }
+
+    if (campo.tipo === 'switch') {
+      extraProps.trueLabel  = campo.pivot?.switch_true_label  || 'Sim'
+      extraProps.falseLabel = campo.pivot?.switch_false_label || 'Não'
+      extraProps.trueValue  = campo.pivot?.switch_true_value  ?? true
+      extraProps.falseValue = campo.pivot?.switch_false_value ?? false
+    }
+
     return {
       key: String(campo.id),
       label: campo.label || campo.campo,
@@ -122,8 +135,8 @@ const fields = computed(() =>
       ...(optionsLoader && {
         options: optionsLoader,
         multiple: campo.tipo === 'select' ? campo.pivot?.select_multiplo === 1 : false,
-        ...extraProps,
       }),
+      ...extraProps,
     }
   })
 )
@@ -144,8 +157,8 @@ const carregarCampos = async (id) => {
           const n = Number(raw)
           if (Number.isFinite(n)) val = n
         }
-        if (campo.tipo === 'switch' && val === null) val = false
-        if (campo.tipo === 'range' && val === null) val = 0
+        if (campo.tipo === 'switch' && val === null) val = campo.pivot?.switch_false_value ?? false
+        if (campo.tipo === 'range' && val === null) val = campo.pivot?.range_minimo ?? 0
         return [String(campo.id), val]
       })
     )
