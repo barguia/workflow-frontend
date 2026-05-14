@@ -215,6 +215,15 @@ const fields = [
   },
   {
     col: 3,
+    key: 'obrigatorio',
+    label: 'Obrigatório',
+    type: 'radio',
+    options: async () => [{value: 1, text: 'Sim'}, {value: 0, text: 'Não'}],
+    rules: [v => !!v || 'Label é obrigatório'],
+    optional: false
+  },
+  {
+    col: 3,
     key: 'tipo',
     label: 'Tipo de campo',
     type: 'select',
