@@ -105,12 +105,58 @@
                             type="number"
                         />
                       </v-col>
-                      <v-col cols="12" :md="campo.tipo === 'select' ? 5 : 8">
+                      <v-col v-if="!['range', 'switch'].includes(campo.tipo)" cols="12" :md="campo.tipo === 'select' ? 5 : 8">
                         <TextFieldComponent
+                            v-if="['text', 'number', 'date'].includes(campo.tipo)"
                             v-model="campo.pivot.valor_default"
                             label="Valor padrão"
-                            density="compact"
-                            hide-details
+                            :type="tipoInput(campo.tipo)"
+                        />
+                        <EmailComponent
+                            v-else-if="campo.tipo === 'email'"
+                            v-model="campo.pivot.valor_default"
+                            label="Valor padrão"
+                        />
+                        <DatetimeComponent
+                            v-else-if="campo.tipo === 'datetime'"
+                            v-model="campo.pivot.valor_default"
+                            label="Valor padrão"
+                        />
+                        <TimeComponent
+                            v-else-if="campo.tipo === 'time'"
+                            v-model="campo.pivot.valor_default"
+                            label="Valor padrão"
+                        />
+                        <TextAreaComponent
+                            v-else-if="campo.tipo === 'textarea'"
+                            v-model="campo.pivot.valor_default"
+                            label="Valor padrão"
+                            rows="2"
+                            auto-grow
+                        />
+                        <SelectComponent
+                            v-else-if="campo.tipo === 'select'"
+                            :model-value="selectDefaultValue(campo)"
+                            :items="camposOpcoes[campo.id] ?? []"
+                            :multiple="campo.pivot.select_multiplo === 1"
+                            label="Valor padrão"
+                            @update:model-value="(v) => setSelectDefault(campo, v)"
+                        />
+                        <RadioComponent
+                            v-else-if="campo.tipo === 'radio'"
+                            v-model="campo.pivot.valor_default"
+                            :items="camposOpcoes[campo.id] ?? []"
+                            label="Valor padrão"
+                            inline
+                        />
+                        <CheckboxComponent
+                            v-else-if="campo.tipo === 'checkbox'"
+                            :model-value="checkboxDefaultValue(campo)"
+                            :items="camposOpcoes[campo.id] ?? []"
+                            label="Valor padrão"
+                            multiple
+                            inline
+                            @update:model-value="(v) => setCheckboxDefault(campo, v)"
                         />
                       </v-col>
                       <v-col v-if="campo.tipo === 'select'" cols="12" md="3" class="d-flex align-center">
@@ -161,6 +207,18 @@
                           />
                         </v-col>
                       </v-row>
+                      <v-row dense class="mt-2">
+                        <v-col cols="12">
+                          <RangeComponent
+                              :model-value="campo.pivot.valor_default !== null && campo.pivot.valor_default !== '' ? Number(campo.pivot.valor_default) : (campo.pivot.range_minimo ?? 0)"
+                              :min="campo.pivot.range_minimo ?? 0"
+                              :max="campo.pivot.range_maximo ?? 100"
+                              :step="campo.pivot.range_step ?? 1"
+                              label="Valor padrão"
+                              @update:model-value="(v) => { campo.pivot.valor_default = v }"
+                          />
+                        </v-col>
+                      </v-row>
                     </template>
 
                     <template v-if="campo.tipo === 'switch'">
@@ -207,6 +265,18 @@
                           />
                         </v-col>
                       </v-row>
+                      <v-row dense class="mt-2">
+                        <v-col cols="12">
+                          <SwitchComponent
+                              v-model="campo.pivot.valor_default"
+                              label="Valor padrão"
+                              :true-label="campo.pivot.switch_true_label || 'Ativo'"
+                              :false-label="campo.pivot.switch_false_label || 'Inativo'"
+                              :true-value="campo.pivot.switch_true_value || 'true'"
+                              :false-value="campo.pivot.switch_false_value || 'false'"
+                          />
+                        </v-col>
+                      </v-row>
                     </template>
 
                   </div>
@@ -248,6 +318,15 @@ import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 import ProgressLinearComponent from '@/components/comuns/progress/ProgressLinearComponent.vue'
 import TextFieldComponent from '@/components/comuns/forms/TextFieldComponent.vue'
+import TextAreaComponent from '@/components/comuns/forms/TextAreaComponent.vue'
+import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
+import RadioComponent from '@/components/comuns/forms/RadioComponent.vue'
+import CheckboxComponent from '@/components/comuns/forms/CheckboxComponent.vue'
+import EmailComponent from '@/components/comuns/forms/EmailComponent.vue'
+import DatetimeComponent from '@/components/comuns/forms/DatetimeComponent.vue'
+import TimeComponent from '@/components/comuns/forms/TimeComponent.vue'
+import RangeComponent from '@/components/comuns/forms/RangeComponent.vue'
+import SwitchComponent from '@/components/comuns/forms/SwitchComponent.vue'
 import api from '@/services/api.js'
 
 const props = defineProps({
@@ -289,11 +368,71 @@ const renumerarOrdem = () => {
   camposPivot.value.forEach((c, i) => { c.pivot.ordem = i })
 }
 
+const tipoInput = (tipo) => tipo === 'number' ? 'number' : tipo === 'date' ? 'date' : 'text'
+
+const TIPOS_SELECIONAIS = ['select', 'checkbox', 'radio', 'combobox', 'autocomplete']
+const camposOpcoes = ref({})
+
+const carregarOpcoesCampos = async (campos) => {
+  await Promise.all(
+    campos
+      .filter(c => TIPOS_SELECIONAIS.includes(c.tipo))
+      .map(async (c) => {
+        if (c.opcoes_por_uri === 1 && c.opcoes_uri) {
+          try {
+            const res = await api.get(c.opcoes_uri)
+            const list = Array.isArray(res.data?.data) ? res.data.data : []
+            camposOpcoes.value[c.id] = list.map(item => ({
+              value: item[c.opcoes_uri_value],
+              text:  item[c.opcoes_uri_text],
+            }))
+          } catch {
+            camposOpcoes.value[c.id] = []
+          }
+        } else {
+          camposOpcoes.value[c.id] = (c.campos_opcoes ?? [])
+            .slice()
+            .sort((a, b) =>
+              Number(a.ordem) - Number(b.ordem) ||
+              a.valor.localeCompare(b.valor) ||
+              a.opcao.localeCompare(b.opcao)
+            )
+            .map(o => ({ value: o.valor, text: o.opcao }))
+        }
+      })
+  )
+}
+
+const parseMultipleDefault = (valor) => {
+  if (!valor) return []
+  try { return JSON.parse(valor) } catch { return valor.split(',').map(s => s.trim()).filter(Boolean) }
+}
+
+const checkboxDefaultValue = (campo) => parseMultipleDefault(campo.pivot.valor_default)
+
+const setCheckboxDefault = (campo, values) => {
+  campo.pivot.valor_default = values?.length ? JSON.stringify(values) : null
+}
+
+const selectDefaultValue = (campo) => {
+  if (!campo.pivot.select_multiplo) return campo.pivot.valor_default
+  return parseMultipleDefault(campo.pivot.valor_default)
+}
+
+const setSelectDefault = (campo, value) => {
+  if (!campo.pivot.select_multiplo) {
+    campo.pivot.valor_default = value ?? null
+  } else {
+    campo.pivot.valor_default = Array.isArray(value) && value.length ? JSON.stringify(value) : null
+  }
+}
+
 onMounted(async () => {
   carregandoPivot.value = true
   try {
     const res = await api.get(`wf/forms/formularios-campos/${props.formulario.id}`)
     camposPivot.value = (res.data.data ?? []).sort((a, b) => (a.pivot?.ordem ?? 0) - (b.pivot?.ordem ?? 0))
+    await carregarOpcoesCampos(camposPivot.value)
   } finally {
     carregandoPivot.value = false
   }
