@@ -150,6 +150,15 @@
                             inline
                             @update:model-value="(v) => setCheckboxDefault(campo, v)"
                         />
+                        <AutocompleteComponent
+                            v-else-if="campo.tipo === 'autocomplete'"
+                            v-model="campo.pivot.valor_default"
+                            :items="camposOpcoes[campo.id] ?? []"
+                            :no-filter="campo.opcoes_por_uri === 1"
+                            label="Valor padrão"
+                            density="compact"
+                            @update:search="(s) => camposOnSearch[campo.id]?.(s)"
+                        />
                       </v-col>
                       <v-col v-if="campo.tipo === 'select'" cols="12" md="3" class="d-flex align-center">
                         <v-checkbox
@@ -319,6 +328,8 @@ import DatetimeComponent from '@/components/comuns/forms/DatetimeComponent.vue'
 import TimeComponent from '@/components/comuns/forms/TimeComponent.vue'
 import RangeComponent from '@/components/comuns/forms/RangeComponent.vue'
 import SwitchComponent from '@/components/comuns/forms/SwitchComponent.vue'
+import AutocompleteComponent from '@/components/comuns/forms/AutocompleteComponent.vue'
+import { debounce } from 'lodash-es'
 import api from '@/services/api.js'
 
 const props = defineProps({
@@ -363,7 +374,8 @@ const renumerarOrdem = () => {
 const tipoInput = (tipo) => tipo === 'number' ? 'number' : tipo === 'date' ? 'date' : 'text'
 
 const TIPOS_SELECIONAIS = ['select', 'checkbox', 'radio', 'combobox', 'autocomplete']
-const camposOpcoes = ref({})
+const camposOpcoes  = ref({})
+const camposOnSearch = ref({})
 
 const carregarOpcoesCampos = async (campos) => {
   await Promise.all(
@@ -371,15 +383,24 @@ const carregarOpcoesCampos = async (campos) => {
       .filter(c => TIPOS_SELECIONAIS.includes(c.tipo))
       .map(async (c) => {
         if (c.opcoes_por_uri === 1 && c.opcoes_uri) {
-          try {
-            const res = await api.get(c.opcoes_uri)
+          const fetchOptions = async (search = '') => {
+            const params = search ? { [c.opcoes_uri_text]: search } : {}
+            const res = await api.get(c.opcoes_uri, { params })
             const list = Array.isArray(res.data?.data) ? res.data.data : []
-            camposOpcoes.value[c.id] = list.map(item => ({
+            return list.map(item => ({
               value: item[c.opcoes_uri_value],
               text:  item[c.opcoes_uri_text],
             }))
+          }
+          try {
+            camposOpcoes.value[c.id] = await fetchOptions()
           } catch {
             camposOpcoes.value[c.id] = []
+          }
+          if (c.tipo === 'autocomplete') {
+            camposOnSearch.value[c.id] = debounce(async (search) => {
+              try { camposOpcoes.value[c.id] = await fetchOptions(search) } catch { /* mantém itens atuais */ }
+            }, 350)
           }
         } else {
           camposOpcoes.value[c.id] = (c.campos_opcoes ?? [])
@@ -407,8 +428,15 @@ const setCheckboxDefault = (campo, values) => {
 }
 
 const selectDefaultValue = (campo) => {
-  if (!campo.pivot.select_multiplo) return campo.pivot.valor_default
-  return parseMultipleDefault(campo.pivot.valor_default)
+  const raw = campo.pivot.valor_default
+  if (!campo.pivot.select_multiplo) {
+    if (campo.opcoes_por_uri === 1 && raw !== null && raw !== '') {
+      const n = Number(raw)
+      if (Number.isFinite(n)) return n
+    }
+    return raw
+  }
+  return parseMultipleDefault(raw)
 }
 
 const setSelectDefault = (campo, value) => {
