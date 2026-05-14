@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="proxyModel" max-width="900px" scrollable @keydown.esc="proxyModel = false" @before-leave="() => document.activeElement?.blur()">
+  <v-dialog v-model="proxyModel" max-width="1400px" scrollable @keydown.esc="proxyModel = false" @before-leave="() => document.activeElement?.blur()">
     <CardComponent rounded="lg">
 
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
@@ -38,7 +38,7 @@
           Nenhum campo encontrado para "<strong>{{ busca }}</strong>".
         </p>
 
-        <v-expansion-panels v-else multiple variant="accordion" class="rounded-0">
+        <v-expansion-panels v-else v-model="openPanels" multiple class="rounded-0 campos-grid">
           <Draggable
               v-model="camposPivot"
               :item-key="c => c.pivot.id"
@@ -51,7 +51,12 @@
               @end="renumerarOrdem"
           >
             <template #item="{ element: campo }">
-              <v-expansion-panel v-show="campoCorresponde(campo)" elevation="0">
+              <v-expansion-panel
+                  v-show="campoCorresponde(campo)"
+                  :value="campo.pivot.id"
+                  :style="panelStyle(campo)"
+                  elevation="0"
+              >
 
                 <v-expansion-panel-title class="px-5 py-3">
                   <div class="d-flex align-center gap-3 flex-grow-1 mr-4 min-width-0">
@@ -68,8 +73,8 @@
                       <div class="text-caption text-medium-emphasis text-truncate">{{ campo.campo }}</div>
                     </div>
                   </div>
-                  <div class="d-flex align-center gap-1 flex-shrink-0 mr-2" @click.stop>
-                    <span class="text-caption text-medium-emphasis">Obrigatório</span>
+                  <div class="d-flex flex-column align-center flex-shrink-0 mr-2" @click.stop>
+                    <span class="text-caption text-medium-emphasis" style="line-height:1">Obrigatório</span>
                     <v-switch
                         v-model="campo.pivot.obrigatorio"
                         :true-value="1"
@@ -103,6 +108,7 @@
                             label="Valor padrão"
                             density="compact"
                             :type="tipoInput(campo.tipo)"
+                            :mask="campo.mascara || undefined"
                         />
                         <EmailComponent
                             v-else-if="campo.tipo === 'email'"
@@ -344,10 +350,20 @@ const proxyModel = computed({
   set: (v) => emit('update:modelValue', v),
 })
 
-const camposPivot    = ref([])
+const camposPivot     = ref([])
 const carregandoPivot = ref(false)
-const salvandoTodos  = ref(false)
-const busca          = ref('')
+const salvandoTodos   = ref(false)
+const busca           = ref('')
+const openPanels      = ref([])
+
+const panelStyle = (campo) => {
+  const isOpen = openPanels.value.includes(campo.pivot.id)
+  if (isOpen) return { flexBasis: '100%', width: '100%', flexGrow: 0, flexShrink: 0 }
+  const cols = campo.pivot?.cols ?? 12
+  const pct = `calc(${cols} / 12 * 100%)`
+  return { flexBasis: pct, width: pct, flexGrow: 0, flexShrink: 0 }
+}
+
 
 const camposFiltrados = computed(() => {
   const q = busca.value.trim().toLowerCase()
@@ -501,6 +517,27 @@ const salvarTodosPivots = async () => {
 :global(.drag-ghost) {
   opacity: 0.45;
   background: rgb(var(--v-theme-teal), 0.06) !important;
+}
+
+:deep(.campos-grid) {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+:deep(.campos-grid .v-expansion-panel) {
+  flex-grow: 0;
+  flex-shrink: 0;
+  transition: flex-basis 0.25s ease, width 0.25s ease;
+  min-width: 0;
+  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  box-sizing: border-box;
+}
+
+:deep(.campos-grid .v-expansion-panel--active) {
+  flex-basis: 100% !important;
+  width: 100% !important;
+  flex-grow: 0 !important;
 }
 
 :deep(.v-expansion-panel-text__wrapper) {

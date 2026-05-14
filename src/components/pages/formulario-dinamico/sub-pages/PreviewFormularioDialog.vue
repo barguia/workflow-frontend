@@ -1,5 +1,5 @@
 <template>
-  <DialogComponent v-model="dialog" max-width="700" scrollable>
+  <DialogComponent v-model="dialog" max-width="1400" scrollable>
     <CardComponent>
       <CardTitleComponent class="d-flex align-center justify-space-between pa-4">
         <span class="text-h6">{{ titulo }}</span>
