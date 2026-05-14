@@ -96,20 +96,12 @@
                             max="12"
                         />
                       </v-col>
-                      <v-col cols="6" md="2">
-                        <TextFieldComponent
-                            v-model.number="campo.pivot.ordem"
-                            label="Ordem"
-                            density="compact"
-                            hide-details
-                            type="number"
-                        />
-                      </v-col>
                       <v-col v-if="!['range', 'switch'].includes(campo.tipo)" cols="12" :md="campo.tipo === 'select' ? 5 : 8">
                         <TextFieldComponent
                             v-if="['text', 'number', 'date'].includes(campo.tipo)"
                             v-model="campo.pivot.valor_default"
                             label="Valor padrão"
+                            density="compact"
                             :type="tipoInput(campo.tipo)"
                         />
                         <EmailComponent

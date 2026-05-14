@@ -159,6 +159,13 @@ const carregarCampos = async (id) => {
         }
         if (campo.tipo === 'switch' && val === null) val = campo.pivot?.switch_false_value ?? false
         if (campo.tipo === 'range' && val === null) val = campo.pivot?.range_minimo ?? 0
+        if (campo.tipo === 'checkbox' || (campo.tipo === 'select' && campo.pivot?.select_multiplo === 1)) {
+          if (!val) {
+            val = []
+          } else if (typeof val === 'string') {
+            try { val = JSON.parse(val) } catch { val = val.split(',').map(s => s.trim()).filter(Boolean) }
+          }
+        }
         return [String(campo.id), val]
       })
     )
