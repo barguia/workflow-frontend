@@ -48,6 +48,7 @@ const form = ref({
   email: '',
   estado_id: null,
   cidade_id: null,
+  profissao: null,
   interesses: [],
   observacoes: '',
   campo_admin: ''
@@ -99,6 +100,15 @@ const fields = computed(() => [
     col: 6,
   },
   {
+    key: 'profissao',
+    label: 'Profissão',
+    type: 'autocomplete',
+    options: () => api.get('/profissoes'),
+    sorted: true,
+    rules: [v => !!v || 'Selecione uma profissão'],
+    col: 6,
+  },
+  {
     key: 'interesses',
     label: 'Interesses',
     type: 'select',
@@ -145,6 +155,7 @@ const resetar = () => {
     email: '',
     estado_id: null,
     cidade_id: null,
+    profissao: null,
     interesses: [],
     observacoes: '',
     campo_admin: ''

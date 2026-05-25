@@ -7,6 +7,15 @@ const ESTADOS = [
     { text: 'Minas Gerais', value: 3, gorvernador: 'Julio Alves' },
 ]
 
+const PROFISSOES = [
+    { text: 'Desenvolvedor', value: 1 },
+    { text: 'Designer', value: 2 },
+    { text: 'Analista de Dados', value: 3 },
+    { text: 'DevOps', value: 4 },
+    { text: 'Gerente de Projetos', value: 5 },
+    { text: 'Arquiteto de Software', value: 6 },
+]
+
 const INTERESSES = [
     { text: 'Tecnologia', value: 1 },
     { text: 'Infraestrutura', value: 2 },
@@ -34,6 +43,7 @@ const api = {
 
         if (url === '/estados') return ESTADOS
         if (url === '/interesses') return INTERESSES
+        if (url === '/profissoes') return PROFISSOES
 
         const match = url.match(/\/cidades\?estado_id=(\d+)/)
         if (match) {

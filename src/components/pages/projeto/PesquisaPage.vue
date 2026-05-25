@@ -123,6 +123,17 @@
             <IconComponent start>mdi-filter-off-outline</IconComponent>
             Limpar
           </ButtonComponent>
+          <ButtonComponent
+            variant="outlined"
+            color="success"
+            :loading="baixando"
+            :disabled="!ultimaQuery"
+            @click="baixar"
+            data-testid="pesquisa-btn-download"
+          >
+            <IconComponent start>mdi-download-outline</IconComponent>
+            Exportar
+          </ButtonComponent>
           <ButtonComponent color="primary" :loading="pesquisando" @click="pesquisar" data-testid="pesquisa-btn-pesquisar">
             <IconComponent start>mdi-magnify</IconComponent>
             Pesquisar
@@ -191,6 +202,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useCrud } from '@/services/useCrud.js'
 import { useValidationErrors } from '@/composables/useValidationErrors.js'
 import { useColumnSelection } from '@/composables/useColumnSelection.js'
+import api from "@/services/api";
 
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
@@ -245,6 +257,7 @@ const carregando = ref({
 })
 
 const pesquisando     = ref(false)
+const baixando        = ref(false)
 const rawResultados   = ref(null)
 
 // Paginação server-side
@@ -387,6 +400,25 @@ async function carregarTarefas() {
     const data = await fetchTarefas()
     opcoes.value.tarefas = (data ?? []).map(t => ({ value: t.id, text: t.tarefa ?? String(t.id) }))
   } finally { carregando.value.tarefas = false }
+}
+
+async function baixar() {
+  if (!ultimaQuery.value) return
+  baixando.value = true
+  try {
+    const response = await api.post('wf/projetos/download-pesquisa', ultimaQuery.value, { responseType: 'blob' })
+    const disposition = response.headers?.['content-disposition'] ?? ''
+    const match = disposition.match(/filename[^;=\n]*=(['"]?)([^'";\n]+)\1/)
+    const filename = match ? match[2] : 'pesquisa.xlsx'
+    const url = URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  } finally {
+    baixando.value = false
+  }
 }
 
 async function onModoChange() {

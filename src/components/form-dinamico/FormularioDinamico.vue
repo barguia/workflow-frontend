@@ -7,9 +7,9 @@
         <!-- v-if = remove do DOM -->
         <template v-if="resolveRenderIf(field)">
 
-          <!-- TEXT / EMAIL / DATE / PASSWORD -->
+          <!-- TEXT / DATE / PASSWORD -->
           <TextFieldComponent
-              v-if="isType(field, ['text','email','date','password'])"
+              v-if="isType(field, ['text','date','password'])"
               v-model="localForm[field.key]"
               :label="field.label"
               :type="field.type || 'text'"
@@ -41,6 +41,7 @@
               :items="fieldOptions[field.key] || []"
               :rules="resolveRules(field)"
               :multiple="field.multiple ?? false"
+              :sorted="field.sorted ?? false"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
@@ -55,6 +56,7 @@
               :items="fieldOptions[field.key] || []"
               :rules="resolveRules(field)"
               :inline="field.inline ?? false"
+              :sorted="field.sorted ?? false"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
@@ -71,10 +73,28 @@
               :multiple="field.multiple ?? false"
               :chips="field.chips ?? false"
               :inline="field.inline ?? false"
+              :sorted="field.sorted ?? false"
               :error-messages="validationErrors[field.key]"
               :required="!field.optional"
               :disabled="resolveDisabled(field)"
               @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- AUTOCOMPLETE -->
+          <AutocompleteComponent
+              v-else-if="isType(field, 'autocomplete')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :items="fieldOptions[field.key] || []"
+              :rules="resolveRules(field)"
+              :multiple="field.multiple ?? false"
+              :no-filter="field.noFilter ?? false"
+              :sorted="field.sorted ?? false"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+              @update:search="onAutocompleteSearch(field, $event)"
           />
 
           <!-- COMBOBOX -->
@@ -93,6 +113,73 @@
               :disabled="resolveDisabled(field)"
               @update:modelValue="onFieldChange(field, $event)"
           />
+
+          <!-- EMAIL -->
+          <EmailComponent
+              v-else-if="isType(field, 'email')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- DATETIME -->
+          <DatetimeComponent
+              v-else-if="isType(field, 'datetime')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- TIME -->
+          <TimeComponent
+              v-else-if="isType(field, 'time')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :rules="resolveRules(field)"
+              :error-messages="validationErrors[field.key]"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- RANGE -->
+          <RangeComponent
+              v-else-if="isType(field, 'range')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :min="field.min ?? 0"
+              :max="field.max ?? 100"
+              :step="field.step ?? 1"
+              :thumb-label="field.thumbLabel ?? true"
+              :show-ticks="field.showTicks ?? false"
+              :rules="resolveRules(field)"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
+
+          <!-- SWITCH -->
+          <SwitchComponent
+              v-else-if="isType(field, 'switch')"
+              v-model="localForm[field.key]"
+              :label="field.label"
+              :true-label="field.trueLabel ?? 'Sim'"
+              :false-label="field.falseLabel ?? 'Não'"
+              :true-value="field.trueValue ?? true"
+              :false-value="field.falseValue ?? false"
+              :rules="resolveRules(field)"
+              :required="!field.optional"
+              :disabled="resolveDisabled(field)"
+              @update:modelValue="onFieldChange(field, $event)"
+          />
         </template>
       </ColComponent>
     </RowComponent>
@@ -101,7 +188,7 @@
 
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from 'vue'
-import { isEqual } from 'lodash-es'
+import { isEqual, debounce } from 'lodash-es'
 import RadioComponent from "@/components/comuns/forms/RadioComponent.vue";
 import CheckboxComponent from "@/components/comuns/forms/CheckboxComponent.vue";
 import SelectComponent from "@/components/comuns/forms/SelectComponent.vue";
@@ -111,6 +198,12 @@ import FormComponent from "@/components/comuns/forms/FormComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 import ComboboxComponent from "@/components/comuns/forms/ComboboxComponent.vue";
+import AutocompleteComponent from "@/components/comuns/forms/AutocompleteComponent.vue";
+import EmailComponent from "@/components/comuns/forms/EmailComponent.vue";
+import DatetimeComponent from "@/components/comuns/forms/DatetimeComponent.vue";
+import TimeComponent from "@/components/comuns/forms/TimeComponent.vue";
+import RangeComponent from "@/components/comuns/forms/RangeComponent.vue";
+import SwitchComponent from "@/components/comuns/forms/SwitchComponent.vue";
 
 const props = defineProps({
   fields: { type: Array, required: true },
@@ -257,6 +350,26 @@ const onFieldChange = async (field, value) => {
 const isType = (field, types) => {
   const arr = Array.isArray(types) ? types : [types]
   return arr.includes(field.type || 'text')
+}
+
+/* -------------------------------------------------
+   6b. BUSCA REMOTA (autocomplete com onSearch)
+   ------------------------------------------------- */
+const _searchers = {}
+
+const onAutocompleteSearch = (field, search) => {
+  if (typeof field.onSearch !== 'function') return
+  if (!_searchers[field.key]) {
+    _searchers[field.key] = debounce(async (s) => {
+      try {
+        const opts = await field.onSearch(s)
+        fieldOptions.value[field.key] = Array.isArray(opts) ? opts : []
+      } catch (e) {
+        console.warn(`[FormularioDinamico] busca remota falhou: ${field.key}`, e)
+      }
+    }, 350)
+  }
+  _searchers[field.key](search ?? '')
 }
 
 /* -------------------------------------------------

@@ -125,8 +125,6 @@ import CardTitleComponent from "@/components/comuns/cards/CardTitleComponent.vue
 import CardTextComponent from "@/components/comuns/cards/CardTextComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import CardActionsComponent from "@/components/comuns/cards/CardActionsComponent.vue";
-import RowComponent from "@/components/comuns/layout/RowComponent.vue";
-import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 import FormularioDinamico from "@/components/form-dinamico/FormularioDinamico.vue"
 import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 
