@@ -51,7 +51,7 @@
         <div style="max-height:220px; overflow-y:auto">
           <div class="d-flex align-start gap-5 flex-wrap">
             <div>
-              <div class="text-caption text-medium-emphasis mb-1">Largura no grid</div>
+              <div data-testid="configuracao-painel-largura" class="text-caption text-medium-emphasis mb-1">Largura no grid</div>
               <div class="d-flex gap-1">
                 <button
                     v-for="preset in PRESETS"
@@ -281,6 +281,7 @@
                         @click.stop
                     >
                       <button
+                          data-testid="configuracao-campo-editar"
                           class="edit-btn"
                           :class="{ 'edit-btn--active': campoSelecionado?.pivot.id === campo.pivot.id }"
                           :aria-label="'Editar ' + campo.label"
