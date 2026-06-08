@@ -10,6 +10,12 @@ test.describe('Configuração de campos (pivot)', () => {
     await expect(page.getByTestId('configuracao-carregando')).not.toBeVisible({ timeout: 15000 })
   })
 
+  // Abre o painel de edição via botão lápis (hover revela o botão)
+  const abrirPainel = async (card) => {
+    await card.hover()
+    await card.getByTestId('configuracao-campo-editar').click()
+  }
+
   // ─── Modal ───────────────────────────────────────────────────────────────
 
   test('exibe botões Salvar tudo e Cancelar', async ({ page }) => {
@@ -64,13 +70,13 @@ test.describe('Configuração de campos (pivot)', () => {
 
   // ─── Painel de edição ────────────────────────────────────────────────────
 
-  test('clicar num campo abre o painel de edição com o label correto', async ({ page }) => {
+  test('clicar no lápis abre o painel de edição com o label correto', async ({ page }) => {
     const campos = page.getByTestId('configuracao-campo-item')
     const count = await campos.count()
     test.skip(count === 0, 'Nenhum campo associado ao formulário')
 
-    const labelTexto = await campos.first().locator('.text-body-2').textContent()
-    await campos.first().click()
+    const labelTexto = await campos.first().locator('.card-name').textContent()
+    await abrirPainel(campos.first())
 
     await expect(page.getByTestId('configuracao-painel-edicao')).toBeVisible()
     await expect(page.getByTestId('configuracao-painel-label')).toHaveText(labelTexto?.trim() ?? '')
@@ -81,32 +87,33 @@ test.describe('Configuração de campos (pivot)', () => {
     const count = await campos.count()
     test.skip(count === 0, 'Nenhum campo associado ao formulário')
 
-    await campos.first().click()
+    await abrirPainel(campos.first())
     await expect(page.getByTestId('configuracao-painel-edicao')).toBeVisible()
 
     await page.getByTestId('configuracao-painel-fechar').click()
     await expect(page.getByTestId('configuracao-painel-edicao')).not.toBeVisible()
   })
 
-  test('clicar no campo selecionado novamente fecha o painel (toggle)', async ({ page }) => {
+  test('clicar no lápis novamente fecha o painel (toggle)', async ({ page }) => {
     const campos = page.getByTestId('configuracao-campo-item')
     const count = await campos.count()
     test.skip(count === 0, 'Nenhum campo associado ao formulário')
 
-    await campos.first().click()
+    await abrirPainel(campos.first())
     await expect(page.getByTestId('configuracao-painel-edicao')).toBeVisible()
 
-    await campos.first().click()
+    // O botão lápis permanece visível quando o campo está selecionado
+    await campos.first().getByTestId('configuracao-campo-editar').click()
     await expect(page.getByTestId('configuracao-painel-edicao')).not.toBeVisible()
   })
 
-  test('painel sempre exibe o campo Cols', async ({ page }) => {
+  test('painel sempre exibe seletor de largura no grid', async ({ page }) => {
     const campos = page.getByTestId('configuracao-campo-item')
     const count = await campos.count()
     test.skip(count === 0, 'Nenhum campo associado ao formulário')
 
-    await campos.first().click()
-    await expect(page.getByTestId('configuracao-painel-edicao').getByLabel('Cols')).toBeVisible()
+    await abrirPainel(campos.first())
+    await expect(page.getByTestId('configuracao-painel-largura')).toBeVisible()
   })
 
   // ─── Tipos específicos ───────────────────────────────────────────────────
@@ -116,7 +123,7 @@ test.describe('Configuração de campos (pivot)', () => {
     const count = await rangeCampos.count()
     test.skip(count === 0, 'Nenhum campo do tipo range associado')
 
-    await rangeCampos.first().click()
+    await abrirPainel(rangeCampos.first())
     await expect(page.getByLabel('Mínimo')).toBeVisible()
     await expect(page.getByLabel('Máximo')).toBeVisible()
     await expect(page.getByLabel('Step')).toBeVisible()
@@ -127,7 +134,7 @@ test.describe('Configuração de campos (pivot)', () => {
     const count = await selectCampos.count()
     test.skip(count === 0, 'Nenhum campo do tipo select associado')
 
-    await selectCampos.first().click()
+    await abrirPainel(selectCampos.first())
     await expect(page.getByLabel('Seleção múltipla')).toBeVisible()
   })
 
@@ -136,7 +143,7 @@ test.describe('Configuração de campos (pivot)', () => {
     const count = await switchCampos.count()
     test.skip(count === 0, 'Nenhum campo do tipo switch associado')
 
-    await switchCampos.first().click()
+    await abrirPainel(switchCampos.first())
     await expect(page.getByLabel('Label ativo')).toBeVisible()
     await expect(page.getByLabel('Label inativo')).toBeVisible()
     await expect(page.getByLabel('Valor ativo')).toBeVisible()
