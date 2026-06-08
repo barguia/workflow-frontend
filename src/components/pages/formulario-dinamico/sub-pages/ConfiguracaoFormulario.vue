@@ -234,7 +234,8 @@
             v-else
             v-model="camposPivot"
             :item-key="c => c.pivot.id"
-            handle=".drag-handle"
+            filter="button"
+            :prevent-on-filter="false"
             :animation="200"
             :disabled="!!busca"
             ghost-class="drag-ghost"
@@ -608,13 +609,14 @@ const salvarTodosPivots = async () => {
   position: relative;
   border: 0.5px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 6px;
-  cursor: pointer;
+  cursor: grab;
   background: rgb(var(--v-theme-surface));
   transition: border-color 0.15s, box-shadow 0.15s;
   min-height: 80px;
   overflow: hidden;
   user-select: none;
 }
+.campo-item:active { cursor: grabbing; }
 .campo-item:hover {
   border-color: rgb(var(--v-theme-teal));
   box-shadow: 0 0 0 2px rgba(var(--v-theme-teal), 0.14);
@@ -625,19 +627,17 @@ const salvarTodosPivots = async () => {
   background: rgba(var(--v-theme-teal), 0.04);
 }
 
-/* Drag bar */
+/* Drag bar — indicador visual apenas */
 .drag-bar {
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 4px;
   border-radius: 4px 0 0 4px;
   background: rgba(var(--v-border-color), var(--v-border-opacity));
-  cursor: grab;
   transition: background 0.15s;
   z-index: 1;
+  pointer-events: none;
 }
-.drag-bar:active { cursor: grabbing; }
-.drag-bar--disabled { cursor: default; }
 .drag-bar--hover   { background: rgb(var(--v-theme-teal)); }
 
 /* Card body */
