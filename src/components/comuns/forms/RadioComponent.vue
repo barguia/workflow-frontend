@@ -12,6 +12,7 @@
         :key="item.value"
         :label="item.text"
         :value="item.value"
+        @click="!required && modelValue === item.value && (modelValue = null)"
     />
   </v-radio-group>
 </template>
