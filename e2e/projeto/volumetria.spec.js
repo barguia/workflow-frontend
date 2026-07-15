@@ -20,8 +20,6 @@ test.describe('Volumetria — Painel', () => {
 
   test('clicar em um macroprocesso exibe a tabela de processos', async ({ page }) => {
     const cards = page.locator('.row-one .v-card')
-    expect(await cards.count()).toBeGreaterThanOrEqual(2)
-
     await cards.nth(1).click()
 
     await expect(page.getByTestId('volumetria-tabela-processos')).toBeVisible({ timeout: 5000 })
