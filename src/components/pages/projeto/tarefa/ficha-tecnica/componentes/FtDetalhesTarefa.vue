@@ -1,34 +1,76 @@
 <template>
-  <CardComponent rounded="xl" variant="elevated" height="100%">
+  <CardComponent
+    rounded="xl"
+    variant="elevated"
+    height="100%"
+  >
     <CardTextComponent class="pa-5">
-      <div class="section-label mb-3">Detalhes da Tarefa</div>
+      <div class="section-label mb-3">
+        Detalhes da Tarefa
+      </div>
       <RowComponent dense>
         <ColComponent cols="12">
-          <div class="field-label">Tarefa</div>
-          <div class="field-value">{{ tarefa.tarefa ?? '—' }}</div>
+          <div class="field-label">
+            Tarefa
+          </div>
+          <div class="field-value">
+            {{ tarefa.tarefa ?? '—' }}
+          </div>
         </ColComponent>
-        <ColComponent v-if="tarefa.descricao_tarefa" cols="12">
-          <div class="field-label">Descrição</div>
-          <div class="field-value">{{ tarefa.descricao_tarefa }}</div>
+        <ColComponent
+          v-if="tarefa.descricao_tarefa"
+          cols="12"
+        >
+          <div class="field-label">
+            Descrição
+          </div>
+          <div class="field-value">
+            {{ tarefa.descricao_tarefa }}
+          </div>
         </ColComponent>
       </RowComponent>
 
       <DividerComponent class="my-4" />
 
-      <div class="section-label mb-3">Localização no Workflow</div>
+      <div class="section-label mb-3">
+        Localização no Workflow
+      </div>
       <RowComponent dense>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Processo</div>
-          <div class="field-value">{{ tarefa.processo ?? '—' }}</div>
-        </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Macroprocesso / Fase</div>
-          <div class="field-value">{{ tarefa.descricao_processo ?? '—' }}</div>
-        </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Aging do Processo</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Processo
+          </div>
           <div class="field-value">
-            <ChipComponent :color="agingColor(tarefa.aging_processo)" size="small" variant="tonal">
+            {{ tarefa.processo ?? '—' }}
+          </div>
+        </ColComponent>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Macroprocesso / Fase
+          </div>
+          <div class="field-value">
+            {{ tarefa.descricao_processo ?? '—' }}
+          </div>
+        </ColComponent>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Aging do Processo
+          </div>
+          <div class="field-value">
+            <ChipComponent
+              :color="agingColor(tarefa.aging_processo)"
+              size="small"
+              variant="tonal"
+            >
               {{ tarefa.aging_processo ?? 0 }} dia{{ tarefa.aging_processo !== 1 ? 's' : '' }}
             </ChipComponent>
           </div>
@@ -37,10 +79,17 @@
 
       <DividerComponent class="my-4" />
 
-      <div class="section-label mb-3">Situação Atual</div>
+      <div class="section-label mb-3">
+        Situação Atual
+      </div>
       <RowComponent dense>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Status</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Status
+          </div>
           <div class="field-value">
             <ChipComponent
               :color="tarefa.finalized_at ? 'success' : 'primary'"
@@ -51,29 +100,67 @@
             </ChipComponent>
           </div>
         </ColComponent>
-        <ColComponent v-if="tarefa.descricao_status_status" cols="12" sm="6">
-          <div class="field-label">Descrição do Status</div>
-          <div class="field-value">{{ tarefa.descricao_status_status }}</div>
-        </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Responsável pelo Tratamento</div>
-          <div class="field-value">{{ tarefa.user_tratamento ?? '—' }}</div>
-        </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Aging da Tarefa</div>
+        <ColComponent
+          v-if="tarefa.descricao_status_status"
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Descrição do Status
+          </div>
           <div class="field-value">
-            <ChipComponent :color="agingColor(tarefa.aging_tarefa)" size="small" variant="tonal">
+            {{ tarefa.descricao_status_status }}
+          </div>
+        </ColComponent>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Responsável pelo Tratamento
+          </div>
+          <div class="field-value">
+            {{ tarefa.user_tratamento ?? '—' }}
+          </div>
+        </ColComponent>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Aging da Tarefa
+          </div>
+          <div class="field-value">
+            <ChipComponent
+              :color="agingColor(tarefa.aging_tarefa)"
+              size="small"
+              variant="tonal"
+            >
               {{ tarefa.aging_tarefa ?? 0 }} dia{{ tarefa.aging_tarefa !== 1 ? 's' : '' }}
             </ChipComponent>
           </div>
         </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Data de Cadastro</div>
-          <div class="field-value">{{ formatarDataHora(tarefa.created_at) }}</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Data de Cadastro
+          </div>
+          <div class="field-value">
+            {{ formatarDataHora(tarefa.created_at) }}
+          </div>
         </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Fechado em</div>
-          <div class="field-value">{{ tarefa.finalized_at ? formatarDataHora(tarefa.finalized_at) : '—' }}</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Fechado em
+          </div>
+          <div class="field-value">
+            {{ tarefa.finalized_at ? formatarDataHora(tarefa.finalized_at) : '—' }}
+          </div>
         </ColComponent>
       </RowComponent>
     </CardTextComponent>

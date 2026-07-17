@@ -1,17 +1,17 @@
 <template>
   <v-slider
-      v-bind="$attrs"
-      v-model="modelValue"
-      :label="label"
-      :min="min"
-      :max="max"
-      :step="step"
-      :rules="rules"
-      :required="required"
-      :thumb-label="thumbLabel"
-      :show-ticks="showTicks"
-      thumb-size="20"
-      class="mt-2"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :label="label"
+    :min="min"
+    :max="max"
+    :step="step"
+    :rules="rules"
+    :required="required"
+    :thumb-label="thumbLabel"
+    :show-ticks="showTicks"
+    thumb-size="20"
+    class="mt-2"
   />
 </template>
 

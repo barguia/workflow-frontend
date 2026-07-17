@@ -1,11 +1,23 @@
 <template>
   <!-- Barra de ações -->
-  <CardComponent rounded="xl" variant="elevated" class="mb-6">
+  <CardComponent
+    rounded="xl"
+    variant="elevated"
+    class="mb-6"
+  >
     <CardTextComponent class="pa-4 d-flex align-center gap-3 flex-wrap">
-      <div class="section-label">Ações</div>
+      <div class="section-label">
+        Ações
+      </div>
       <SpacerComponent />
 
-      <ProgressCircularComponent v-if="carregandoAcoes" indeterminate size="22" width="2" color="primary" />
+      <ProgressCircularComponent
+        v-if="carregandoAcoes"
+        indeterminate
+        size="22"
+        width="2"
+        color="primary"
+      />
 
       <template v-else>
         <ButtonComponent
@@ -16,7 +28,9 @@
           :loading="executando === 'adotar'"
           @click="executarAcao('adotar')"
         >
-          <IconComponent start>mdi-account-arrow-right-outline</IconComponent>
+          <IconComponent start>
+            mdi-account-arrow-right-outline
+          </IconComponent>
           Adotar
         </ButtonComponent>
 
@@ -28,7 +42,9 @@
           :loading="executando === 'iniciar_tratamento'"
           @click="executarAcao('iniciar_tratamento')"
         >
-          <IconComponent start>mdi-play-circle-outline</IconComponent>
+          <IconComponent start>
+            mdi-play-circle-outline
+          </IconComponent>
           Iniciar Tratamento
         </ButtonComponent>
 
@@ -40,7 +56,9 @@
           :loading="executando === 'cancelar_tratamento'"
           @click="confirmar('cancelar_tratamento')"
         >
-          <IconComponent start>mdi-cancel</IconComponent>
+          <IconComponent start>
+            mdi-cancel
+          </IconComponent>
           Cancelar Tratamento
         </ButtonComponent>
 
@@ -52,7 +70,9 @@
           :loading="executando === 'abandonar'"
           @click="confirmar('abandonar')"
         >
-          <IconComponent start>mdi-account-remove-outline</IconComponent>
+          <IconComponent start>
+            mdi-account-remove-outline
+          </IconComponent>
           Abandonar
         </ButtonComponent>
 
@@ -64,7 +84,9 @@
           :loading="executando === 'devolver_para_fila'"
           @click="executarAcao('devolver_para_fila')"
         >
-          <IconComponent start>mdi-arrow-u-left-top</IconComponent>
+          <IconComponent start>
+            mdi-arrow-u-left-top
+          </IconComponent>
           Devolver para Fila
         </ButtonComponent>
 
@@ -76,7 +98,9 @@
           :disabled="!!tarefa.finalized_at"
           @click="abrirDialog"
         >
-          <IconComponent start>mdi-clipboard-edit-outline</IconComponent>
+          <IconComponent start>
+            mdi-clipboard-edit-outline
+          </IconComponent>
           Registrar Tratamento
         </ButtonComponent>
       </template>
@@ -84,10 +108,17 @@
   </CardComponent>
 
   <!-- Dialog: Confirmar ação destrutiva -->
-  <DialogComponent v-if="dialogConfirmar" v-model="dialogConfirmar" max-width="400px">
+  <DialogComponent
+    v-if="dialogConfirmar"
+    v-model="dialogConfirmar"
+    max-width="400px"
+  >
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <IconComponent :color="acaoConfig[acaoSelecionada]?.color" size="22">
+        <IconComponent
+          :color="acaoConfig[acaoSelecionada]?.color"
+          size="22"
+        >
           {{ acaoConfig[acaoSelecionada]?.icon }}
         </IconComponent>
         <span class="text-h6">{{ acaoConfig[acaoSelecionada]?.titulo }}</span>
@@ -97,7 +128,12 @@
       </CardTextComponent>
       <CardActionsComponent class="px-6 py-4 border-t">
         <SpacerComponent />
-        <ButtonComponent variant="text" @click="dialogConfirmar = false">Cancelar</ButtonComponent>
+        <ButtonComponent
+          variant="text"
+          @click="dialogConfirmar = false"
+        >
+          Cancelar
+        </ButtonComponent>
         <ButtonComponent
           :color="acaoConfig[acaoSelecionada]?.color"
           variant="flat"
@@ -119,10 +155,20 @@
   >
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <IconComponent color="primary" size="22">mdi-clipboard-edit-outline</IconComponent>
+        <IconComponent
+          color="primary"
+          size="22"
+        >
+          mdi-clipboard-edit-outline
+        </IconComponent>
         <span class="text-h6">Registrar Tratamento</span>
         <SpacerComponent />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="fecharDialog" />
+        <ButtonComponent
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="fecharDialog"
+        />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-5 pb-2 px-6">
@@ -165,7 +211,12 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <SpacerComponent />
-        <ButtonComponent variant="text" @click="fecharDialog">Cancelar</ButtonComponent>
+        <ButtonComponent
+          variant="text"
+          @click="fecharDialog"
+        >
+          Cancelar
+        </ButtonComponent>
         <ButtonComponent
           color="primary"
           variant="flat"

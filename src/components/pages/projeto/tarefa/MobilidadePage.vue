@@ -1,19 +1,38 @@
 <template>
   <!-- Carregando -->
-  <ContainerComponent v-if="carregando" class="fill-height d-flex align-center justify-center" fluid>
-    <ProgressCircularComponent indeterminate color="primary" size="48" />
+  <ContainerComponent
+    v-if="carregando"
+    class="fill-height d-flex align-center justify-center"
+    fluid
+  >
+    <ProgressCircularComponent
+      indeterminate
+      color="primary"
+      size="48"
+    />
   </ContainerComponent>
 
-  <ContainerComponent v-else fluid class="py-4">
-
+  <ContainerComponent
+    v-else
+    fluid
+    class="py-4"
+  >
     <!-- Cabeçalho -->
     <div class="d-flex align-center gap-3 mb-4">
       <div>
         <div class="d-flex align-center gap-2">
-          <IconComponent color="primary" size="20">mdi-transit-connection-variant</IconComponent>
+          <IconComponent
+            color="primary"
+            size="20"
+          >
+            mdi-transit-connection-variant
+          </IconComponent>
           <span class="text-h6 font-weight-bold">Mobilidade da Tarefa</span>
         </div>
-        <div v-if="tarefa" class="text-h5 font-weight-bold text-medium-emphasis mt-1">
+        <div
+          v-if="tarefa"
+          class="text-h5 font-weight-bold text-medium-emphasis mt-1"
+        >
           {{ tarefa.tarefa }} · {{ tarefa.processo?.processo }}
         </div>
       </div>
@@ -21,23 +40,34 @@
       <ButtonComponent
         color="secondary"
         variant="tonal"
-        @click="abrirDialogAssociacao"
         data-testid="mobilidade-btn-associar"
+        @click="abrirDialogAssociacao"
       >
-        <IconComponent start>mdi-link-variant</IconComponent>
+        <IconComponent start>
+          mdi-link-variant
+        </IconComponent>
         Associar
       </ButtonComponent>
     </div>
 
     <!-- Funil de navegação entre tarefas -->
-    <CardComponent rounded="xl" variant="outlined" class="mb-4">
+    <CardComponent
+      rounded="xl"
+      variant="outlined"
+      class="mb-4"
+    >
       <CardTextComponent class="pa-3">
         <div class="text-caption text-medium-emphasis mb-2 d-flex align-center gap-1">
-          <IconComponent size="14">mdi-swap-horizontal</IconComponent>
+          <IconComponent size="14">
+            mdi-swap-horizontal
+          </IconComponent>
           Navegar para outra tarefa
         </div>
         <RowComponent dense>
-          <ColComponent cols="12" sm="4">
+          <ColComponent
+            cols="12"
+            sm="4"
+          >
             <SelectComponent
               v-model="funilMacro"
               :items="opsMacro"
@@ -50,7 +80,10 @@
               data-testid="mobilidade-select-macro"
             />
           </ColComponent>
-          <ColComponent cols="12" sm="4">
+          <ColComponent
+            cols="12"
+            sm="4"
+          >
             <SelectComponent
               v-model="funilProcesso"
               :items="opsProcesso"
@@ -63,7 +96,10 @@
               data-testid="mobilidade-select-processo"
             />
           </ColComponent>
-          <ColComponent cols="12" sm="4">
+          <ColComponent
+            cols="12"
+            sm="4"
+          >
             <SelectComponent
               v-model="funilTarefa"
               :items="opsTarefa"
@@ -81,20 +117,45 @@
     </CardComponent>
 
     <!-- Detalhes da tarefa -->
-    <CardComponent rounded="xl" variant="elevated" class="mb-4">
+    <CardComponent
+      rounded="xl"
+      variant="elevated"
+      class="mb-4"
+    >
       <CardTextComponent class="pa-4">
         <RowComponent dense>
-          <ColComponent cols="12" sm="4">
-            <div class="field-label">Tarefa</div>
-            <div class="field-value">Ordem: {{ tarefa?.ordenacao ?? 0 }}. {{ tarefa?.tarefa ?? '—' }}</div>
+          <ColComponent
+            cols="12"
+            sm="4"
+          >
+            <div class="field-label">
+              Tarefa
+            </div>
+            <div class="field-value">
+              Ordem: {{ tarefa?.ordenacao ?? 0 }}. {{ tarefa?.tarefa ?? '—' }}
+            </div>
           </ColComponent>
-          <ColComponent cols="12" sm="4">
-            <div class="field-label">Processo</div>
-            <div class="field-value">Ordem: {{ tarefa?.processo?.ordenacao ?? 0 }}. {{ tarefa?.processo?.processo ?? '—' }}</div>
+          <ColComponent
+            cols="12"
+            sm="4"
+          >
+            <div class="field-label">
+              Processo
+            </div>
+            <div class="field-value">
+              Ordem: {{ tarefa?.processo?.ordenacao ?? 0 }}. {{ tarefa?.processo?.processo ?? '—' }}
+            </div>
           </ColComponent>
-          <ColComponent cols="12" sm="4">
-            <div class="field-label">Workflow</div>
-            <div class="field-value">{{ tarefa?.workflow?.workflow ?? '—' }}</div>
+          <ColComponent
+            cols="12"
+            sm="4"
+          >
+            <div class="field-label">
+              Workflow
+            </div>
+            <div class="field-value">
+              {{ tarefa?.workflow?.workflow ?? '—' }}
+            </div>
           </ColComponent>
         </RowComponent>
       </CardTextComponent>
@@ -102,29 +163,57 @@
 
     <!-- Painéis de mobilidade -->
     <RowComponent>
-
       <!-- Origens: de onde pode vir -->
-      <ColComponent cols="12" md="6">
-        <CardComponent rounded="xl" variant="elevated" height="100%">
+      <ColComponent
+        cols="12"
+        md="6"
+      >
+        <CardComponent
+          rounded="xl"
+          variant="elevated"
+          height="100%"
+        >
           <CardTextComponent class="pa-0">
             <div class="painel-header pa-4 d-flex align-center gap-2">
-              <IconComponent color="success" size="20">mdi-arrow-collapse-right</IconComponent>
+              <IconComponent
+                color="success"
+                size="20"
+              >
+                mdi-arrow-collapse-right
+              </IconComponent>
               <span class="text-subtitle-1 font-weight-bold">De onde pode vir</span>
             </div>
 
             <DividerComponent />
 
             <div class="pa-4">
-              <div v-if="gruposOrigens.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
+              <div
+                v-if="gruposOrigens.length === 0"
+                class="text-body-2 text-medium-emphasis text-center py-8"
+              >
                 Nenhuma tarefa associada.
               </div>
 
-              <div v-for="grupo in gruposOrigens" :key="grupo.grupo" class="mb-5">
-                <div class="grupo-titulo-pai mb-0" v-if="grupo.processo_pai">Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}</div>
-                <div class="grupo-titulo mb-1">Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
+              <div
+                v-for="grupo in gruposOrigens"
+                :key="grupo.grupo"
+                class="mb-5"
+              >
+                <div
+                  v-if="grupo.processo_pai"
+                  class="grupo-titulo-pai mb-0"
+                >
+                  Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
+                </div>
+                <div class="grupo-titulo mb-1">
+                  Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}
+                </div>
                 <DividerComponent class="mb-2" />
                 <div class="d-flex flex-column gap-2 mt-2">
-                  <div v-for="opcao in grupo.options" :key="opcao.value">
+                  <div
+                    v-for="opcao in grupo.options"
+                    :key="opcao.value"
+                  >
                     <ChipComponent
                       color="success"
                       size="small"
@@ -142,24 +231,50 @@
       </ColComponent>
 
       <!-- Destinos: para onde pode ir -->
-      <ColComponent cols="12" md="6">
-        <CardComponent rounded="xl" variant="elevated" height="100%">
+      <ColComponent
+        cols="12"
+        md="6"
+      >
+        <CardComponent
+          rounded="xl"
+          variant="elevated"
+          height="100%"
+        >
           <CardTextComponent class="pa-0">
             <div class="painel-header pa-4 d-flex align-center gap-2">
-              <IconComponent color="primary" size="20">mdi-arrow-expand-right</IconComponent>
+              <IconComponent
+                color="primary"
+                size="20"
+              >
+                mdi-arrow-expand-right
+              </IconComponent>
               <span class="text-subtitle-1 font-weight-bold">Para onde pode ir</span>
             </div>
 
             <DividerComponent />
 
             <div class="pa-4">
-              <div v-if="gruposDestinos.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
+              <div
+                v-if="gruposDestinos.length === 0"
+                class="text-body-2 text-medium-emphasis text-center py-8"
+              >
                 Nenhuma tarefa associada.
               </div>
 
-              <div v-for="grupo in gruposDestinos" :key="grupo.grupo" class="mb-5">
-                <div class="grupo-titulo-pai mb-0" v-if="grupo.processo_pai">Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}</div>
-                <div class="grupo-titulo mb-1">Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
+              <div
+                v-for="grupo in gruposDestinos"
+                :key="grupo.grupo"
+                class="mb-5"
+              >
+                <div
+                  v-if="grupo.processo_pai"
+                  class="grupo-titulo-pai mb-0"
+                >
+                  Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
+                </div>
+                <div class="grupo-titulo mb-1">
+                  Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}
+                </div>
                 <DividerComponent class="mb-2" />
                 <div class="d-flex flex-column mt-2">
                   <div
@@ -183,7 +298,12 @@
                       variant="tonal"
                       class="flex-shrink-0 font-weight-medium"
                     >
-                      <IconComponent start size="14">mdi-lightning-bolt</IconComponent>
+                      <IconComponent
+                        start
+                        size="14"
+                      >
+                        mdi-lightning-bolt
+                      </IconComponent>
                       Interrupção
                     </ChipComponent>
                     <v-btn-toggle
@@ -193,8 +313,8 @@
                       variant="outlined"
                       rounded="lg"
                       class="flex-shrink-0"
-                      @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
                       :data-testid="`mobilidade-toggle-tipo-${opcao.mobilidade_id}`"
+                      @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
                     >
                       <ButtonComponent
                         v-for="tipo in tiposMobilidade"
@@ -215,19 +335,34 @@
           </CardTextComponent>
         </CardComponent>
       </ColComponent>
-
     </RowComponent>
-
   </ContainerComponent>
 
   <!-- Dialog de Associação de Tarefas -->
-  <DialogComponent v-if="dialogAssociacao" v-model="dialogAssociacao" max-width="1400px" scrollable @keydown.esc="fecharDialogAssociacao">
+  <DialogComponent
+    v-if="dialogAssociacao"
+    v-model="dialogAssociacao"
+    max-width="1400px"
+    scrollable
+    @keydown.esc="fecharDialogAssociacao"
+  >
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <IconComponent color="primary" size="22">mdi-link-variant</IconComponent>
+        <IconComponent
+          color="primary"
+          size="22"
+        >
+          mdi-link-variant
+        </IconComponent>
         <span class="text-h6">Associar mobilidades: {{ tarefa?.tarefa }}</span>
         <SpacerComponent />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="fecharDialogAssociacao" data-testid="mobilidade-modal-btn-fechar" />
+        <ButtonComponent
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          data-testid="mobilidade-modal-btn-fechar"
+          @click="fecharDialogAssociacao"
+        />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-4">
@@ -235,12 +370,19 @@
           <ColComponent
             v-for="grupo in gruposAssociacao"
             :key="grupo.grupo"
-            cols="12" sm="6" md="4"
+            cols="12"
+            sm="6"
+            md="4"
           >
-            <div class="text-subtitle-2 font-weight-bold text-medium-emphasis mb-0" v-if="grupo.processo_pai">
+            <div
+              v-if="grupo.processo_pai"
+              class="text-subtitle-2 font-weight-bold text-medium-emphasis mb-0"
+            >
               Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
             </div>
-            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}</div>
+            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">
+              Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}
+            </div>
             <DividerComponent class="mb-3" />
             <CheckboxItemComponent
               v-for="opt in grupo.options"
@@ -256,7 +398,10 @@
             />
           </ColComponent>
 
-          <ColComponent v-if="gruposAssociacao.length === 0" cols="12">
+          <ColComponent
+            v-if="gruposAssociacao.length === 0"
+            cols="12"
+          >
             <p class="text-body-2 text-medium-emphasis text-center py-6">
               Carregando tarefas…
             </p>
@@ -266,18 +411,41 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <SpacerComponent />
-        <ButtonComponent variant="text" @click="fecharDialogAssociacao" data-testid="mobilidade-modal-btn-cancelar">Cancelar</ButtonComponent>
-        <ButtonComponent color="primary" variant="flat" :loading="salvandoAssociacao" @click="salvarAssociacao" data-testid="mobilidade-modal-btn-salvar">
+        <ButtonComponent
+          variant="text"
+          data-testid="mobilidade-modal-btn-cancelar"
+          @click="fecharDialogAssociacao"
+        >
+          Cancelar
+        </ButtonComponent>
+        <ButtonComponent
+          color="primary"
+          variant="flat"
+          :loading="salvandoAssociacao"
+          data-testid="mobilidade-modal-btn-salvar"
+          @click="salvarAssociacao"
+        >
           Salvar
         </ButtonComponent>
       </CardActionsComponent>
     </CardComponent>
   </DialogComponent>
 
-  <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
+  <SnackbarComponent
+    v-model="snackbar.show"
+    :color="snackbar.color"
+    timeout="4000"
+    location="top"
+  >
     {{ snackbar.message }}
     <template #actions>
-      <ButtonComponent variant="text" color="white" size="small" @click="snackbar.show = false" data-testid="mobilidade-snackbar-btn-fechar">
+      <ButtonComponent
+        variant="text"
+        color="white"
+        size="small"
+        data-testid="mobilidade-snackbar-btn-fechar"
+        @click="snackbar.show = false"
+      >
         Fechar
       </ButtonComponent>
     </template>

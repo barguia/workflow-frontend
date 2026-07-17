@@ -1,14 +1,14 @@
 <template>
   <UmParaMuitosComponent2
-      v-model="proxyModel"
-      :titulo="`Campos do formulário: ${formulario?.formulario}`"
-      :entidade-id="formulario?.id"
-      endpoint-api="wf/forms/formularios-campos"
-      campo-entidade-id="ctrl_formulario_id"
-      campo-ids-associados="campos_ids"
-      :selecionados="camposSelecionados"
-      :todos-itens="todosCampos"
-      @salvo="emit('salvo')"
+    v-model="proxyModel"
+    :titulo="`Campos do formulário: ${formulario?.formulario}`"
+    :entidade-id="formulario?.id"
+    endpoint-api="wf/forms/formularios-campos"
+    campo-entidade-id="ctrl_formulario_id"
+    campo-ids-associados="campos_ids"
+    :selecionados="camposSelecionados"
+    :todos-itens="todosCampos"
+    @salvo="emit('salvo')"
   />
 </template>
 

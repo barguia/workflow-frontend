@@ -1,6 +1,6 @@
 <template>
   <v-badge v-bind="$attrs">
-    <slot></slot>
+    <slot />
   </v-badge>
 </template>
 

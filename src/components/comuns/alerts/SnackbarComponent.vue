@@ -1,6 +1,6 @@
 <template>
   <v-snackbar v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-snackbar>
 </template>
 

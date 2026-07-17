@@ -1,6 +1,6 @@
 <template>
   <v-alert v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-alert>
 </template>
 

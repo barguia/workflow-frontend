@@ -1,13 +1,12 @@
 <template>
   <CrudComponent
-      route="wf/hierarquias"
-      title="Hierarquias de Processos"
-      :fields="fields"
-      :headers="headers"
-      must-sort
-      data-testid="hierarquia-crud"
-  >
-  </CrudComponent>
+    route="wf/hierarquias"
+    title="Hierarquias de Processos"
+    :fields="fields"
+    :headers="headers"
+    must-sort
+    data-testid="hierarquia-crud"
+  />
 </template>
 
 <script setup>

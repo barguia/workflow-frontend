@@ -1,20 +1,25 @@
 <template>
   <div class="checkbox-group">
-    <v-label v-if="label" class="checkbox-group__label">{{ label }}</v-label>
+    <v-label
+      v-if="label"
+      class="checkbox-group__label"
+    >
+      {{ label }}
+    </v-label>
     <div :class="inline ? 'checkbox-group__inline' : 'checkbox-group__column'">
       <v-checkbox
-          v-for="item in sortedItems"
-          :key="item.value"
-          v-model="modelValue"
-          :label="item.text"
-          :value="item.value"
-          :rules="rules"
-          :inline="inline"
-          :required="required"
-          density="compact"
-          hide-details="auto"
-          chips
-          multiple
+        v-for="item in sortedItems"
+        :key="item.value"
+        v-model="modelValue"
+        :label="item.text"
+        :value="item.value"
+        :rules="rules"
+        :inline="inline"
+        :required="required"
+        density="compact"
+        hide-details="auto"
+        chips
+        multiple
       />
     </div>
   </div>

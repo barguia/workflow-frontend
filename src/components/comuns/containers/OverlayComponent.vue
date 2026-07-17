@@ -1,6 +1,6 @@
 <template>
   <v-overlay v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-overlay>
 </template>
 

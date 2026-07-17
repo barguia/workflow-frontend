@@ -1,8 +1,17 @@
 <template>
-  <ContainerComponent fluid class="fill-height pa-0">
-    <RowComponent no-gutters class="fill-height">
+  <ContainerComponent
+    fluid
+    class="fill-height pa-0"
+  >
+    <RowComponent
+      no-gutters
+      class="fill-height"
+    >
       <!-- Seção Principal de Boas-vindas -->
-      <ColComponent cols="12" class="d-flex align-center justify-center bg-primary">
+      <ColComponent
+        cols="12"
+        class="d-flex align-center justify-center bg-primary"
+      >
         <div class="text-center text-white px-4">
           <h1 class="text-h3 font-weight-bold mb-4">
             Bem-vindo ao Workflow
@@ -10,17 +19,29 @@
           <p class="text-h6 mb-6 opacity-90">
             O sistema completo para gestão inteligente de fluxos de trabalho
           </p>
-          <ButtonComponent size="large" color="white" variant="flat" class="text-primary" data-testid="home-btn-explorar">
+          <ButtonComponent
+            size="large"
+            color="white"
+            variant="flat"
+            class="text-primary"
+            data-testid="home-btn-explorar"
+          >
             Explorar Recursos
           </ButtonComponent>
         </div>
       </ColComponent>
 
       <!-- Seção de Recursos -->
-      <ColComponent cols="12" class="py-16">
+      <ColComponent
+        cols="12"
+        class="py-16"
+      >
         <ContainerComponent>
           <RowComponent justify="center">
-            <ColComponent cols="12" class="text-center mb-12">
+            <ColComponent
+              cols="12"
+              class="text-center mb-12"
+            >
               <h2 class="text-h4 font-weight-bold text-primary mb-4">
                 Recursos que impulsionam sua produtividade
               </h2>
@@ -30,36 +51,75 @@
             </ColComponent>
 
             <!-- Cartões de Recursos -->
-            <ColComponent cols="12" md="4" class="d-flex">
-              <CardComponent elevation="4" class="pa-6 flex-grow-1 text-center">
-                <IconComponent size="48" color="primary" class="mb-4">
+            <ColComponent
+              cols="12"
+              md="4"
+              class="d-flex"
+            >
+              <CardComponent
+                elevation="4"
+                class="pa-6 flex-grow-1 text-center"
+              >
+                <IconComponent
+                  size="48"
+                  color="primary"
+                  class="mb-4"
+                >
                   mdi-chart-timeline-variant
                 </IconComponent>
-                <h3 class="text-h5 font-weight-bold mb-3">Dashboards Interativos</h3>
+                <h3 class="text-h5 font-weight-bold mb-3">
+                  Dashboards Interativos
+                </h3>
                 <p class="text-body-2 text-medium-emphasis">
                   Visualize métricas em tempo real com gráficos dinâmicos e indicadores personalizáveis
                 </p>
               </CardComponent>
             </ColComponent>
 
-            <ColComponent cols="12" md="4" class="d-flex">
-              <CardComponent elevation="4" class="pa-6 flex-grow-1 text-center">
-                <IconComponent size="48" color="primary" class="mb-4">
+            <ColComponent
+              cols="12"
+              md="4"
+              class="d-flex"
+            >
+              <CardComponent
+                elevation="4"
+                class="pa-6 flex-grow-1 text-center"
+              >
+                <IconComponent
+                  size="48"
+                  color="primary"
+                  class="mb-4"
+                >
                   mdi-form-select
                 </IconComponent>
-                <h3 class="text-h5 font-weight-bold mb-3">Formulários Dinâmicos</h3>
+                <h3 class="text-h5 font-weight-bold mb-3">
+                  Formulários Dinâmicos
+                </h3>
                 <p class="text-body-2 text-medium-emphasis">
                   Crie formulários inteligentes que se adaptam conforme as respostas do usuário
                 </p>
               </CardComponent>
             </ColComponent>
 
-            <ColComponent cols="12" md="4" class="d-flex">
-              <CardComponent elevation="4" class="pa-6 flex-grow-1 text-center">
-                <IconComponent size="48" color="primary" class="mb-4">
+            <ColComponent
+              cols="12"
+              md="4"
+              class="d-flex"
+            >
+              <CardComponent
+                elevation="4"
+                class="pa-6 flex-grow-1 text-center"
+              >
+                <IconComponent
+                  size="48"
+                  color="primary"
+                  class="mb-4"
+                >
                   mdi-playlist-check
                 </IconComponent>
-                <h3 class="text-h5 font-weight-bold mb-3">Filas de Trabalho</h3>
+                <h3 class="text-h5 font-weight-bold mb-3">
+                  Filas de Trabalho
+                </h3>
                 <p class="text-body-2 text-medium-emphasis">
                   Organize tarefas em filas prioritárias com distribuição automática entre equipes
                 </p>
@@ -70,10 +130,17 @@
       </ColComponent>
 
       <!-- Seção de Destaque -->
-      <ColComponent cols="12" class="py-16" style="background: rgb(var(--v-theme-background))">
+      <ColComponent
+        cols="12"
+        class="py-16"
+        style="background: rgb(var(--v-theme-background))"
+      >
         <ContainerComponent>
           <RowComponent align="center">
-            <ColComponent cols="12" md="6">
+            <ColComponent
+              cols="12"
+              md="6"
+            >
               <h2 class="text-h4 font-weight-bold mb-4">
                 Gestão Completa de Processos
               </h2>
@@ -85,28 +152,55 @@
               <ListComponent class="bg-transparent">
                 <ListItemComponent>
                   <v-list-item-title class="d-flex align-center">
-                    <IconComponent color="success" class="mr-2">mdi-check-circle</IconComponent>
+                    <IconComponent
+                      color="success"
+                      class="mr-2"
+                    >
+                      mdi-check-circle
+                    </IconComponent>
                     Mapeamento visual de fluxos
                   </v-list-item-title>
                 </ListItemComponent>
                 <ListItemComponent>
                   <v-list-item-title class="d-flex align-center">
-                    <IconComponent color="success" class="mr-2">mdi-check-circle</IconComponent>
+                    <IconComponent
+                      color="success"
+                      class="mr-2"
+                    >
+                      mdi-check-circle
+                    </IconComponent>
                     Automação de aprovações
                   </v-list-item-title>
                 </ListItemComponent>
                 <ListItemComponent>
                   <v-list-item-title class="d-flex align-center">
-                    <IconComponent color="success" class="mr-2">mdi-check-circle</IconComponent>
+                    <IconComponent
+                      color="success"
+                      class="mr-2"
+                    >
+                      mdi-check-circle
+                    </IconComponent>
                     Rastreamento em tempo real
                   </v-list-item-title>
                 </ListItemComponent>
               </ListComponent>
             </ColComponent>
-            <ColComponent cols="12" md="6" class="text-center">
-              <v-responsive class="mx-auto" max-width="500">
+            <ColComponent
+              cols="12"
+              md="6"
+              class="text-center"
+            >
+              <v-responsive
+                class="mx-auto"
+                max-width="500"
+              >
                 <div class="placeholder-image bg-grey-lighten-2 rounded-xl d-flex align-center justify-center fill-height">
-                  <IconComponent size="80" color="grey-darken-1">mdi-image-outline</IconComponent>
+                  <IconComponent
+                    size="80"
+                    color="grey-darken-1"
+                  >
+                    mdi-image-outline
+                  </IconComponent>
                 </div>
               </v-responsive>
             </ColComponent>

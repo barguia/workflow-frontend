@@ -1,23 +1,41 @@
 <template>
   <AppComponent>
-    <MenuComponent/>
+    <MenuComponent />
 
-    <MainComponent class="main-content main-content-fluid" fluid >
-      <ContainerComponent fluid class="pa-0">
+    <MainComponent
+      class="main-content main-content-fluid"
+      fluid
+    >
+      <ContainerComponent
+        fluid
+        class="pa-0"
+      >
         <row-component class="justify-center">
-          <ColComponent class="content-box pa-1 pa-sm-0 pa-sm-0" cols="12" md="12" lg="12" xl="12">
+          <ColComponent
+            class="content-box pa-1 pa-sm-0 pa-sm-0"
+            cols="12"
+            md="12"
+            lg="12"
+            xl="12"
+          >
             <div class="content-container">
               <RouterView />
 
               <SnackbarComponent
-                  v-model="showSnackbar"
-                  :color="type"
-                  timeout="5000"
-                  location="top"
+                v-model="showSnackbar"
+                :color="type"
+                timeout="5000"
+                location="top"
               >
                 {{ message }}
                 <template #actions>
-                  <ButtonComponent color="white" variant="text" @click="clearNotification">Fechar</ButtonComponent>
+                  <ButtonComponent
+                    color="white"
+                    variant="text"
+                    @click="clearNotification"
+                  >
+                    Fechar
+                  </ButtonComponent>
                 </template>
               </SnackbarComponent>
             </div>
@@ -26,17 +44,23 @@
       </ContainerComponent>
     </MainComponent>
     <OverlayComponent
-        :model-value="isLoading()"
-        scrim="#000"
-        opacity="0.5"
-        z-index="9999"
-        persistent
-        class="d-flex align-center justify-center">
-      <ProgressCircularComponent indeterminate size="64" color="primary" />
-      <p class="mt-4 text-white">Carregando...</p>
+      :model-value="isLoading()"
+      scrim="#000"
+      opacity="0.5"
+      z-index="9999"
+      persistent
+      class="d-flex align-center justify-center"
+    >
+      <ProgressCircularComponent
+        indeterminate
+        size="64"
+        color="primary"
+      />
+      <p class="mt-4 text-white">
+        Carregando...
+      </p>
     </OverlayComponent>
   </AppComponent>
-
 </template>
 
 <script>
@@ -75,14 +99,6 @@ export default {
     FooterComponent,
     AppComponent,
   },
-  data() {
-    return {
-      todas_rotas: router.options.routes,
-      isMobile: false,
-      drawer: false,
-      autenticado: false,
-    };
-  },
   setup() {
     const vuetifyTheme = useTheme();
     const themeStore = useThemeStore();
@@ -100,6 +116,24 @@ export default {
       clearNotification,
     };
   },
+  data() {
+    return {
+      todas_rotas: router.options.routes,
+      isMobile: false,
+      drawer: false,
+      autenticado: false,
+    };
+  },
+  computed: {
+    getMenus() {
+      return this.todas_rotas.filter(r => {
+        if (r.meta?.hidden === true) return false
+        const n = typeof r.name === 'string' ? r.name.trim().toLowerCase() : ''
+        const isWildcard404 = r.path.includes(':pathMatch')
+        return n !== 'not-found' && !isWildcard404 && !!n
+      })
+    }
+  },
   async mounted() {
     const authStore = useAuthStore();
     await authStore.checkAuth();
@@ -116,16 +150,6 @@ export default {
     checkScreenSize() {
       this.isMobile = window.innerWidth <= 768;
     },
-  },
-  computed: {
-    getMenus() {
-      return this.todas_rotas.filter(r => {
-        if (r.meta?.hidden === true) return false
-        const n = typeof r.name === 'string' ? r.name.trim().toLowerCase() : ''
-        const isWildcard404 = r.path.includes(':pathMatch')
-        return n !== 'not-found' && !isWildcard404 && !!n
-      })
-    }
   },
 };
 </script>

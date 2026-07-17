@@ -1,11 +1,11 @@
 <template>
   <CrudComponent
-      route="wf/projetos"
-      title="Gestão de Projetos"
-      :fields="fields"
-      :headers="headers"
-      :show-select="false"
-      data-testid="projeto-crud"
+    route="wf/projetos"
+    title="Gestão de Projetos"
+    :fields="fields"
+    :headers="headers"
+    :show-select="false"
+    data-testid="projeto-crud"
   >
     <template #previewField="{ item }">
       <ButtonComponent

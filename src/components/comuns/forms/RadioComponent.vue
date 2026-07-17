@@ -1,18 +1,18 @@
 <template>
   <v-radio-group
-      v-bind="$attrs"
-      v-model="modelValue"
-      :label="label"
-      :rules="rules"
-      :inline="inline"
-      :required="required"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :label="label"
+    :rules="rules"
+    :inline="inline"
+    :required="required"
   >
     <v-radio
-        v-for="item in sortedItems"
-        :key="item.value"
-        :label="item.text"
-        :value="item.value"
-        @click="!required && modelValue === item.value && (modelValue = null)"
+      v-for="item in sortedItems"
+      :key="item.value"
+      :label="item.text"
+      :value="item.value"
+      @click="!required && modelValue === item.value && (modelValue = null)"
     />
   </v-radio-group>
 </template>

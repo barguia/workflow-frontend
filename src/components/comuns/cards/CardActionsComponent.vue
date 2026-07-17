@@ -1,6 +1,6 @@
 <template>
   <v-card-actions v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-card-actions>
 </template>
 

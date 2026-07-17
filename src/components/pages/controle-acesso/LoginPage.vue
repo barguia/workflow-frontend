@@ -1,7 +1,15 @@
 <template>
   <ContainerComponent>
-    <RowComponent justify="center" align="center">
-      <ColComponent cols="12" sm="8" md="6" lg="4">
+    <RowComponent
+      justify="center"
+      align="center"
+    >
+      <ColComponent
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
+      >
         <CardComponent class="pa-6">
           <CardTitleComponent class="text-h4 text-center mb-6">
             Login
@@ -25,14 +33,17 @@
               class="mb-4"
               data-testid="login-input-senha"
             />
-            <RowComponent justify="space-between" class="mb-4">
+            <RowComponent
+              justify="space-between"
+              class="mb-4"
+            >
               <ColComponent cols="auto">
                 <RouterLink to="/forgot-password">
                   <ButtonComponent
-                      variant="text"
-                      color="primary"
-                      @click="handleForgotPassword"
-                      data-testid="login-btn-esqueci-senha"
+                    variant="text"
+                    color="primary"
+                    data-testid="login-btn-esqueci-senha"
+                    @click="handleForgotPassword"
                   >
                     Esqueci a senha
                   </ButtonComponent>
@@ -40,10 +51,10 @@
               </ColComponent>
               <ColComponent cols="auto">
                 <ButtonComponent
-                    color="primary"
-                    type="submit"
-                    :loading="loading"
-                    data-testid="login-btn-entrar"
+                  color="primary"
+                  type="submit"
+                  :loading="loading"
+                  data-testid="login-btn-entrar"
                 >
                   Efetuar Login
                 </ButtonComponent>

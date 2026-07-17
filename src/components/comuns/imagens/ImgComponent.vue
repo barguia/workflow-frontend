@@ -1,6 +1,6 @@
 <template>
   <v-img v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-img>
 </template>
 

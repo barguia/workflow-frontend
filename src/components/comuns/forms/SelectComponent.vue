@@ -1,16 +1,16 @@
 <template>
   <v-select
-      v-bind="$attrs"
-      v-model="modelValue"
-      :items="sortedItems"
-      :label="label"
-      :rules="rules"
-      :multiple="multiple"
-      :required="required"
-      :clearable="clearable"
-      item-title="text"
-      item-value="value"
-      :return-object="false"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :items="sortedItems"
+    :label="label"
+    :rules="rules"
+    :multiple="multiple"
+    :required="required"
+    :clearable="clearable"
+    item-title="text"
+    item-value="value"
+    :return-object="false"
   />
 </template>
 

@@ -1,11 +1,11 @@
 <template>
   <v-text-field
-      v-bind="$attrs"
-      v-model="modelValue"
-      type="time"
-      :label="label"
-      :rules="rules"
-      :required="required"
+    v-bind="$attrs"
+    v-model="modelValue"
+    type="time"
+    :label="label"
+    :rules="rules"
+    :required="required"
   />
 </template>
 

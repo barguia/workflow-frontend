@@ -46,38 +46,54 @@ async function trocarPassword() {
 
 <template>
   <ContainerComponent>
-    <RowComponent justify="center" align="center">
-    <ColComponent cols="12" sm="8" md="6" lg="4">
-      <CardComponent class="pa-6">
-          <CardTitleComponent class="text-h4 text-center mb-6">Reset Password</CardTitleComponent>
+    <RowComponent
+      justify="center"
+      align="center"
+    >
+      <ColComponent
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
+      >
+        <CardComponent class="pa-6">
+          <CardTitleComponent class="text-h4 text-center mb-6">
+            Reset Password
+          </CardTitleComponent>
           <CardTextComponent class="text-h4 text-center mb-6">
-            <FormComponent class="pa-6" @submit.prevent="trocarPassword">
+            <FormComponent
+              class="pa-6"
+              @submit.prevent="trocarPassword"
+            >
               <TextFieldComponent
-                  v-model="password"
-                  label="Senha"
-                  type="password"
-                  prepend-inner-icon="mdi-lock"
-                  required
-                  class="mb-4"
-                  data-testid="reset-input-senha"
+                v-model="password"
+                label="Senha"
+                type="password"
+                prepend-inner-icon="mdi-lock"
+                required
+                class="mb-4"
+                data-testid="reset-input-senha"
               />
 
               <TextFieldComponent
-                  v-model="password_confirmation"
-                  label="Senha"
-                  type="password"
-                  prepend-inner-icon="mdi-lock"
-                  required
-                  class="mb-4"
-                  data-testid="reset-input-confirmar-senha"
+                v-model="password_confirmation"
+                label="Senha"
+                type="password"
+                prepend-inner-icon="mdi-lock"
+                required
+                class="mb-4"
+                data-testid="reset-input-confirmar-senha"
               />
-              <RowComponent justify="space-between" class="mb-4">
+              <RowComponent
+                justify="space-between"
+                class="mb-4"
+              >
                 <ColComponent cols="auto">
                   <RouterLink to="/login">
                     <ButtonComponent
-                        variant="text"
-                        color="primary"
-                        data-testid="reset-btn-voltar"
+                      variant="text"
+                      color="primary"
+                      data-testid="reset-btn-voltar"
                     >
                       Voltar para login
                     </ButtonComponent>
@@ -85,10 +101,10 @@ async function trocarPassword() {
                 </ColComponent>
                 <ColComponent cols="auto">
                   <ButtonComponent
-                      color="primary"
-                      type="submit"
-                      @click="trocarPassword()"
-                      data-testid="reset-btn-trocar-senha"
+                    color="primary"
+                    type="submit"
+                    data-testid="reset-btn-trocar-senha"
+                    @click="trocarPassword()"
                   >
                     Trocar senha
                   </ButtonComponent>
@@ -99,7 +115,6 @@ async function trocarPassword() {
         </CardComponent>
       </ColComponent>
     </RowComponent>
-
   </ContainerComponent>
 </template>
 

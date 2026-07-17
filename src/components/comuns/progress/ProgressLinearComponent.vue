@@ -1,6 +1,6 @@
 <template>
   <v-progress-linear v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-progress-linear>
 </template>
 

@@ -1,11 +1,11 @@
 <template>
   <v-text-field
-      v-bind="$attrs"
-      v-model="modelValue"
-      type="email"
-      :label="label"
-      :rules="allRules"
-      :required="required"
+    v-bind="$attrs"
+    v-model="modelValue"
+    type="email"
+    :label="label"
+    :rules="allRules"
+    :required="required"
   />
 </template>
 

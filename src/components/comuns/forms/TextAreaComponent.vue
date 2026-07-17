@@ -1,5 +1,5 @@
 <template>
-  <v-textarea  v-bind="$attrs"/>
+  <v-textarea v-bind="$attrs" />
 </template>
 
 <script>

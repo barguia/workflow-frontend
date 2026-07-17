@@ -1,152 +1,222 @@
 <template>
-  <v-dialog v-model="proxyModel" max-width="1400px" scrollable @keydown.esc="proxyModel = false" @before-leave="() => { document.activeElement?.blur(); campoSelecionado = null }">
+  <v-dialog
+    v-model="proxyModel"
+    max-width="1400px"
+    scrollable
+    @keydown.esc="proxyModel = false"
+    @before-leave="() => { document.activeElement?.blur(); campoSelecionado = null }"
+  >
     <CardComponent rounded="lg">
-
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <IconComponent color="teal" size="22">mdi-tune</IconComponent>
+        <IconComponent
+          color="teal"
+          size="22"
+        >
+          mdi-tune
+        </IconComponent>
         <div>
-          <div class="text-h6 lh-sm">Configurar campos</div>
-          <div class="text-caption text-medium-emphasis">{{ formulario?.formulario }}</div>
+          <div class="text-h6 lh-sm">
+            Configurar campos
+          </div>
+          <div class="text-caption text-medium-emphasis">
+            {{ formulario?.formulario }}
+          </div>
         </div>
         <SpacerComponent />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="proxyModel = false" />
+        <ButtonComponent
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="proxyModel = false"
+        />
       </CardTitleComponent>
 
-      <div v-if="!carregandoPivot && camposPivot.length" class="px-5 py-3 border-b d-flex align-center gap-3">
+      <div
+        v-if="!carregandoPivot && camposPivot.length"
+        class="px-5 py-3 border-b d-flex align-center gap-3"
+      >
         <v-text-field
-            v-model="busca"
-            data-testid="configuracao-busca"
-            density="compact"
-            hide-details
-            placeholder="Buscar campo..."
-            prepend-inner-icon="mdi-magnify"
-            clearable
-            style="max-width:240px"
+          v-model="busca"
+          data-testid="configuracao-busca"
+          density="compact"
+          hide-details
+          placeholder="Buscar campo..."
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          style="max-width:240px"
         />
-        <v-chip data-testid="configuracao-chip-total" size="small" variant="tonal" color="teal">
+        <v-chip
+          data-testid="configuracao-chip-total"
+          size="small"
+          variant="tonal"
+          color="teal"
+        >
           {{ camposFiltrados.length }} {{ camposFiltrados.length === 1 ? 'campo' : 'campos' }}
         </v-chip>
         <div class="d-flex align-center gap-3 ml-auto">
           <span class="d-flex align-center gap-1 text-caption text-medium-emphasis mr-3">
-            <span class="legend-dot legend-dot--obrigatorio mr-1"></span> Obrigatório
+            <span class="legend-dot legend-dot--obrigatorio mr-1" /> Obrigatório
           </span>
           <span class="d-flex align-center gap-1 text-caption text-medium-emphasis">
-            <span class="legend-dot legend-dot--opcional mr-1"></span> Opcional
+            <span class="legend-dot legend-dot--opcional mr-1" /> Opcional
           </span>
         </div>
       </div>
 
-      <div v-if="campoSelecionado" data-testid="configuracao-painel-edicao" class="edit-panel border-b">
+      <div
+        v-if="campoSelecionado"
+        data-testid="configuracao-painel-edicao"
+        class="edit-panel border-b"
+      >
         <div class="d-flex align-center justify-space-between mb-3">
           <div>
-            <div class="text-caption text-medium-emphasis edit-label-upper">Editando campo</div>
-            <div data-testid="configuracao-painel-label" class="text-subtitle-2 font-weight-bold" style="color:rgb(var(--v-theme-teal))">{{ campoSelecionado.label }}</div>
+            <div class="text-caption text-medium-emphasis edit-label-upper">
+              Editando campo
+            </div>
+            <div
+              data-testid="configuracao-painel-label"
+              class="text-subtitle-2 font-weight-bold"
+              style="color:rgb(var(--v-theme-teal))"
+            >
+              {{ campoSelecionado.label }}
+            </div>
           </div>
           <div class="d-flex align-center gap-2">
-            <v-chip size="small" variant="flat" color="teal">{{ campoSelecionado.tipo }}</v-chip>
-            <ButtonComponent data-testid="configuracao-painel-fechar" icon="mdi-close" variant="text" size="x-small" @click="campoSelecionado = null" />
+            <v-chip
+              size="small"
+              variant="flat"
+              color="teal"
+            >
+              {{ campoSelecionado.tipo }}
+            </v-chip>
+            <ButtonComponent
+              data-testid="configuracao-painel-fechar"
+              icon="mdi-close"
+              variant="text"
+              size="x-small"
+              @click="campoSelecionado = null"
+            />
           </div>
         </div>
 
         <div style="max-height:220px; overflow-y:auto">
           <div class="d-flex align-start gap-5 flex-wrap">
             <div>
-              <div data-testid="configuracao-painel-largura" class="text-caption text-medium-emphasis mb-1">Largura no grid</div>
+              <div
+                data-testid="configuracao-painel-largura"
+                class="text-caption text-medium-emphasis mb-1"
+              >
+                Largura no grid
+              </div>
               <div class="d-flex gap-1">
                 <button
-                    v-for="preset in PRESETS"
-                    :key="preset"
-                    class="width-btn"
-                    :class="{ 'width-btn--active': snapCols(campoSelecionado.pivot.cols ?? 12) === preset }"
-                    @click="campoSelecionado.pivot.cols = preset"
+                  v-for="preset in PRESETS"
+                  :key="preset"
+                  class="width-btn"
+                  :class="{ 'width-btn--active': snapCols(campoSelecionado.pivot.cols ?? 12) === preset }"
+                  @click="campoSelecionado.pivot.cols = preset"
                 >
                   {{ colsLabel(preset) }}
                 </button>
               </div>
             </div>
 
-            <div v-if="!['range', 'switch'].includes(campoSelecionado.tipo)" style="min-width:180px; flex:1; max-width:320px">
+            <div
+              v-if="!['range', 'switch'].includes(campoSelecionado.tipo)"
+              style="min-width:180px; flex:1; max-width:320px"
+            >
               <TextFieldComponent
-                  v-if="['text', 'number', 'date'].includes(campoSelecionado.tipo)"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  label="Valor padrão"
-                  density="compact"
-                  :type="tipoInput(campoSelecionado.tipo)"
-                  :mask="campoSelecionado.mascara || undefined"
+                v-if="['text', 'number', 'date'].includes(campoSelecionado.tipo)"
+                v-model="campoSelecionado.pivot.valor_default"
+                label="Valor padrão"
+                density="compact"
+                :type="tipoInput(campoSelecionado.tipo)"
+                :mask="campoSelecionado.mascara || undefined"
               />
               <EmailComponent
-                  v-else-if="campoSelecionado.tipo === 'email'"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  label="Valor padrão"
+                v-else-if="campoSelecionado.tipo === 'email'"
+                v-model="campoSelecionado.pivot.valor_default"
+                label="Valor padrão"
               />
               <DatetimeComponent
-                  v-else-if="campoSelecionado.tipo === 'datetime'"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  label="Valor padrão"
+                v-else-if="campoSelecionado.tipo === 'datetime'"
+                v-model="campoSelecionado.pivot.valor_default"
+                label="Valor padrão"
               />
               <TimeComponent
-                  v-else-if="campoSelecionado.tipo === 'time'"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  label="Valor padrão"
+                v-else-if="campoSelecionado.tipo === 'time'"
+                v-model="campoSelecionado.pivot.valor_default"
+                label="Valor padrão"
               />
               <TextAreaComponent
-                  v-else-if="campoSelecionado.tipo === 'textarea'"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  label="Valor padrão"
-                  rows="2"
-                  auto-grow
+                v-else-if="campoSelecionado.tipo === 'textarea'"
+                v-model="campoSelecionado.pivot.valor_default"
+                label="Valor padrão"
+                rows="2"
+                auto-grow
               />
               <SelectComponent
-                  v-else-if="campoSelecionado.tipo === 'select'"
-                  :model-value="selectDefaultValue(campoSelecionado)"
-                  :items="camposOpcoes[campoSelecionado.id] ?? []"
-                  :multiple="campoSelecionado.pivot.select_multiplo === 1"
-                  label="Valor padrão"
-                  density="compact"
-                  @update:model-value="(v) => setSelectDefault(campoSelecionado, v)"
+                v-else-if="campoSelecionado.tipo === 'select'"
+                :model-value="selectDefaultValue(campoSelecionado)"
+                :items="camposOpcoes[campoSelecionado.id] ?? []"
+                :multiple="campoSelecionado.pivot.select_multiplo === 1"
+                label="Valor padrão"
+                density="compact"
+                @update:model-value="(v) => setSelectDefault(campoSelecionado, v)"
               />
               <RadioComponent
-                  v-else-if="campoSelecionado.tipo === 'radio'"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  :items="camposOpcoes[campoSelecionado.id] ?? []"
-                  label="Valor padrão"
-                  inline
+                v-else-if="campoSelecionado.tipo === 'radio'"
+                v-model="campoSelecionado.pivot.valor_default"
+                :items="camposOpcoes[campoSelecionado.id] ?? []"
+                label="Valor padrão"
+                inline
               />
               <CheckboxComponent
-                  v-else-if="campoSelecionado.tipo === 'checkbox'"
-                  :model-value="checkboxDefaultValue(campoSelecionado)"
-                  :items="camposOpcoes[campoSelecionado.id] ?? []"
-                  label="Valor padrão"
-                  multiple
-                  inline
-                  @update:model-value="(v) => setCheckboxDefault(campoSelecionado, v)"
+                v-else-if="campoSelecionado.tipo === 'checkbox'"
+                :model-value="checkboxDefaultValue(campoSelecionado)"
+                :items="camposOpcoes[campoSelecionado.id] ?? []"
+                label="Valor padrão"
+                multiple
+                inline
+                @update:model-value="(v) => setCheckboxDefault(campoSelecionado, v)"
               />
               <AutocompleteComponent
-                  v-else-if="campoSelecionado.tipo === 'autocomplete'"
-                  v-model="campoSelecionado.pivot.valor_default"
-                  :items="camposOpcoes[campoSelecionado.id] ?? []"
-                  :no-filter="campoSelecionado.opcoes_por_uri === 1"
-                  label="Valor padrão"
-                  density="compact"
-                  @update:search="(s) => camposOnSearch[campoSelecionado.id]?.(s)"
+                v-else-if="campoSelecionado.tipo === 'autocomplete'"
+                v-model="campoSelecionado.pivot.valor_default"
+                :items="camposOpcoes[campoSelecionado.id] ?? []"
+                :no-filter="campoSelecionado.opcoes_por_uri === 1"
+                label="Valor padrão"
+                density="compact"
+                @update:search="(s) => camposOnSearch[campoSelecionado.id]?.(s)"
               />
             </div>
 
-            <div v-if="campoSelecionado.tipo === 'select'" class="d-flex align-center" style="padding-top:18px">
+            <div
+              v-if="campoSelecionado.tipo === 'select'"
+              class="d-flex align-center"
+              style="padding-top:18px"
+            >
               <v-checkbox
-                  v-model="campoSelecionado.pivot.select_multiplo"
-                  :true-value="1"
-                  :false-value="0"
-                  label="Seleção múltipla"
-                  hide-details
-                  density="compact"
-                  color="teal"
+                v-model="campoSelecionado.pivot.select_multiplo"
+                :true-value="1"
+                :false-value="0"
+                label="Seleção múltipla"
+                hide-details
+                density="compact"
+                color="teal"
               />
             </div>
 
             <div class="ml-auto d-flex flex-column align-end flex-shrink-0">
-              <div class="text-caption text-medium-emphasis mb-1">Preview</div>
-              <v-chip size="small" variant="outlined" color="teal" prepend-icon="mdi-eye-outline">
+              <div class="text-caption text-medium-emphasis mb-1">
+                Preview
+              </div>
+              <v-chip
+                size="small"
+                variant="outlined"
+                color="teal"
+                prepend-icon="mdi-eye-outline"
+              >
                 {{ campoSelecionado.label }}{{ campoSelecionado.pivot.obrigatorio ? ' *' : '' }}
               </v-chip>
             </div>
@@ -155,29 +225,64 @@
           <template v-if="campoSelecionado.tipo === 'range'">
             <v-divider class="my-3" />
             <div class="d-flex align-center gap-2 mb-3">
-              <v-icon size="15" color="teal">mdi-tune-variant</v-icon>
+              <v-icon
+                size="15"
+                color="teal"
+              >
+                mdi-tune-variant
+              </v-icon>
               <span class="text-caption font-weight-medium edit-label-upper">Limites do intervalo</span>
             </div>
             <v-row dense>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model.number="campoSelecionado.pivot.range_minimo" label="Mínimo" density="compact" hide-details type="number" />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model.number="campoSelecionado.pivot.range_minimo"
+                  label="Mínimo"
+                  density="compact"
+                  hide-details
+                  type="number"
+                />
               </v-col>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model.number="campoSelecionado.pivot.range_maximo" label="Máximo" density="compact" hide-details type="number" />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model.number="campoSelecionado.pivot.range_maximo"
+                  label="Máximo"
+                  density="compact"
+                  hide-details
+                  type="number"
+                />
               </v-col>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model.number="campoSelecionado.pivot.range_step" label="Step" density="compact" hide-details type="number" />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model.number="campoSelecionado.pivot.range_step"
+                  label="Step"
+                  density="compact"
+                  hide-details
+                  type="number"
+                />
               </v-col>
             </v-row>
-            <v-row dense class="mt-2">
+            <v-row
+              dense
+              class="mt-2"
+            >
               <v-col cols="12">
                 <RangeComponent
-                    :model-value="campoSelecionado.pivot.valor_default !== null && campoSelecionado.pivot.valor_default !== '' ? Number(campoSelecionado.pivot.valor_default) : (campoSelecionado.pivot.range_minimo ?? 0)"
-                    :min="campoSelecionado.pivot.range_minimo ?? 0"
-                    :max="campoSelecionado.pivot.range_maximo ?? 100"
-                    :step="campoSelecionado.pivot.range_step ?? 1"
-                    label="Valor padrão"
-                    @update:model-value="(v) => { campoSelecionado.pivot.valor_default = v }"
+                  :model-value="campoSelecionado.pivot.valor_default !== null && campoSelecionado.pivot.valor_default !== '' ? Number(campoSelecionado.pivot.valor_default) : (campoSelecionado.pivot.range_minimo ?? 0)"
+                  :min="campoSelecionado.pivot.range_minimo ?? 0"
+                  :max="campoSelecionado.pivot.range_maximo ?? 100"
+                  :step="campoSelecionado.pivot.range_step ?? 1"
+                  label="Valor padrão"
+                  @update:model-value="(v) => { campoSelecionado.pivot.valor_default = v }"
                 />
               </v-col>
             </v-row>
@@ -186,32 +291,76 @@
           <template v-if="campoSelecionado.tipo === 'switch'">
             <v-divider class="my-3" />
             <div class="d-flex align-center gap-2 mb-3">
-              <v-icon size="15" color="teal">mdi-toggle-switch-outline</v-icon>
+              <v-icon
+                size="15"
+                color="teal"
+              >
+                mdi-toggle-switch-outline
+              </v-icon>
               <span class="text-caption font-weight-medium edit-label-upper">Rótulos e valores</span>
             </div>
             <v-row dense>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model="campoSelecionado.pivot.switch_true_label" label="Label ativo" placeholder="Sim" density="compact" hide-details />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model="campoSelecionado.pivot.switch_true_label"
+                  label="Label ativo"
+                  placeholder="Sim"
+                  density="compact"
+                  hide-details
+                />
               </v-col>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model="campoSelecionado.pivot.switch_false_label" label="Label inativo" placeholder="Não" density="compact" hide-details />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model="campoSelecionado.pivot.switch_false_label"
+                  label="Label inativo"
+                  placeholder="Não"
+                  density="compact"
+                  hide-details
+                />
               </v-col>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model="campoSelecionado.pivot.switch_true_value" label="Valor ativo" placeholder="true" density="compact" hide-details />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model="campoSelecionado.pivot.switch_true_value"
+                  label="Valor ativo"
+                  placeholder="true"
+                  density="compact"
+                  hide-details
+                />
               </v-col>
-              <v-col cols="12" md="3">
-                <TextFieldComponent v-model="campoSelecionado.pivot.switch_false_value" label="Valor inativo" placeholder="false" density="compact" hide-details />
+              <v-col
+                cols="12"
+                md="3"
+              >
+                <TextFieldComponent
+                  v-model="campoSelecionado.pivot.switch_false_value"
+                  label="Valor inativo"
+                  placeholder="false"
+                  density="compact"
+                  hide-details
+                />
               </v-col>
             </v-row>
-            <v-row dense class="mt-2">
+            <v-row
+              dense
+              class="mt-2"
+            >
               <v-col cols="12">
                 <SwitchComponent
-                    v-model="campoSelecionado.pivot.valor_default"
-                    label="Valor padrão"
-                    :true-label="campoSelecionado.pivot.switch_true_label || 'Ativo'"
-                    :false-label="campoSelecionado.pivot.switch_false_label || 'Inativo'"
-                    :true-value="campoSelecionado.pivot.switch_true_value || 'true'"
-                    :false-value="campoSelecionado.pivot.switch_false_value || 'false'"
+                  v-model="campoSelecionado.pivot.valor_default"
+                  label="Valor padrão"
+                  :true-label="campoSelecionado.pivot.switch_true_label || 'Ativo'"
+                  :false-label="campoSelecionado.pivot.switch_false_label || 'Inativo'"
+                  :true-value="campoSelecionado.pivot.switch_true_value || 'true'"
+                  :false-value="campoSelecionado.pivot.switch_false_value || 'false'"
                 />
               </v-col>
             </v-row>
@@ -219,86 +368,115 @@
         </div>
       </div>
 
-      <CardTextComponent class="pa-0" style="max-height:380px; overflow-y:auto">
-        <ProgressLinearComponent v-if="carregandoPivot" data-testid="configuracao-carregando" indeterminate color="teal" />
+      <CardTextComponent
+        class="pa-0"
+        style="max-height:380px; overflow-y:auto"
+      >
+        <ProgressLinearComponent
+          v-if="carregandoPivot"
+          data-testid="configuracao-carregando"
+          indeterminate
+          color="teal"
+        />
 
-        <p v-else-if="camposPivot.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
+        <p
+          v-else-if="camposPivot.length === 0"
+          class="text-body-2 text-medium-emphasis text-center py-8"
+        >
           Nenhum campo associado a este formulário.
         </p>
 
-        <p v-else-if="camposFiltrados.length === 0" class="text-body-2 text-medium-emphasis text-center py-8">
+        <p
+          v-else-if="camposFiltrados.length === 0"
+          class="text-body-2 text-medium-emphasis text-center py-8"
+        >
           Nenhum campo encontrado para "<strong>{{ busca }}</strong>".
         </p>
 
         <Draggable
-            v-else
-            v-model="camposPivot"
-            :item-key="c => c.pivot.id"
-            filter="button"
-            :prevent-on-filter="false"
-            :animation="200"
-            :disabled="!!busca"
-            ghost-class="drag-ghost"
-            tag="div"
-            class="campos-grid"
-            @end="renumerarOrdem"
+          v-else
+          v-model="camposPivot"
+          :item-key="c => c.pivot.id"
+          filter="button"
+          :prevent-on-filter="false"
+          :animation="200"
+          :disabled="!!busca"
+          ghost-class="drag-ghost"
+          tag="div"
+          class="campos-grid"
+          @end="renumerarOrdem"
         >
           <template #item="{ element: campo }">
             <div
-                v-show="campoCorresponde(campo)"
-                data-testid="configuracao-campo-item"
-                class="campo-item"
-                :class="{ 'campo-selecionado': campoSelecionado?.pivot.id === campo.pivot.id }"
-                :style="itemStyle(campo)"
-                @mouseenter="hoveringId = campo.pivot.id"
-                @mouseleave="hoveringId = null"
+              v-show="campoCorresponde(campo)"
+              data-testid="configuracao-campo-item"
+              class="campo-item"
+              :class="{ 'campo-selecionado': campoSelecionado?.pivot.id === campo.pivot.id }"
+              :style="itemStyle(campo)"
+              @mouseenter="hoveringId = campo.pivot.id"
+              @mouseleave="hoveringId = null"
             >
               <div
-                  class="drag-handle drag-bar"
-                  :class="{ 'drag-bar--hover': hoveringId === campo.pivot.id && !busca, 'drag-bar--disabled': !!busca }"
-                  @click.stop
-              ></div>
+                class="drag-handle drag-bar"
+                :class="{ 'drag-bar--hover': hoveringId === campo.pivot.id && !busca, 'drag-bar--disabled': !!busca }"
+                @click.stop
+              />
               <div class="card-body">
                 <div class="card-top">
-                  <span class="type-badge" :style="typeBadgeStyle(campo.tipo)">{{ campo.tipo }}</span>
+                  <span
+                    class="type-badge"
+                    :style="typeBadgeStyle(campo.tipo)"
+                  >{{ campo.tipo }}</span>
                   <div class="d-flex align-center ga-1">
                     <button
-                        class="toggle-sm"
-                        :class="campo.pivot.obrigatorio ? 'toggle-sm--on' : 'toggle-sm--off'"
-                        :title="campo.pivot.obrigatorio ? 'Tornar opcional' : 'Tornar obrigatório'"
-                        :aria-label="campo.pivot.obrigatorio ? 'Tornar opcional' : 'Tornar obrigatório'"
-                        @click.stop="campo.pivot.obrigatorio = campo.pivot.obrigatorio ? 0 : 1"
+                      class="toggle-sm"
+                      :class="campo.pivot.obrigatorio ? 'toggle-sm--on' : 'toggle-sm--off'"
+                      :title="campo.pivot.obrigatorio ? 'Tornar opcional' : 'Tornar obrigatório'"
+                      :aria-label="campo.pivot.obrigatorio ? 'Tornar opcional' : 'Tornar obrigatório'"
+                      @click.stop="campo.pivot.obrigatorio = campo.pivot.obrigatorio ? 0 : 1"
                     >
-                      <span class="toggle-sm__dot"></span>
+                      <span class="toggle-sm__dot" />
                       <span class="toggle-sm__label">
-                        <span v-if="campo.pivot.obrigatorio" class="toggle-sm__asterisk">*</span>
+                        <span
+                          v-if="campo.pivot.obrigatorio"
+                          class="toggle-sm__asterisk"
+                        >*</span>
                         {{ campo.pivot.obrigatorio ? 'Obrig.' : 'Opc.' }}
                       </span>
                     </button>
                     <div
-                        class="card-actions"
-                        :class="{ 'card-actions--visible': hoveringId === campo.pivot.id || campoSelecionado?.pivot.id === campo.pivot.id }"
-                        @click.stop
+                      class="card-actions"
+                      :class="{ 'card-actions--visible': hoveringId === campo.pivot.id || campoSelecionado?.pivot.id === campo.pivot.id }"
+                      @click.stop
                     >
                       <button
-                          data-testid="configuracao-campo-editar"
-                          class="edit-btn"
-                          :class="{ 'edit-btn--active': campoSelecionado?.pivot.id === campo.pivot.id }"
-                          :aria-label="'Editar ' + campo.label"
-                          @click="selecionarCampo(campo)"
+                        data-testid="configuracao-campo-editar"
+                        class="edit-btn"
+                        :class="{ 'edit-btn--active': campoSelecionado?.pivot.id === campo.pivot.id }"
+                        :aria-label="'Editar ' + campo.label"
+                        @click="selecionarCampo(campo)"
                       >
-                        <v-icon size="14">mdi-pencil</v-icon>
+                        <v-icon size="14">
+                          mdi-pencil
+                        </v-icon>
                       </button>
                     </div>
                   </div>
                 </div>
-                <div class="card-name">{{ campo.label }}</div>
-                <div class="card-key">{{ campo.campo }}</div>
+                <div class="card-name">
+                  {{ campo.label }}
+                </div>
+                <div class="card-key">
+                  {{ campo.campo }}
+                </div>
                 <div
-                    class="required-indicator"
-                    :class="{ 'required-indicator--visible': campo.pivot.obrigatorio || hoveringId === campo.pivot.id }"
+                  class="required-indicator"
+                  :class="{ 'required-indicator--visible': campo.pivot.obrigatorio || hoveringId === campo.pivot.id }"
                 >
-                  <span class="req-dot" :class="campo.pivot.obrigatorio ? 'req-dot--on' : 'req-dot--off'"></span>
+                  <span
+                    class="req-dot"
+                    :class="campo.pivot.obrigatorio ? 'req-dot--on' : 'req-dot--off'"
+                  />
                   {{ campo.pivot.obrigatorio ? 'Obrigatório' : 'Opcional' }}
                 </div>
               </div>
@@ -308,20 +486,29 @@
       </CardTextComponent>
 
       <div class="border-t bg-grey-lighten-5 px-5 py-3 d-flex align-center gap-3">
-        <v-icon size="15" color="medium-emphasis">mdi-information-outline</v-icon>
+        <v-icon
+          size="15"
+          color="medium-emphasis"
+        >
+          mdi-information-outline
+        </v-icon>
         <span class="text-caption text-medium-emphasis flex-grow-1">Alterações só serão aplicadas após salvar</span>
-        <ButtonComponent variant="text" @click="proxyModel = false">Cancelar</ButtonComponent>
         <ButtonComponent
-            variant="flat"
-            color="teal"
-            prepend-icon="mdi-content-save-outline"
-            :loading="salvandoTodos"
-            @click="salvarTodosPivots"
+          variant="text"
+          @click="proxyModel = false"
+        >
+          Cancelar
+        </ButtonComponent>
+        <ButtonComponent
+          variant="flat"
+          color="teal"
+          prepend-icon="mdi-content-save-outline"
+          :loading="salvandoTodos"
+          @click="salvarTodosPivots"
         >
           Salvar tudo
         </ButtonComponent>
       </div>
-
     </CardComponent>
   </v-dialog>
 </template>

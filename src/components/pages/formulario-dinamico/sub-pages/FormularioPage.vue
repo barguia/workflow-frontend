@@ -1,61 +1,61 @@
 <template>
   <CrudComponent
-      route="wf/forms/formularios"
-      title="Formulários"
-      must-sort
-      :fields="fields"
-      :headers="headers"
-      :show-select="false"
-      data-testid="formulario-crud"
+    route="wf/forms/formularios"
+    title="Formulários"
+    must-sort
+    :fields="fields"
+    :headers="headers"
+    :show-select="false"
+    data-testid="formulario-crud"
   >
     <template #actionsField="{ item }">
       <ButtonComponent
-          icon="mdi-eye-outline"
-          variant="text"
-          size="small"
-          color="secondary"
-          title="Visualizar formulário"
-          data-testid="formulario-btn-preview"
-          @click="abrirPreview(item)"
+        icon="mdi-eye-outline"
+        variant="text"
+        size="small"
+        color="secondary"
+        title="Visualizar formulário"
+        data-testid="formulario-btn-preview"
+        @click="abrirPreview(item)"
       />
       <ButtonComponent
-          icon="mdi-format-list-checks"
-          variant="text"
-          size="small"
-          color="primary"
-          title="Associar campos"
-          data-testid="formulario-btn-campos"
-          @click="abrirModalCampos(item)"
+        icon="mdi-format-list-checks"
+        variant="text"
+        size="small"
+        color="primary"
+        title="Associar campos"
+        data-testid="formulario-btn-campos"
+        @click="abrirModalCampos(item)"
       />
       <ButtonComponent
-          icon="mdi-tune"
-          variant="text"
-          size="small"
-          color="teal"
-          title="Configurar campos associados"
-          data-testid="formulario-btn-pivot"
-          @click="abrirModalPivot(item)"
+        icon="mdi-tune"
+        variant="text"
+        size="small"
+        color="teal"
+        title="Configurar campos associados"
+        data-testid="formulario-btn-pivot"
+        @click="abrirModalPivot(item)"
       />
     </template>
   </CrudComponent>
 
   <AssociacaoCampos
-      v-if="dialog"
-      v-model="dialog"
-      :formulario="formularioSelecionado"
-      @salvo="fecharModal"
+    v-if="dialog"
+    v-model="dialog"
+    :formulario="formularioSelecionado"
+    @salvo="fecharModal"
   />
 
   <PreviewFormularioDialog
-      v-if="dialogPreview"
-      v-model="dialogPreview"
-      :formulario="formularioSelecionado"
+    v-if="dialogPreview"
+    v-model="dialogPreview"
+    :formulario="formularioSelecionado"
   />
 
   <ConfiguracaoFormulario
-      v-if="dialogPivot"
-      v-model="dialogPivot"
-      :formulario="formularioSelecionado"
+    v-if="dialogPivot"
+    v-model="dialogPivot"
+    :formulario="formularioSelecionado"
   />
 </template>
 

@@ -1,12 +1,11 @@
 <template>
   <CrudComponent
-      route="app/organizacoes"
-      title="Organizações"
-      :fields="fields"
-      :headers="headers"
-      data-testid="organizacao-crud"
-  >
-  </CrudComponent>
+    route="app/organizacoes"
+    title="Organizações"
+    :fields="fields"
+    :headers="headers"
+    data-testid="organizacao-crud"
+  />
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 <template>
   <v-card-text v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-card-text>
 </template>
 

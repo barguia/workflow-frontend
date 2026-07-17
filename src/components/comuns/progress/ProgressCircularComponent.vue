@@ -1,6 +1,6 @@
 <template>
   <v-progress-circular v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-progress-circular>
 </template>
 

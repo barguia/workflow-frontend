@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-navigation-drawer>
 </template>
 
