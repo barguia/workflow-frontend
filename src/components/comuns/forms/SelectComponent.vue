@@ -18,9 +18,9 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  label: String,
-  items: Array,
-  rules: Array,
+  label: { type: String, default: '' },
+  items: { type: Array, default: () => [] },
+  rules: { type: Array, default: () => [] },
   multiple: Boolean,
   required: Boolean,
   clearable: { type: Boolean, default: true },
@@ -28,7 +28,7 @@ const props = defineProps({
   sorted: { type: Boolean, default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: null })
 
 const sortedItems = computed(() => {
   if (!props.sorted || !props.items) return props.items

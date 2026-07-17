@@ -75,7 +75,6 @@ import MenuCompletoComponent from "@/components/menu/MenuCompletoComponent.vue";
 import ButtonComponent from "@/components/comuns/buttons/ButtonComponent.vue";
 import AppComponent from "@/components/comuns/navigations/AppComponent.vue";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
-import FooterComponent from "@/components/comuns/layout/FooterComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
 import SnackbarComponent from "@/components/comuns/alerts/SnackbarComponent.vue";
@@ -96,7 +95,6 @@ export default {
     ButtonComponent,
     MenuComponent: MenuCompletoComponent,
     ContainerComponent,
-    FooterComponent,
     AppComponent,
   },
   setup() {

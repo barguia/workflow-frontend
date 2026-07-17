@@ -29,9 +29,9 @@ import { computed } from 'vue'
 
 //       @update:modelValue="$emit('update:modelValue', $event)" chamada duplicada
 const props = defineProps({
-  label: String,
-  items: Array,
-  rules: Array,
+  label: { type: String, default: '' },
+  items: { type: Array, default: () => [] },
+  rules: { type: Array, default: () => [] },
   inline: Boolean,
   required: Boolean,
   chips: Boolean,
@@ -39,7 +39,7 @@ const props = defineProps({
   sorted: { type: Boolean, default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: null })
 
 const sortedItems = computed(() => {
   if (!props.sorted || !props.items) return props.items

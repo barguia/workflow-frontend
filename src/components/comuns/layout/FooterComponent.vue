@@ -55,7 +55,9 @@
 <script>
 
 export default {
-  props: ['menus'],
+  props: {
+    menus: { type: Array, default: () => [] },
+  },
   data() {
     return {
       socialLinks: [

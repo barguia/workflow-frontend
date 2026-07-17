@@ -17,8 +17,8 @@
 
 <script setup>
 defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
   min: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
@@ -27,5 +27,5 @@ defineProps({
   showTicks: { type: [Boolean, String], default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: Number })
 </script>

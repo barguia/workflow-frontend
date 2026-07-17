@@ -13,12 +13,12 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: String })
 
 const emailRule = v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'E-mail inválido'
 

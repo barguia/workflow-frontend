@@ -196,13 +196,11 @@ import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true },
-  filter_index: { type: Object, required: false, default: {} },
+  filterIndex: { type: Object, required: false, default: () => ({}) },
   title: { type: String, required: true },
-  form: { type: Object, default: () => ({}) },
   fields: {
     type: Array,
     required: true,
-    default: () => []
   },
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
@@ -272,7 +270,7 @@ watch(selectedItems, (newValue) => {
 // Carregar itens do backend (paginação server-side)
 const loadItems = async () => {
   const params = {
-    ...props.filter_index,
+    ...props.filterIndex,
     page: currentPage.value,
     per_page: perPage.value === -1 ? 99999 : perPage.value,
   }

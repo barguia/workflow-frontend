@@ -20,9 +20,9 @@
 <script setup>
 
 defineProps({
-  label: String,
-  items: Array,
-  rules: Array,
+  label: { type: String, default: '' },
+  items: { type: Array, default: () => [] },
+  rules: { type: Array, default: () => [] },
   inline: Boolean,
   required: Boolean,
   chips: {
@@ -39,5 +39,5 @@ defineProps({
   },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: null })
 </script>

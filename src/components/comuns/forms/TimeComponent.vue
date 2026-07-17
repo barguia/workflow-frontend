@@ -11,10 +11,10 @@
 
 <script setup>
 defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: String })
 </script>

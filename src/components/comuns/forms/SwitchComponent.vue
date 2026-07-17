@@ -25,8 +25,8 @@
 
 <script setup>
 defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
   trueLabel: { type: String, default: 'Sim' },
   falseLabel: { type: String, default: 'Não' },
@@ -34,5 +34,5 @@ defineProps({
   falseValue: { type: [Boolean, String, Number], default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: [Boolean, String, Number] })
 </script>
