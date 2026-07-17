@@ -30,6 +30,7 @@
             variant="text"
             size="small"
             color="primary"
+            :data-testid="`crud-btn-editar-${item.id}`"
             @click="openEditModal(item)"
           />
           <ButtonComponent
@@ -37,6 +38,7 @@
             variant="text"
             size="small"
             color="error"
+            :data-testid="`crud-btn-excluir-${item.id}`"
             @click="deleteItem(item)"
           />
           <slot
@@ -55,6 +57,7 @@
       location="bottom right"
       class="ma-6"
       elevation="4"
+      data-testid="crud-btn-adicionar"
       @click="openAddModal"
     />
 
@@ -133,6 +136,7 @@
           <v-spacer />
           <ButtonComponent
             variant="text"
+            data-testid="crud-btn-cancelar"
             @click="closeModal"
           >
             Cancelar
@@ -149,6 +153,7 @@
           <ButtonComponent
             color="primary"
             variant="flat"
+            data-testid="crud-btn-salvar"
             @click="saveItem"
           >
             Salvar
