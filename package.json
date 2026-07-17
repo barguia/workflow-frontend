@@ -16,20 +16,22 @@
     "test:coverage": "vitest run --coverage",
     "analyze:components": "node scripts/analyze-components.js",
     "analyze:testids": "node scripts/analyze-testids.js",
+    "lint": "eslint .",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@vue/devtools-api": "^8.1.5",
     "axios": "^1.15.1",
     "crypto-js": "^4.2.0",
     "lodash-es": "^4.17.21",
     "maska": "^3.2.0",
-    "pinia": "^3.0.3",
-    "vue": "^3.5.22",
+    "pinia": "^4.0.2",
+    "vue": "^3.5.40",
     "vue-recaptcha-v3": "^2.0.1",
-    "vue-router": "^4.5.1",
+    "vue-router": "^5.2.0",
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.10.3"
   },
@@ -37,14 +39,18 @@
     "flatted": "3.4.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.58.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "@vue/test-utils": "^2.4.6",
     "dotenv": "^17.3.1",
-    "jsdom": "^28.1.0",
-    "vite": "^8.0.16",
+    "eslint": "^10.7.0",
+    "eslint-plugin-vue": "^10.9.2",
+    "globals": "^17.7.0",
+    "jsdom": "^29.1.1",
+    "vite": "^8.1.5",
     "vite-plugin-vue-devtools": "^8.0.2",
     "vitest": "^4.0.18"
   }
