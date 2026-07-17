@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import api from '@/services/api.js'
 
 import CardComponent from "@/components/comuns/cards/CardComponent.vue"

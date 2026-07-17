@@ -16,9 +16,7 @@ import {ref} from "vue";
 const { index: fetchWorkflow } = useCrud('wf/workflows')
 const { index: fetchHierarquia } = useCrud('wf/hierarquias')
 
-const hierarquias = ref({})
 const opcoesHieraquia = ref({})
-const form = ref({})
 
 const fields = [
   {

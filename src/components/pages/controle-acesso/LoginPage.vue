@@ -71,7 +71,6 @@
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore.js';
 import { useRouter } from 'vue-router';
-import {useNotifications} from "@/composables/useNotifications.js";
 import ContainerComponent from "@/components/comuns/containers/ContainerComponent.vue";
 import RowComponent from "@/components/comuns/layout/RowComponent.vue";
 import ColComponent from "@/components/comuns/layout/ColComponent.vue";
@@ -88,7 +87,6 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref(false)
-const { triggerNotification } = useNotifications();
 
 const handleForgotPassword = () => {
   console.log('Navegar para esqueci a senha')
@@ -107,7 +105,6 @@ async function login() {
       email: email.value,
       password: password.value,
     });
-    // triggerNotification({ message: 'Login realizado com sucesso!', type: 'success' });
     window.dispatchEvent(
         new CustomEvent('notification', {
           detail: {

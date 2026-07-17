@@ -235,7 +235,6 @@
 import { ref, computed, onMounted } from 'vue'
 
 import api from '@/services/api.js'
-import { useCrud } from '@/services/useCrud.js'
 
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
@@ -254,8 +253,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['tratamento-salvo', 'tratamento-erro', 'acao-executada'])
-
-const { index: fetchStatus } = useCrud('wf/status')
 
 // --- Ações dinâmicas ---
 const carregandoAcoes = ref(false)
@@ -327,7 +324,6 @@ async function executarAcao(acao) {
 // --- Registrar Tratamento ---
 const dialog               = ref(false)
 const salvando             = ref(false)
-const carregandoStatus     = ref(false)
 const carregandoTratamentos = ref(false)
 
 const todosTratamentos     = ref([])

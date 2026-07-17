@@ -261,7 +261,7 @@ const { initColumns, saveColumns } = useColumnSelection(props.route)
 watch(selectedColumns, saveColumns)
 
 // useCrud
-const { index, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
+const { index, fetchColumns, create, update, deleteItem: deleteServiceItem, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -287,7 +287,7 @@ const loadItems = async () => {
       rawItems.value = Array.isArray(response) ? response : []
       totalItems.value = rawItems.value.length
     }
-  } catch (err) {
+  } catch {
     // Erros tratados pelo useCrud
   }
 }
@@ -357,8 +357,8 @@ const saveItem = async () => {
     closeModal()
     loadItems() // Recarregar lista
     emit('item-saved', result)
-  } catch (err) {
-    // console.log(err)
+  } catch {
+    // Erros tratados pelo useCrud
   }
 }
 

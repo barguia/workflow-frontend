@@ -17,7 +17,8 @@ const fieldRef = ref(null)
 let maskInstance = null
 
 const attrsWithoutMask = computed(() => {
-  const { mask, ...rest } = attrs
+  const rest = { ...attrs }
+  delete rest.mask
   return rest
 })
 
