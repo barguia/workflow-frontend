@@ -61,7 +61,9 @@ export function useColumnSelection(cacheKey) {
         selected:  cols,
         available: lastAvailable ?? cols,
       }))
-    } catch {}
+    } catch (e) {
+      console.warn(`[useColumnSelection] falha ao salvar colunas de ${cacheKey}`, e)
+    }
   }
 
   return { initColumns, saveColumns }
