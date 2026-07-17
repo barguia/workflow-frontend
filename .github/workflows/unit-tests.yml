@@ -29,3 +29,6 @@ jobs:
         env:
           VITE_CRYPTO_KEY: ${{ secrets.VITE_CRYPTO_KEY }}
           VITE_API_URL: http://localhost/api/
+
+      - name: Run lint tests
+        run: npm run lint
