@@ -1,6 +1,6 @@
 <template>
   <v-app-bar v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-app-bar>
 </template>
 

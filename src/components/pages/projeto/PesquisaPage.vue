@@ -1,18 +1,30 @@
 <template>
-  <ContainerComponent fluid class="py-4">
-
+  <ContainerComponent
+    fluid
+    class="py-4"
+  >
     <!-- Cabeçalho -->
     <div class="d-flex align-center mb-4 gap-2">
-      <IconComponent color="primary" size="22">mdi-magnify</IconComponent>
+      <IconComponent
+        color="primary"
+        size="22"
+      >
+        mdi-magnify
+      </IconComponent>
       <span class="text-h6 font-weight-bold">Pesquisa de Registros</span>
     </div>
 
-    <CardComponent rounded="xl" variant="elevated">
+    <CardComponent
+      rounded="xl"
+      variant="elevated"
+    >
       <CardTextComponent class="pa-5">
-
         <!-- Toggle Finalizados / Pendentes -->
         <div class="mb-5">
-          <div class="text-caption font-weight-bold text-uppercase mb-2" style="opacity:.65; letter-spacing:.06em">
+          <div
+            class="text-caption font-weight-bold text-uppercase mb-2"
+            style="opacity:.65; letter-spacing:.06em"
+          >
             Tipo de Registro
           </div>
           <v-btn-toggle
@@ -21,13 +33,21 @@
             rounded="pill"
             color="primary"
             density="comfortable"
-            @update:model-value="onModoChange"
             data-testid="pesquisa-toggle-tipo"
+            @update:model-value="onModoChange"
           >
-            <ButtonComponent value="pendentes" prepend-icon="mdi-clock-outline" data-testid="pesquisa-btn-pendentes">
+            <ButtonComponent
+              value="pendentes"
+              prepend-icon="mdi-clock-outline"
+              data-testid="pesquisa-btn-pendentes"
+            >
               Pendentes
             </ButtonComponent>
-            <ButtonComponent value="finalizados" prepend-icon="mdi-check-circle-outline" data-testid="pesquisa-btn-finalizados">
+            <ButtonComponent
+              value="finalizados"
+              prepend-icon="mdi-check-circle-outline"
+              data-testid="pesquisa-btn-finalizados"
+            >
               Finalizados
             </ButtonComponent>
           </v-btn-toggle>
@@ -36,13 +56,19 @@
         <DividerComponent class="mb-5" />
 
         <!-- Filtros -->
-        <div class="text-caption font-weight-bold text-uppercase mb-3" style="opacity:.65; letter-spacing:.06em">
+        <div
+          class="text-caption font-weight-bold text-uppercase mb-3"
+          style="opacity:.65; letter-spacing:.06em"
+        >
           Filtros
         </div>
 
         <RowComponent dense>
           <!-- Projetos -->
-          <ColComponent cols="12" md="6">
+          <ColComponent
+            cols="12"
+            md="6"
+          >
             <SelectComponent
               v-model="filtros.projetos"
               label="Projetos"
@@ -57,7 +83,10 @@
           </ColComponent>
 
           <!-- Macro Processo -->
-          <ColComponent cols="12" md="6">
+          <ColComponent
+            cols="12"
+            md="6"
+          >
             <SelectComponent
               v-model="filtros.macroProcessos"
               label="Macro Processo"
@@ -72,9 +101,12 @@
           </ColComponent>
 
           <!-- Processo -->
-          <ColComponent cols="12" md="6">
+          <ColComponent
+            cols="12"
+            md="6"
+          >
             <SelectComponent
-                v-model="filtros.processos"
+              v-model="filtros.processos"
               label="Processo"
               :items="opcoes.processos"
               :loading="carregando.processos"
@@ -87,7 +119,11 @@
           </ColComponent>
 
           <!-- Status — apenas Pendentes -->
-          <ColComponent v-if="modo === 'pendentes'" cols="12" md="6">
+          <ColComponent
+            v-if="modo === 'pendentes'"
+            cols="12"
+            md="6"
+          >
             <SelectComponent
               v-model="filtros.status"
               label="Status"
@@ -102,7 +138,10 @@
           </ColComponent>
 
           <!-- Tarefas -->
-          <ColComponent cols="12" md="6">
+          <ColComponent
+            cols="12"
+            md="6"
+          >
             <SelectComponent
               v-model="filtros.tarefas"
               label="Tarefas"
@@ -119,8 +158,15 @@
 
         <!-- Ações -->
         <div class="d-flex justify-end gap-3 mt-5">
-          <ButtonComponent variant="text" color="default" @click="limparFiltros" data-testid="pesquisa-btn-limpar">
-            <IconComponent start>mdi-filter-off-outline</IconComponent>
+          <ButtonComponent
+            variant="text"
+            color="default"
+            data-testid="pesquisa-btn-limpar"
+            @click="limparFiltros"
+          >
+            <IconComponent start>
+              mdi-filter-off-outline
+            </IconComponent>
             Limpar
           </ButtonComponent>
           <ButtonComponent
@@ -128,24 +174,39 @@
             color="success"
             :loading="baixando"
             :disabled="!ultimaQuery"
-            @click="baixar"
             data-testid="pesquisa-btn-download"
+            @click="baixar"
           >
-            <IconComponent start>mdi-download-outline</IconComponent>
+            <IconComponent start>
+              mdi-download-outline
+            </IconComponent>
             Exportar
           </ButtonComponent>
-          <ButtonComponent color="primary" :loading="pesquisando" @click="pesquisar" data-testid="pesquisa-btn-pesquisar">
-            <IconComponent start>mdi-magnify</IconComponent>
+          <ButtonComponent
+            color="primary"
+            :loading="pesquisando"
+            data-testid="pesquisa-btn-pesquisar"
+            @click="pesquisar"
+          >
+            <IconComponent start>
+              mdi-magnify
+            </IconComponent>
             Pesquisar
           </ButtonComponent>
         </div>
-
       </CardTextComponent>
     </CardComponent>
 
     <!-- Resultados -->
-    <div v-if="rawResultados !== null" class="mt-6" data-testid="pesquisa-tabela-resultados">
-      <CardComponent rounded="xl" variant="elevated">
+    <div
+      v-if="rawResultados !== null"
+      class="mt-6"
+      data-testid="pesquisa-tabela-resultados"
+    >
+      <CardComponent
+        rounded="xl"
+        variant="elevated"
+      >
         <CrudDataTableComponent
           :headers="[{ key: 'actions', title: '', sortable: false, align: 'end' }]"
           :items="resultados"
@@ -183,16 +244,35 @@
         </CrudDataTableComponent>
       </CardComponent>
     </div>
-
   </ContainerComponent>
 
-  <SnackbarComponent v-model="showErros" color="error" timeout="6000" location="top">
-    <div class="text-body-2 font-weight-medium mb-1">Erro de validação</div>
-    <div v-for="(msgs, campo) in validationErrors" :key="campo">
-      <span v-for="msg in msgs" :key="msg">· {{ msg }}</span>
+  <SnackbarComponent
+    v-model="showErros"
+    color="error"
+    timeout="6000"
+    location="top"
+  >
+    <div class="text-body-2 font-weight-medium mb-1">
+      Erro de validação
+    </div>
+    <div
+      v-for="(msgs, campo) in validationErrors"
+      :key="campo"
+    >
+      <span
+        v-for="msg in msgs"
+        :key="msg"
+      >· {{ msg }}</span>
     </div>
     <template #actions>
-      <ButtonComponent variant="text" color="white" size="small" @click="showErros = false">Fechar</ButtonComponent>
+      <ButtonComponent
+        variant="text"
+        color="white"
+        size="small"
+        @click="showErros = false"
+      >
+        Fechar
+      </ButtonComponent>
     </template>
   </SnackbarComponent>
 </template>

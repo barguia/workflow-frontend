@@ -2,42 +2,63 @@
   <div>
     <ContainerComponent fluid>
       <CrudDataTableComponent
-          v-bind="$attrs"
-          v-model:selected="selectedItems"
-          :headers="headers"
-          :items="items"
-          v-model:search="search"
-          :title="title"
-          :show-select="showSelect"
-          :total-items="effectiveTotalItems"
-          :page="currentPage"
-          :items-per-page="perPage"
-          :available-columns="activeAvailableColumns"
-          :selected-columns="selectedColumns"
-          @update:selected-columns="selectedColumns = $event"
-          @edit="openEditModal"
-          @update:options="handleTableOptions"
+        v-bind="$attrs"
+        v-model:selected="selectedItems"
+        v-model:search="search"
+        :headers="headers"
+        :items="items"
+        :title="title"
+        :show-select="showSelect"
+        :total-items="effectiveTotalItems"
+        :page="currentPage"
+        :items-per-page="perPage"
+        :available-columns="activeAvailableColumns"
+        :selected-columns="selectedColumns"
+        @update:selected-columns="selectedColumns = $event"
+        @edit="openEditModal"
+        @update:options="handleTableOptions"
       >
         <template #preview="{ item }">
-          <slot name="previewField" :item="item" />
+          <slot
+            name="previewField"
+            :item="item"
+          />
         </template>
         <template #actions="{ item }">
-          <ButtonComponent icon="mdi-pencil"  variant="text" size="small" color="primary" @click="openEditModal(item)" />
-          <ButtonComponent icon="mdi-delete"  variant="text" size="small" color="error"   @click="deleteItem(item)" />
-          <slot name="actionsField" :item="item"/>
+          <ButtonComponent
+            icon="mdi-pencil"
+            variant="text"
+            size="small"
+            color="primary"
+            :data-testid="`crud-btn-editar-${item.id}`"
+            @click="openEditModal(item)"
+          />
+          <ButtonComponent
+            icon="mdi-delete"
+            variant="text"
+            size="small"
+            color="error"
+            :data-testid="`crud-btn-excluir-${item.id}`"
+            @click="deleteItem(item)"
+          />
+          <slot
+            name="actionsField"
+            :item="item"
+          />
         </template>
       </CrudDataTableComponent>
     </ContainerComponent>
 
     <ButtonComponent
-        color="primary"
-        icon="mdi-plus"
-        size="large"
-        position="fixed"
-        location="bottom right"
-        class="ma-6"
-        elevation="4"
-        @click="openAddModal"
+      color="primary"
+      icon="mdi-plus"
+      size="large"
+      position="fixed"
+      location="bottom right"
+      class="ma-6"
+      elevation="4"
+      data-testid="crud-btn-adicionar"
+      @click="openAddModal"
     />
 
     <SnackbarComponent
@@ -50,45 +71,91 @@
       class="mass-action-bar"
     >
       <div class="d-flex align-center ga-3">
-        <IconComponent color="primary" size="18">mdi-checkbox-marked-circle-outline</IconComponent>
+        <IconComponent
+          color="primary"
+          size="18"
+        >
+          mdi-checkbox-marked-circle-outline
+        </IconComponent>
         <span class="text-body-2 font-weight-medium">{{ selectedItems.length }} item(ns) selecionado(s)</span>
         <v-spacer />
-        <ButtonComponent variant="text" color="error" size="small" @click="deleteSelected">
-          <IconComponent start size="16">mdi-delete-outline</IconComponent>
+        <ButtonComponent
+          variant="text"
+          color="error"
+          size="small"
+          @click="deleteSelected"
+        >
+          <IconComponent
+            start
+            size="16"
+          >
+            mdi-delete-outline
+          </IconComponent>
           Excluir
         </ButtonComponent>
       </div>
     </SnackbarComponent>
 
     <!-- Modal para Adicionar/Editar Item -->
-    <v-dialog v-model="dialog" max-width="1000px" @keydown.esc="closeModal" scrollable @before-leave="() => document.activeElement?.blur()">
+    <v-dialog
+      v-model="dialog"
+      max-width="1000px"
+      scrollable
+      @keydown.esc="closeModal"
+      @before-leave="() => document.activeElement?.blur()"
+    >
       <CardComponent rounded="lg">
         <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-          <IconComponent color="primary" size="22">{{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}</IconComponent>
+          <IconComponent
+            color="primary"
+            size="22"
+          >
+            {{ isEditing ? 'mdi-pencil-outline' : 'mdi-plus-circle-outline' }}
+          </IconComponent>
           <span class="text-h6">{{ isEditing ? 'Editar ' + title : 'Adicionar ' + title }}</span>
           <v-spacer />
-          <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModal" />
+          <ButtonComponent
+            icon="mdi-close"
+            variant="text"
+            size="small"
+            @click="closeModal"
+          />
         </CardTitleComponent>
         <CardTextComponent>
           <FormularioDinamico
-              ref="formularioRef"
-              :fields="fields"
-              v-model="form"
-              :validationErrors="validationErrors"
-              :is-editing="isEditing"
-              :resolvedOptions="resolvedOptions"
-              :context="props.context"
+            ref="formularioRef"
+            v-model="form"
+            :fields="fields"
+            :validation-errors="validationErrors"
+            :is-editing="isEditing"
+            :resolved-options="resolvedOptions"
+            :context="props.context"
           />
         </CardTextComponent>
         <CardActionsComponent class="px-6 py-4 border-t">
           <v-spacer />
-          <ButtonComponent variant="text" @click="closeModal">
+          <ButtonComponent
+            variant="text"
+            data-testid="crud-btn-cancelar"
+            @click="closeModal"
+          >
             Cancelar
           </ButtonComponent>
 
-          <slot name="actions" :is-editing="isEditing" :form="form" :save-item="saveItem" :close-modal="closeModal" />
+          <slot
+            name="actions"
+            :is-editing="isEditing"
+            :form="form"
+            :save-item="saveItem"
+            :close-modal="closeModal"
+          />
 
-          <ButtonComponent color="primary" variant="flat" @click="saveItem">
+          <ButtonComponent
+            color="primary"
+            variant="flat"
+            data-testid="crud-btn-salvar"
+            @click="saveItem"
+          >
             Salvar
           </ButtonComponent>
         </CardActionsComponent>
@@ -96,13 +163,17 @@
     </v-dialog>
     <!-- Snackbar para Erros/Sucesso -->
     <SnackbarComponent
-        v-model="showSnackbar"
-        :color="snackbarMessage === 'Operação realizada com sucesso!' ? 'success' : 'error'"
-        timeout="3000"
+      v-model="showSnackbar"
+      :color="snackbarMessage === 'Operação realizada com sucesso!' ? 'success' : 'error'"
+      timeout="3000"
     >
       {{ snackbarMessage }}
-      <template v-slot:actions>
-        <ButtonComponent color="white" variant="text" @click="showSnackbar = false">
+      <template #actions>
+        <ButtonComponent
+          color="white"
+          variant="text"
+          @click="showSnackbar = false"
+        >
           Fechar
         </ButtonComponent>
       </template>
@@ -130,13 +201,11 @@ import IconComponent from "@/components/comuns/icons/IconComponent.vue";
 
 const props = defineProps({
   route: { type: String, required: true },
-  filter_index: { type: Object, required: false, default: {} },
+  filterIndex: { type: Object, required: false, default: () => ({}) },
   title: { type: String, required: true },
-  form: { type: Object, default: () => ({}) },
   fields: {
     type: Array,
     required: true,
-    default: () => []
   },
   headers: { type: Array, required: true }, // Headers para a tabela
   context: { type: Object, default: () => ({}) },
@@ -195,7 +264,7 @@ const { initColumns, saveColumns } = useColumnSelection(props.route)
 watch(selectedColumns, saveColumns)
 
 // useCrud
-const { index, fetchColumns, create, update, deleteItem: deleteServiceItem, errors, snackbarMessage, showSnackbar } = useCrud(props.route)
+const { index, fetchColumns, create, update, deleteItem: deleteServiceItem, snackbarMessage, showSnackbar } = useCrud(props.route)
 const showMassActions = ref(false)
 
 // Sincronizar showMassActions com selectedItems
@@ -206,7 +275,7 @@ watch(selectedItems, (newValue) => {
 // Carregar itens do backend (paginação server-side)
 const loadItems = async () => {
   const params = {
-    ...props.filter_index,
+    ...props.filterIndex,
     page: currentPage.value,
     per_page: perPage.value === -1 ? 99999 : perPage.value,
   }
@@ -221,7 +290,7 @@ const loadItems = async () => {
       rawItems.value = Array.isArray(response) ? response : []
       totalItems.value = rawItems.value.length
     }
-  } catch (err) {
+  } catch {
     // Erros tratados pelo useCrud
   }
 }
@@ -291,8 +360,8 @@ const saveItem = async () => {
     closeModal()
     loadItems() // Recarregar lista
     emit('item-saved', result)
-  } catch (err) {
-    // console.log(err)
+  } catch {
+    // Erros tratados pelo useCrud
   }
 }
 

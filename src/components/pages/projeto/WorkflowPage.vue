@@ -1,12 +1,11 @@
 <template>
   <CrudComponent
-      route="wf/workflows"
-      title="Workflows"
-      :fields="fields"
-      :headers="headers"
-      data-testid="workflow-crud"
-  >
-  </CrudComponent>
+    route="wf/workflows"
+    title="Workflows"
+    :fields="fields"
+    :headers="headers"
+    data-testid="workflow-crud"
+  />
 </template>
 
 <script setup>

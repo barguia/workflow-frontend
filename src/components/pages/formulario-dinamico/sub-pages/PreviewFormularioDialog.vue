@@ -1,30 +1,54 @@
 <template>
-  <DialogComponent v-model="dialog" max-width="1400" scrollable>
+  <DialogComponent
+    v-model="dialog"
+    max-width="1400"
+    scrollable
+  >
     <CardComponent>
       <CardTitleComponent class="d-flex align-center justify-space-between pa-4">
         <span class="text-h6">{{ titulo }}</span>
-        <ButtonComponent icon="mdi-close" variant="text" size="small" data-testid="preview-fechar-topo" @click="dialog = false" />
+        <ButtonComponent
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          data-testid="preview-fechar-topo"
+          @click="dialog = false"
+        />
       </CardTitleComponent>
 
       <DividerComponent />
 
       <CardTextComponent class="pa-4">
-        <ProgressLinearComponent v-if="loading" indeterminate color="primary" class="mb-4" />
+        <ProgressLinearComponent
+          v-if="loading"
+          indeterminate
+          color="primary"
+          class="mb-4"
+        />
 
-        <AlerComponent v-else-if="erro" type="error" variant="tonal" class="mb-4">
+        <AlerComponent
+          v-else-if="erro"
+          type="error"
+          variant="tonal"
+          class="mb-4"
+        >
           Não foi possível carregar os campos do formulário.
         </AlerComponent>
 
-        <AlerComponent v-else-if="!loading && campos.length === 0" type="info" variant="tonal">
+        <AlerComponent
+          v-else-if="!loading && campos.length === 0"
+          type="info"
+          variant="tonal"
+        >
           Este formulário não possui campos associados.
         </AlerComponent>
 
         <FormularioDinamico
-            v-else
-            ref="formRef"
-            :fields="fields"
-            v-model="form"
-            :validation-errors="{}"
+          v-else
+          ref="formRef"
+          v-model="form"
+          :fields="fields"
+          :validation-errors="{}"
         />
       </CardTextComponent>
 
@@ -32,8 +56,21 @@
 
       <CardActionsComponent class="pa-3">
         <SpacerComponent />
-        <ButtonComponent variant="text" data-testid="preview-fechar" @click="dialog = false">Fechar</ButtonComponent>
-        <ButtonComponent v-if="campos.length" color="primary" data-testid="preview-validar" @click="validar">Validar</ButtonComponent>
+        <ButtonComponent
+          variant="text"
+          data-testid="preview-fechar"
+          @click="dialog = false"
+        >
+          Fechar
+        </ButtonComponent>
+        <ButtonComponent
+          v-if="campos.length"
+          color="primary"
+          data-testid="preview-validar"
+          @click="validar"
+        >
+          Validar
+        </ButtonComponent>
       </CardActionsComponent>
     </CardComponent>
   </DialogComponent>

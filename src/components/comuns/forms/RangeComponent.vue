@@ -1,24 +1,24 @@
 <template>
   <v-slider
-      v-bind="$attrs"
-      v-model="modelValue"
-      :label="label"
-      :min="min"
-      :max="max"
-      :step="step"
-      :rules="rules"
-      :required="required"
-      :thumb-label="thumbLabel"
-      :show-ticks="showTicks"
-      thumb-size="20"
-      class="mt-2"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :label="label"
+    :min="min"
+    :max="max"
+    :step="step"
+    :rules="rules"
+    :required="required"
+    :thumb-label="thumbLabel"
+    :show-ticks="showTicks"
+    thumb-size="20"
+    class="mt-2"
   />
 </template>
 
 <script setup>
 defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
   min: { type: Number, default: 0 },
   max: { type: Number, default: 100 },
@@ -27,5 +27,5 @@ defineProps({
   showTicks: { type: [Boolean, String], default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: Number })
 </script>

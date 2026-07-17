@@ -1,26 +1,26 @@
 <template>
   <v-data-table-server
-      v-bind="$attrs"
-      v-model="localSelected"
-      :headers="effectiveHeaders"
-      :items="localItems"
-      :items-length="totalItems"
-      :items-per-page="itemsPerPage"
-      :page="page"
-      :items-per-page-options="[
-        { value: 50, title: '50' },
-        { value: 100, title: '100' },
-        { value: 200, title: '200' },
-        { value: 500, title: '500' },
-        { value: -1, title: 'Todos' },
-      ]"
-      :show-select="showSelect"
-      class="elevation-0 rounded-lg"
-      item-key="id"
-      hover
-      @update:options="handleOptionsUpdate"
+    v-bind="$attrs"
+    v-model="localSelected"
+    :headers="effectiveHeaders"
+    :items="localItems"
+    :items-length="totalItems"
+    :items-per-page="itemsPerPage"
+    :page="page"
+    :items-per-page-options="[
+      { value: 50, title: '50' },
+      { value: 100, title: '100' },
+      { value: 200, title: '200' },
+      { value: 500, title: '500' },
+      { value: -1, title: 'Todos' },
+    ]"
+    :show-select="showSelect"
+    class="elevation-0 rounded-lg"
+    item-key="id"
+    hover
+    @update:options="handleOptionsUpdate"
   >
-    <template v-slot:top>
+    <template #top>
       <div class="table-toolbar pa-4 d-flex align-center ga-3">
         <span class="text-subtitle-1 font-weight-semibold">{{ title }}</span>
         <SpacerComponent />
@@ -46,29 +46,59 @@
         />
       </div>
     </template>
-    <template v-slot:item.preview="{ item }">
-      <slot name="preview" :item="item" />
+    <template #item.preview="{ item }">
+      <slot
+        name="preview"
+        :item="item"
+      />
     </template>
-    <template v-slot:item.actions="{ item }">
-      <slot name="actions" :item="item">
-        <ButtonComponent icon="mdi-pencil" variant="text" size="small" color="primary" @click="$emit('edit', item)" />
+    <template #item.actions="{ item }">
+      <slot
+        name="actions"
+        :item="item"
+      >
+        <ButtonComponent
+          icon="mdi-pencil"
+          variant="text"
+          size="small"
+          color="primary"
+          @click="$emit('edit', item)"
+        />
       </slot>
     </template>
   </v-data-table-server>
 
   <!-- Seletor de colunas -->
-  <v-dialog v-model="columnDialog" max-width="520" scrollable @before-leave="() => document.activeElement?.blur()">
+  <v-dialog
+    v-model="columnDialog"
+    max-width="520"
+    scrollable
+    @before-leave="() => document.activeElement?.blur()"
+  >
     <v-card rounded="lg">
       <v-card-title class="d-flex align-center py-3 px-4">
-        <v-icon start size="18" color="primary">mdi-table-column</v-icon>
+        <v-icon
+          start
+          size="18"
+          color="primary"
+        >
+          mdi-table-column
+        </v-icon>
         <span class="text-subtitle-1 font-weight-semibold">Gerenciar colunas</span>
         <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="columnDialog = false" />
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="columnDialog = false"
+        />
       </v-card-title>
       <v-divider />
 
-      <v-card-text class="pa-4" style="max-height: 520px; overflow-y: auto">
-
+      <v-card-text
+        class="pa-4"
+        style="max-height: 520px; overflow-y: auto"
+      >
         <!-- Visíveis -->
         <div class="text-caption font-weight-bold text-uppercase mb-2 text-medium-emphasis">
           Visíveis ({{ visibleCols.length }})
@@ -77,19 +107,21 @@
           v-for="(col, i) in visibleCols"
           :key="col.key"
           :draggable="dragIdx === i"
+          :class="['col-row d-flex align-center ga-2 px-2 py-1 rounded mb-1', { 'drag-over': dragOverIdx === i }]"
           @dragstart="onDragStart(i)"
           @dragover.prevent="onDragOver(i)"
           @dragleave="dragOverIdx = null"
           @drop.prevent="onDrop(i)"
           @dragend="dragIdx = null; dragOverIdx = null"
-          :class="['col-row d-flex align-center ga-2 px-2 py-1 rounded mb-1', { 'drag-over': dragOverIdx === i }]"
         >
           <v-icon
             size="18"
             class="drag-handle"
             @mousedown="dragIdx = i"
             @mouseup="dragIdx = null"
-          >mdi-drag-vertical</v-icon>
+          >
+            mdi-drag-vertical
+          </v-icon>
           <span class="flex-grow-1 text-body-2">{{ formatColumnTitle(col.key) }}</span>
           <v-btn
             icon="mdi-eye-off-outline"
@@ -102,7 +134,10 @@
           />
         </div>
 
-        <v-divider v-if="hiddenCols.length > 0" class="my-4" />
+        <v-divider
+          v-if="hiddenCols.length > 0"
+          class="my-4"
+        />
 
         <!-- Ocultas -->
         <div v-if="hiddenCols.length > 0">
@@ -114,7 +149,13 @@
             :key="col.key"
             class="col-row d-flex align-center ga-2 px-2 py-1 rounded mb-1"
           >
-            <v-icon size="16" color="on-surface" style="opacity:.35">mdi-drag-vertical</v-icon>
+            <v-icon
+              size="16"
+              color="on-surface"
+              style="opacity:.35"
+            >
+              mdi-drag-vertical
+            </v-icon>
             <span class="flex-grow-1 text-body-2 text-medium-emphasis">{{ formatColumnTitle(col.key) }}</span>
             <v-btn
               icon="mdi-eye-outline"
@@ -127,16 +168,38 @@
             />
           </div>
         </div>
-
       </v-card-text>
 
       <v-divider />
       <v-card-actions class="pa-3 ga-2">
-        <v-btn variant="text" size="small" @click="showAll">Todas</v-btn>
-        <v-btn variant="text" size="small" @click="hideAll">Nenhuma</v-btn>
+        <v-btn
+          variant="text"
+          size="small"
+          @click="showAll"
+        >
+          Todas
+        </v-btn>
+        <v-btn
+          variant="text"
+          size="small"
+          @click="hideAll"
+        >
+          Nenhuma
+        </v-btn>
         <v-spacer />
-        <v-btn variant="text" @click="columnDialog = false">Cancelar</v-btn>
-        <v-btn color="primary" variant="flat" @click="applyColumns">Aplicar</v-btn>
+        <v-btn
+          variant="text"
+          @click="columnDialog = false"
+        >
+          Cancelar
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="flat"
+          @click="applyColumns"
+        >
+          Aplicar
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -1,14 +1,26 @@
 <template>
-  <AppBarComponent app elevation="1">
+  <AppBarComponent
+    app
+    elevation="1"
+  >
     <AppBarNavIconComponent
       v-if="authStore.isAuthenticated"
-      @click="drawer = !drawer"
       data-testid="menu-toggle"
+      @click="drawer = !drawer"
     />
 
     <ToolbarTitleComponent>
-      <router-link to="/" class="nav-link brand-title">
-        <IconComponent color="primary" size="22" class="mr-1">mdi-circle-multiple-outline</IconComponent>
+      <router-link
+        to="/"
+        class="nav-link brand-title"
+      >
+        <IconComponent
+          color="primary"
+          size="22"
+          class="mr-1"
+        >
+          mdi-circle-multiple-outline
+        </IconComponent>
         Workflow
       </router-link>
     </ToolbarTitleComponent>
@@ -17,20 +29,46 @@
 
     <ThemeSwitcherComponent />
 
-    <DividerComponent vertical inset class="mx-1" style="height: 24px; align-self: center;" />
+    <DividerComponent
+      vertical
+      inset
+      class="mx-1"
+      style="height: 24px; align-self: center;"
+    />
 
     <!-- Menu de Perfil -->
-    <MenuComponent location="bottom end" :close-on-content-click="true">
+    <MenuComponent
+      location="bottom end"
+      :close-on-content-click="true"
+    >
       <template #activator="{ props }">
-        <ButtonComponent v-bind="props" icon variant="text" size="small">
-          <AvatarComponent color="primary" size="34">
-            <IconComponent size="18">mdi-account</IconComponent>
+        <ButtonComponent
+          v-bind="props"
+          icon
+          variant="text"
+          size="small"
+        >
+          <AvatarComponent
+            color="primary"
+            size="34"
+          >
+            <IconComponent size="18">
+              mdi-account
+            </IconComponent>
           </AvatarComponent>
         </ButtonComponent>
       </template>
 
-      <CardComponent min-width="200" rounded="lg" elevation="4">
-        <v-list density="compact" nav class="pa-2">
+      <CardComponent
+        min-width="200"
+        rounded="lg"
+        elevation="4"
+      >
+        <v-list
+          density="compact"
+          nav
+          class="pa-2"
+        >
           <v-list-subheader class="text-caption font-weight-bold text-uppercase px-2 mb-1">
             Conta
           </v-list-subheader>
@@ -65,13 +103,23 @@
   >
     <!-- Cabeçalho do drawer -->
     <div class="drawer-header pa-4 d-flex align-center gap-2">
-      <IconComponent color="primary" size="26">mdi-circle-multiple-outline</IconComponent>
+      <IconComponent
+        color="primary"
+        size="26"
+      >
+        mdi-circle-multiple-outline
+      </IconComponent>
       <span class="text-subtitle-1 font-weight-bold">Workflow</span>
     </div>
 
     <DividerComponent />
 
-    <ListComponent v-model:opened="opened" nav density="compact" class="pa-2">
+    <ListComponent
+      v-model:opened="opened"
+      nav
+      density="compact"
+      class="pa-2"
+    >
       <MenuNodeComponent
         v-for="item in authStore.getMenus"
         :key="item.id"

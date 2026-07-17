@@ -1,13 +1,18 @@
 <template>
   <div class="gestao-overview">
-    <ContainerComponent fluid class="py-8 py-md-12">
+    <ContainerComponent
+      fluid
+      class="py-8 py-md-12"
+    >
       <div class="max-width-container">
-
         <div class="mb-10">
           <h1 class="text-h4 font-weight-medium text-center">
             Central de Gestão de Projetos
           </h1>
-          <p class="text-body-1 mt-4 text-center text-medium-emphasis" style="max-width: 840px; margin: 0 auto;">
+          <p
+            class="text-body-1 mt-4 text-center text-medium-emphasis"
+            style="max-width: 840px; margin: 0 auto;"
+          >
             Área centralizada para acompanhamento e governança dos projetos em andamento.
             Gerencie workflows, processos, tarefas e acompanhe indicadores em tempo real.
           </p>
@@ -17,7 +22,9 @@
           <ColComponent
             v-for="modulo in modulos"
             :key="modulo.titulo"
-            cols="12" md="6" lg="4"
+            cols="12"
+            md="6"
+            lg="4"
           >
             <div
               class="modulo-card pa-6"
@@ -25,11 +32,19 @@
               @click="modulo.hash ? navegar(modulo.hash) : undefined"
             >
               <div class="d-flex align-start ga-4">
-                <IconComponent :color="modulo.cor" size="36" class="mt-1">{{ modulo.icone }}</IconComponent>
+                <IconComponent
+                  :color="modulo.cor"
+                  size="36"
+                  class="mt-1"
+                >
+                  {{ modulo.icone }}
+                </IconComponent>
 
                 <div class="flex-grow-1">
                   <div class="d-flex align-center justify-space-between mb-2">
-                    <h3 class="text-h6 font-weight-medium">{{ modulo.titulo }}</h3>
+                    <h3 class="text-h6 font-weight-medium">
+                      {{ modulo.titulo }}
+                    </h3>
                     <IconComponent
                       v-if="modulo.hash"
                       size="18"
@@ -39,7 +54,12 @@
                       mdi-arrow-right
                     </IconComponent>
                   </div>
-                  <p class="text-body-2 mb-0" style="line-height: 1.6;">{{ modulo.descricao }}</p>
+                  <p
+                    class="text-body-2 mb-0"
+                    style="line-height: 1.6;"
+                  >
+                    {{ modulo.descricao }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -57,10 +77,11 @@
           icon="mdi-information-outline"
         >
           <strong>Dica:</strong> Use a aba <strong>Pesquisa</strong> para filtrar registros por projeto,
-          processo, tarefa ou status. Clique no ícone <IconComponent size="16">mdi-eye-outline</IconComponent>
+          processo, tarefa ou status. Clique no ícone <IconComponent size="16">
+            mdi-eye-outline
+          </IconComponent>
           em qualquer linha para abrir a Ficha Técnica do projeto.
         </AlertComponent>
-
       </div>
     </ContainerComponent>
   </div>

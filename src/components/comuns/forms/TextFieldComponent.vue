@@ -1,5 +1,9 @@
 <template>
-  <v-text-field ref="fieldRef" autocomplete="off" v-bind="attrsWithoutMask" />
+  <v-text-field
+    ref="fieldRef"
+    autocomplete="off"
+    v-bind="attrsWithoutMask"
+  />
 </template>
 
 <script setup>
@@ -13,7 +17,8 @@ const fieldRef = ref(null)
 let maskInstance = null
 
 const attrsWithoutMask = computed(() => {
-  const { mask, ...rest } = attrs
+  const rest = { ...attrs }
+  delete rest.mask
   return rest
 })
 

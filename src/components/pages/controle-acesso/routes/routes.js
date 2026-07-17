@@ -1,4 +1,3 @@
-import RolePage from "@/components/pages/controle-acesso/sub-pages/RolePage.vue";
 import LoginPage from "@/components/pages/controle-acesso/LoginPage.vue";
 import ForgotPasswordPage from "@/components/pages/controle-acesso/ForgotPasswordPage.vue";
 import ResetPasswordPage from "@/components/pages/controle-acesso/ResetPasswordPage.vue";

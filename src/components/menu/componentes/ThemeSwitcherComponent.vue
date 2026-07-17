@@ -1,13 +1,32 @@
 <template>
-  <MenuComponent location="bottom end" :close-on-content-click="true">
+  <MenuComponent
+    location="bottom end"
+    :close-on-content-click="true"
+  >
     <template #activator="{ props }">
-      <ButtonComponent v-bind="props" icon variant="text" size="small" :title="activeTheme?.label">
-        <IconComponent size="22">{{ activeTheme?.icon }}</IconComponent>
+      <ButtonComponent
+        v-bind="props"
+        icon
+        variant="text"
+        size="small"
+        :title="activeTheme?.label"
+      >
+        <IconComponent size="22">
+          {{ activeTheme?.icon }}
+        </IconComponent>
       </ButtonComponent>
     </template>
 
-    <CardComponent min-width="180" elevation="4" rounded="lg">
-      <v-list density="compact" nav class="pa-2">
+    <CardComponent
+      min-width="180"
+      elevation="4"
+      rounded="lg"
+    >
+      <v-list
+        density="compact"
+        nav
+        class="pa-2"
+      >
         <v-list-subheader class="text-caption font-weight-bold text-uppercase px-2 mb-1">
           Aparência
         </v-list-subheader>
@@ -31,7 +50,11 @@
             {{ tema.label }}
           </v-list-item-title>
           <template #append>
-            <IconComponent v-if="themeStore.currentTheme === tema.key" size="16" color="primary">
+            <IconComponent
+              v-if="themeStore.currentTheme === tema.key"
+              size="16"
+              color="primary"
+            >
               mdi-check
             </IconComponent>
           </template>

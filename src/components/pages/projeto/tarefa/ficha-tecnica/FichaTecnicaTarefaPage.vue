@@ -1,29 +1,61 @@
 <template>
   <!-- 404 -->
-  <ContainerComponent v-if="naoEncontrado" class="fill-height d-flex align-center justify-center text-center" fluid>
+  <ContainerComponent
+    v-if="naoEncontrado"
+    class="fill-height d-flex align-center justify-center text-center"
+    fluid
+  >
     <div>
-      <IconComponent size="72" color="error">mdi-file-alert-outline</IconComponent>
-      <div class="text-h5 font-weight-bold mt-4">Registro não encontrado</div>
+      <IconComponent
+        size="72"
+        color="error"
+      >
+        mdi-file-alert-outline
+      </IconComponent>
+      <div class="text-h5 font-weight-bold mt-4">
+        Registro não encontrado
+      </div>
       <p class="text-body-1 mt-2 text-medium-emphasis">
         A tarefa com ID <strong>#{{ route.params.id }}</strong> não existe ou foi removida.
       </p>
-      <ButtonComponent class="mt-6" color="primary" @click="router.back()" data-testid="ficha-tarefa-btn-voltar-404">
-        <IconComponent start>mdi-arrow-left</IconComponent>
+      <ButtonComponent
+        class="mt-6"
+        color="primary"
+        data-testid="ficha-tarefa-btn-voltar-404"
+        @click="router.back()"
+      >
+        <IconComponent start>
+          mdi-arrow-left
+        </IconComponent>
         Voltar
       </ButtonComponent>
     </div>
   </ContainerComponent>
 
   <!-- Carregando -->
-  <ContainerComponent v-else-if="carregando" class="fill-height d-flex align-center justify-center" fluid>
-    <ProgressCircularComponent indeterminate color="primary" size="48" />
+  <ContainerComponent
+    v-else-if="carregando"
+    class="fill-height d-flex align-center justify-center"
+    fluid
+  >
+    <ProgressCircularComponent
+      indeterminate
+      color="primary"
+      size="48"
+    />
   </ContainerComponent>
 
   <!-- Conteúdo -->
-  <ContainerComponent v-else-if="tarefa" fluid class="py-4">
-
+  <ContainerComponent
+    v-else-if="tarefa"
+    fluid
+    class="py-4"
+  >
     <!-- Cabeçalho -->
-    <FtCabecalho :tarefa="tarefa" @voltar="router.back()">
+    <FtCabecalho
+      :tarefa="tarefa"
+      @voltar="router.back()"
+    >
       <template #acoes>
         <FtAcoesTarefa
           :tarefa="tarefa"
@@ -35,11 +67,20 @@
     </FtCabecalho>
 
     <!-- Body 1: Dados complementares do projeto + Body 2: Detalhes da tarefa -->
-    <RowComponent dense class="mb-6">
-      <ColComponent cols="12" md="6">
+    <RowComponent
+      dense
+      class="mb-6"
+    >
+      <ColComponent
+        cols="12"
+        md="6"
+      >
         <FtDadosProjeto :tarefa="tarefa" />
       </ColComponent>
-      <ColComponent cols="12" md="6">
+      <ColComponent
+        cols="12"
+        md="6"
+      >
         <FtDetalhesTarefa :tarefa="tarefa" />
       </ColComponent>
     </RowComponent>
@@ -55,13 +96,22 @@
     <div class="mt-6">
       <FtTarefasAbertas :tarefa="tarefa" />
     </div>
-
   </ContainerComponent>
 
-  <SnackbarComponent v-model="snackbar.show" :color="snackbar.color" timeout="4000" location="top">
+  <SnackbarComponent
+    v-model="snackbar.show"
+    :color="snackbar.color"
+    timeout="4000"
+    location="top"
+  >
     {{ snackbar.message }}
     <template #actions>
-      <ButtonComponent variant="text" color="white" size="small" @click="snackbar.show = false">
+      <ButtonComponent
+        variant="text"
+        color="white"
+        size="small"
+        @click="snackbar.show = false"
+      >
         Fechar
       </ButtonComponent>
     </template>

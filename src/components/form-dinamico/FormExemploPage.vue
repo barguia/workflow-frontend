@@ -1,20 +1,35 @@
 <template>
   <ContainerComponent>
-    <CardComponent max-width="1000" class="mx-auto">
-      <CardTitleComponent class="text-h5">Formulário Dinâmico Completo</CardTitleComponent>
+    <CardComponent
+      max-width="1000"
+      class="mx-auto"
+    >
+      <CardTitleComponent class="text-h5">
+        Formulário Dinâmico Completo
+      </CardTitleComponent>
       <CardTextComponent>
         <FormularioDinamico
-            :fields="fields"
-            v-model="form"
-            :validation-errors="{}"
-            ref="formulario"
-            @field-change="onChange"
+          ref="formulario"
+          v-model="form"
+          :fields="fields"
+          :validation-errors="{}"
+          @field-change="onChange"
         />
       </CardTextComponent>
       <CardActionsComponent>
         <SpacerComponent />
-        <ButtonComponent color="error" @click="resetar">Resetar</ButtonComponent>
-        <ButtonComponent color="primary" @click="salvar">Salvar</ButtonComponent>
+        <ButtonComponent
+          color="error"
+          @click="resetar"
+        >
+          Resetar
+        </ButtonComponent>
+        <ButtonComponent
+          color="primary"
+          @click="salvar"
+        >
+          Salvar
+        </ButtonComponent>
       </CardActionsComponent>
     </CardComponent>
 

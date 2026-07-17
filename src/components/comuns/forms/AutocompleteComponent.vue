@@ -1,17 +1,17 @@
 <template>
   <v-autocomplete
-      v-bind="$attrs"
-      v-model="modelValue"
-      :items="sortedItems"
-      :label="label"
-      :rules="rules"
-      :multiple="multiple"
-      :required="required"
-      :clearable="clearable"
-      :no-filter="noFilter"
-      item-title="text"
-      item-value="value"
-      :return-object="false"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :items="sortedItems"
+    :label="label"
+    :rules="rules"
+    :multiple="multiple"
+    :required="required"
+    :clearable="clearable"
+    :no-filter="noFilter"
+    item-title="text"
+    item-value="value"
+    :return-object="false"
   />
 </template>
 
@@ -19,9 +19,9 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  label: String,
-  items: Array,
-  rules: Array,
+  label: { type: String, default: '' },
+  items: { type: Array, default: () => [] },
+  rules: { type: Array, default: () => [] },
   multiple: Boolean,
   required: Boolean,
   clearable: { type: Boolean, default: true },
@@ -29,7 +29,7 @@ const props = defineProps({
   sorted: { type: Boolean, default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: null })
 
 const sortedItems = computed(() => {
   if (!props.sorted || !props.items) return props.items

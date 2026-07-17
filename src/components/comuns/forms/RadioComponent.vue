@@ -1,18 +1,18 @@
 <template>
   <v-radio-group
-      v-bind="$attrs"
-      v-model="modelValue"
-      :label="label"
-      :rules="rules"
-      :inline="inline"
-      :required="required"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :label="label"
+    :rules="rules"
+    :inline="inline"
+    :required="required"
   >
     <v-radio
-        v-for="item in sortedItems"
-        :key="item.value"
-        :label="item.text"
-        :value="item.value"
-        @click="!required && modelValue === item.value && (modelValue = null)"
+      v-for="item in sortedItems"
+      :key="item.value"
+      :label="item.text"
+      :value="item.value"
+      @click="!required && modelValue === item.value && (modelValue = null)"
     />
   </v-radio-group>
 </template>
@@ -22,15 +22,15 @@ import { computed } from 'vue'
 
 // @update:modelValue="$emit('update:modelValue', $event)" Chamada duplicada
 const props = defineProps({
-  label: String,
-  items: Array,
-  rules: Array,
+  label: { type: String, default: '' },
+  items: { type: Array, default: () => [] },
+  rules: { type: Array, default: () => [] },
   inline: Boolean,
   required: Boolean,
   sorted: { type: Boolean, default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: null })
 
 const sortedItems = computed(() => {
   if (!props.sorted || !props.items) return props.items

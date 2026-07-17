@@ -1,108 +1,181 @@
 <template>
   <CrudComponent
-      route="wf/forms/campos"
-      title="Campos Formulário dinâmico"
-      must-sort
-      :fields="fields"
-      :headers="headers"
-      :show-select="false"
-      data-testid="campo-crud"
+    route="wf/forms/campos"
+    title="Campos Formulário dinâmico"
+    must-sort
+    :fields="fields"
+    :headers="headers"
+    :show-select="false"
+    data-testid="campo-crud"
   >
     <template #actionsField="{ item }">
       <ButtonComponent
-          v-if="tiposSelecionais.includes(item.tipo) && item.opcoes_por_uri === 0"
-          icon="mdi-format-list-bulleted"
-          variant="text"
-          size="small"
-          color="secondary"
-          title="Gerenciar opções"
-          data-testid="campo-btn-opcoes"
-          @click="openOpcoesDialog(item)"
+        v-if="tiposSelecionais.includes(item.tipo) && item.opcoes_por_uri === 0"
+        icon="mdi-format-list-bulleted"
+        variant="text"
+        size="small"
+        color="secondary"
+        title="Gerenciar opções"
+        data-testid="campo-btn-opcoes"
+        @click="openOpcoesDialog(item)"
       />
     </template>
   </CrudComponent>
 
   <!-- Dialog de gerenciamento de opções -->
-  <v-dialog v-model="opcoesDialog" max-width="820px" scrollable @keydown.esc="opcoesDialog = false" @before-leave="() => document.activeElement?.blur()">
+  <v-dialog
+    v-model="opcoesDialog"
+    max-width="820px"
+    scrollable
+    @keydown.esc="opcoesDialog = false"
+    @before-leave="() => document.activeElement?.blur()"
+  >
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <IconComponent color="secondary" size="22">mdi-format-list-bulleted</IconComponent>
+        <IconComponent
+          color="secondary"
+          size="22"
+        >
+          mdi-format-list-bulleted
+        </IconComponent>
         <span class="text-h6">Opções — {{ campoAtivo?.label }}</span>
         <v-spacer />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="opcoesDialog = false" />
+        <ButtonComponent
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="opcoesDialog = false"
+        />
       </CardTitleComponent>
 
-      <CardTextComponent class="pa-0" style="max-height: 520px; overflow-y: auto">
+      <CardTextComponent
+        class="pa-0"
+        style="max-height: 520px; overflow-y: auto"
+      >
         <!-- Lista de opções -->
-        <v-table density="compact" class="opcoes-table">
+        <v-table
+          density="compact"
+          class="opcoes-table"
+        >
           <thead>
             <tr>
-              <th class="text-left">Opção</th>
-              <th style="width:120px">Valor</th>
-              <th style="width:80px">Ordem</th>
-              <th style="width:140px">Filtro</th>
+              <th class="text-left">
+                Opção
+              </th>
+              <th style="width:120px">
+                Valor
+              </th>
+              <th style="width:80px">
+                Ordem
+              </th>
+              <th style="width:140px">
+                Filtro
+              </th>
               <th style="width:84px" />
             </tr>
           </thead>
           <tbody>
             <tr v-if="opcoes.length === 0">
-              <td colspan="5" class="text-center text-medium-emphasis text-body-2 py-6">
+              <td
+                colspan="5"
+                class="text-center text-medium-emphasis text-body-2 py-6"
+              >
                 Nenhuma opção cadastrada.
               </td>
             </tr>
-            <tr v-for="opcao in opcoes" :key="opcao.id">
+            <tr
+              v-for="opcao in opcoes"
+              :key="opcao.id"
+            >
               <template v-if="editandoId === opcao.id">
                 <td>
                   <TextFieldComponent
-                      v-model="editForm.opcao"
-                      variant="plain"
-                      density="compact"
-                      :error-messages="validationErrors.opcao"
-                      hide-details="auto"
-                      @input="clearErrors"
+                    v-model="editForm.opcao"
+                    variant="plain"
+                    density="compact"
+                    :error-messages="validationErrors.opcao"
+                    hide-details="auto"
+                    @input="clearErrors"
                   />
                 </td>
                 <td>
                   <TextFieldComponent
-                      v-model="editForm.valor"
-                      variant="plain"
-                      density="compact"
-                      :error-messages="validationErrors.valor"
-                      hide-details="auto"
-                      @input="clearErrors"
+                    v-model="editForm.valor"
+                    variant="plain"
+                    density="compact"
+                    :error-messages="validationErrors.valor"
+                    hide-details="auto"
+                    @input="clearErrors"
                   />
                 </td>
                 <td>
                   <TextFieldComponent
-                      v-model.number="editForm.ordem"
-                      variant="plain"
-                      density="compact"
-                      hide-details
-                      type="number"
-                      min="0"
+                    v-model.number="editForm.ordem"
+                    variant="plain"
+                    density="compact"
+                    hide-details
+                    type="number"
+                    min="0"
                   />
                 </td>
                 <td>
                   <TextFieldComponent
-                      v-model="editForm.filtro"
-                      variant="plain"
-                      density="compact"
-                      hide-details
+                    v-model="editForm.filtro"
+                    variant="plain"
+                    density="compact"
+                    hide-details
                   />
                 </td>
                 <td>
-                  <ButtonComponent icon="mdi-check" variant="text" size="small" color="success" @click="salvarEdicao(opcao)" />
-                  <ButtonComponent icon="mdi-close" variant="text" size="small" @click="cancelarEdicao" />
+                  <ButtonComponent
+                    icon="mdi-check"
+                    variant="text"
+                    size="small"
+                    color="success"
+                    @click="salvarEdicao(opcao)"
+                  />
+                  <ButtonComponent
+                    icon="mdi-close"
+                    variant="text"
+                    size="small"
+                    @click="cancelarEdicao"
+                  />
                 </td>
               </template>
               <template v-else>
-                <td class="text-body-2">{{ opcao.opcao }}</td>
-                <td><v-chip size="x-small" variant="tonal" color="secondary">{{ opcao.valor }}</v-chip></td>
-                <td class="text-body-2">{{ opcao.ordem }}</td>
-                <td class="text-body-2 text-medium-emphasis">{{ opcao.filtro || '—' }}</td>
+                <td class="text-body-2">
+                  {{ opcao.opcao }}
+                </td>
+                <td>
+                  <v-chip
+                    size="x-small"
+                    variant="tonal"
+                    color="secondary"
+                  >
+                    {{ opcao.valor }}
+                  </v-chip>
+                </td>
+                <td class="text-body-2">
+                  {{ opcao.ordem }}
+                </td>
+                <td class="text-body-2 text-medium-emphasis">
+                  {{ opcao.filtro || '—' }}
+                </td>
                 <td class="text-no-wrap">
-                  <ButtonComponent icon="mdi-pencil" variant="text" size="small" color="primary" @click="iniciarEdicao(opcao)" />
-                  <ButtonComponent icon="mdi-delete" variant="text" size="small" color="error" @click="removerOpcao(opcao)" />
+                  <ButtonComponent
+                    icon="mdi-pencil"
+                    variant="text"
+                    size="small"
+                    color="primary"
+                    @click="iniciarEdicao(opcao)"
+                  />
+                  <ButtonComponent
+                    icon="mdi-delete"
+                    variant="text"
+                    size="small"
+                    color="error"
+                    @click="removerOpcao(opcao)"
+                  />
                 </td>
               </template>
             </tr>
@@ -111,57 +184,57 @@
             <tr class="add-row">
               <td>
                 <TextFieldComponent
-                    v-model="novaOpcao.opcao"
-                    placeholder="Nova opção"
-                    variant="plain"
-                    density="compact"
-                    :error-messages="validationErrors.opcao"
-                    hide-details="auto"
-                    @keydown.enter="adicionarOpcao"
-                    @input="clearErrors"
+                  v-model="novaOpcao.opcao"
+                  placeholder="Nova opção"
+                  variant="plain"
+                  density="compact"
+                  :error-messages="validationErrors.opcao"
+                  hide-details="auto"
+                  @keydown.enter="adicionarOpcao"
+                  @input="clearErrors"
                 />
               </td>
               <td>
                 <TextFieldComponent
-                    v-model="novaOpcao.valor"
-                    placeholder="Valor"
-                    variant="plain"
-                    density="compact"
-                    :error-messages="validationErrors.valor"
-                    hide-details="auto"
-                    @keydown.enter="adicionarOpcao"
-                    @input="clearErrors"
+                  v-model="novaOpcao.valor"
+                  placeholder="Valor"
+                  variant="plain"
+                  density="compact"
+                  :error-messages="validationErrors.valor"
+                  hide-details="auto"
+                  @keydown.enter="adicionarOpcao"
+                  @input="clearErrors"
                 />
               </td>
               <td>
                 <TextFieldComponent
-                    v-model.number="novaOpcao.ordem"
-                    variant="plain"
-                    density="compact"
-                    hide-details
-                    type="number"
-                    min="0"
-                    @keydown.enter="adicionarOpcao"
+                  v-model.number="novaOpcao.ordem"
+                  variant="plain"
+                  density="compact"
+                  hide-details
+                  type="number"
+                  min="0"
+                  @keydown.enter="adicionarOpcao"
                 />
               </td>
               <td>
                 <TextFieldComponent
-                    v-model="novaOpcao.filtro"
-                    placeholder="Filtro"
-                    variant="plain"
-                    density="compact"
-                    hide-details
-                    @keydown.enter="adicionarOpcao"
+                  v-model="novaOpcao.filtro"
+                  placeholder="Filtro"
+                  variant="plain"
+                  density="compact"
+                  hide-details
+                  @keydown.enter="adicionarOpcao"
                 />
               </td>
               <td>
                 <ButtonComponent
-                    icon="mdi-plus"
-                    variant="flat"
-                    color="primary"
-                    size="small"
-                    :disabled="!novaOpcao.opcao || !novaOpcao.valor"
-                    @click="adicionarOpcao"
+                  icon="mdi-plus"
+                  variant="flat"
+                  color="primary"
+                  size="small"
+                  :disabled="!novaOpcao.opcao || !novaOpcao.valor"
+                  @click="adicionarOpcao"
                 />
               </td>
             </tr>
@@ -171,7 +244,11 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <v-spacer />
-        <ButtonComponent variant="flat" color="primary" @click="opcoesDialog = false">
+        <ButtonComponent
+          variant="flat"
+          color="primary"
+          @click="opcoesDialog = false"
+        >
           Fechar
         </ButtonComponent>
       </CardActionsComponent>

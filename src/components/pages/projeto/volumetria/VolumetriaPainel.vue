@@ -1,30 +1,63 @@
 <template>
-  <ContainerComponent fluid class="py-4">
+  <ContainerComponent
+    fluid
+    class="py-4"
+  >
     <div class="d-flex align-center mb-4 gap-2">
       <span class="text-caption text-medium-emphasis font-weight-medium">Exibir:</span>
-      <v-btn-toggle v-model="statusFiltro" mandatory density="compact" rounded="lg" color="primary" data-testid="volumetria-toggle-status">
-        <ButtonComponent value="aberto" size="small" data-testid="volumetria-btn-filtro-aberto">Aberto</ButtonComponent>
-        <ButtonComponent value="finalizado" size="small" data-testid="volumetria-btn-filtro-finalizado">Finalizado</ButtonComponent>
-        <ButtonComponent value="todos" size="small" data-testid="volumetria-btn-filtro-todos">Todos</ButtonComponent>
+      <v-btn-toggle
+        v-model="statusFiltro"
+        mandatory
+        density="compact"
+        rounded="lg"
+        color="primary"
+        data-testid="volumetria-toggle-status"
+      >
+        <ButtonComponent
+          value="aberto"
+          size="small"
+          data-testid="volumetria-btn-filtro-aberto"
+        >
+          Aberto
+        </ButtonComponent>
+        <ButtonComponent
+          value="finalizado"
+          size="small"
+          data-testid="volumetria-btn-filtro-finalizado"
+        >
+          Finalizado
+        </ButtonComponent>
+        <ButtonComponent
+          value="todos"
+          size="small"
+          data-testid="volumetria-btn-filtro-todos"
+        >
+          Todos
+        </ButtonComponent>
       </v-btn-toggle>
     </div>
 
     <div class="row-one">
       <CardComponent
-          v-for="(item, idx) in cards"
-          :key="keyOf(item, idx)"
-          class="compact"
-          :class="{ 'card-clicavel': idx !== 0, 'card-selecionado': cardSelecionado?.id === item.id && idx !== 0 }"
-          rounded="xl"
-          variant="elevated"
-          @click="idx !== 0 ? selecionarCard(item) : null"
+        v-for="(item, idx) in cards"
+        :key="keyOf(item, idx)"
+        class="compact"
+        :class="{ 'card-clicavel': idx !== 0, 'card-selecionado': cardSelecionado?.id === item.id && idx !== 0 }"
+        rounded="xl"
+        variant="elevated"
+        @click="idx !== 0 ? selecionarCard(item) : null"
       >
         <CardTextComponent>
           <div class="header">
-            <div class="badge" :class="{ total: idx === 0 }">
+            <div
+              class="badge"
+              :class="{ total: idx === 0 }"
+            >
               {{ idx === 0 ? 'TOTAL' : `MP ${item.id}` }}
             </div>
-            <div class="pct">{{ porcentagemText(item) }}</div>
+            <div class="pct">
+              {{ porcentagemText(item) }}
+            </div>
           </div>
 
           <div class="name">
@@ -33,103 +66,145 @@
 
           <div class="grid">
             <div>
-              <div class="k">Quantidade</div>
-              <div class="v">{{ Number(item.quantidade ?? 0) }}</div>
+              <div class="k">
+                Quantidade
+              </div>
+              <div class="v">
+                {{ Number(item.quantidade ?? 0) }}
+              </div>
             </div>
 
             <div>
-              <div class="k">Registros</div>
-              <div class="v2">{{ statusFiltro }}</div>
+              <div class="k">
+                Registros
+              </div>
+              <div class="v2">
+                {{ statusFiltro }}
+              </div>
             </div>
           </div>
 
           <DividerComponent class="my-3" />
 
           <div class="d-flex align-center justify-space-between">
-            <div class="text-caption text-medium-emphasis">Progresso</div>
-            <div class="text-caption font-weight-bold">{{ porcentagemText(item) }}</div>
+            <div class="text-caption text-medium-emphasis">
+              Progresso
+            </div>
+            <div class="text-caption font-weight-bold">
+              {{ porcentagemText(item) }}
+            </div>
           </div>
 
           <ProgressLinearComponent
-              :model-value="porcentagem(item)"
-              height="8"
-              rounded
-              :color="idx === 0 ? 'primary' : (cardSelecionado?.id === item.id ? 'secondary' : 'secondary')"
+            :model-value="porcentagem(item)"
+            height="8"
+            rounded
+            :color="idx === 0 ? 'primary' : (cardSelecionado?.id === item.id ? 'secondary' : 'secondary')"
           />
         </CardTextComponent>
       </CardComponent>
     </div>
 
-    <div v-if="cardSelecionado" class="mt-6">
-      <CardComponent rounded="xl" variant="elevated">
+    <div
+      v-if="cardSelecionado"
+      class="mt-6"
+    >
+      <CardComponent
+        rounded="xl"
+        variant="elevated"
+      >
         <CardTextComponent>
           <div class="d-flex align-center justify-space-between mb-4">
             <div>
-              <div class="text-subtitle-1 font-weight-bold">{{ cardSelecionado.processo }}</div>
-              <div class="text-caption text-medium-emphasis">Expanda os processos para ver os sub-níveis e tarefas</div>
+              <div class="text-subtitle-1 font-weight-bold">
+                {{ cardSelecionado.processo }}
+              </div>
+              <div class="text-caption text-medium-emphasis">
+                Expanda os processos para ver os sub-níveis e tarefas
+              </div>
             </div>
             <ButtonComponent
-                icon="mdi-close"
-                variant="text"
-                size="small"
-                @click="cardSelecionado = null"
-                data-testid="volumetria-btn-fechar-painel"
+              icon="mdi-close"
+              variant="text"
+              size="small"
+              data-testid="volumetria-btn-fechar-painel"
+              @click="cardSelecionado = null"
             />
           </div>
 
           <v-data-table
-              :headers="headersDetalhe"
-              :items="detalheProcessos"
-              :loading="loadingDetalhe"
-              :items-per-page="10"
-              v-model:expanded="expandidos"
-              item-value="id"
-              class="elevation-0 rounded-lg tabela-drill"
-              hover
-              @click:row="clicarLinha"
-              data-testid="volumetria-tabela-processos"
+            v-model:expanded="expandidos"
+            :headers="headersDetalhe"
+            :items="detalheProcessos"
+            :loading="loadingDetalhe"
+            :items-per-page="10"
+            item-value="id"
+            class="elevation-0 rounded-lg tabela-drill"
+            hover
+            data-testid="volumetria-tabela-processos"
+            @click:row="clicarLinha"
           >
-            <template v-slot:loading>
+            <template #loading>
               <v-skeleton-loader type="table-row@5" />
             </template>
-            <template v-slot:no-data>
+            <template #no-data>
               <div class="text-center pa-6 text-medium-emphasis">
                 Nenhum processo encontrado para este macroprocesso.
               </div>
             </template>
 
-            <template v-slot:item.expand-icon="{ item }">
+            <template #item.expand-icon="{ item }">
               <v-icon
-                  size="small"
-                  class="chevron"
-                  :class="{ 'chevron-aberto': expandidos.includes(item.id) }"
-              >mdi-chevron-right</v-icon>
+                size="small"
+                class="chevron"
+                :class="{ 'chevron-aberto': expandidos.includes(item.id) }"
+              >
+                mdi-chevron-right
+              </v-icon>
             </template>
 
-            <template v-slot:expanded-row="{ item, columns }">
+            <template #expanded-row="{ item, columns }">
               <tr>
-                <td :colspan="columns.length" class="pa-0">
+                <td
+                  :colspan="columns.length"
+                  class="pa-0"
+                >
                   <div class="sub-tabela-wrapper">
-                    <div v-if="loadingSub[item.id]" class="py-3 px-6">
-                      <v-progress-linear indeterminate color="secondary" rounded height="3" />
+                    <div
+                      v-if="loadingSub[item.id]"
+                      class="py-3 px-6"
+                    >
+                      <v-progress-linear
+                        indeterminate
+                        color="secondary"
+                        rounded
+                        height="3"
+                      />
                     </div>
                     <div
-                        v-else-if="subDados[item.id]?.length === 0"
-                        class="text-center pa-4 text-caption text-medium-emphasis"
+                      v-else-if="subDados[item.id]?.length === 0"
+                      class="text-center pa-4 text-caption text-medium-emphasis"
                     >
                       Nenhum subprocesso encontrado.
                     </div>
                     <v-data-table
-                        v-else-if="subDados[item.id]"
-                        :headers="headersParaSub(item.id)"
-                        :items="subDados[item.id]"
-                        :items-per-page="-1"
-                        hide-default-footer
-                        class="elevation-0 sub-tabela"
-                        density="compact"
+                      v-else-if="subDados[item.id]"
+                      :headers="headersParaSub(item.id)"
+                      :items="subDados[item.id]"
+                      :items-per-page="-1"
+                      hide-default-footer
+                      class="elevation-0 sub-tabela"
+                      density="compact"
                     >
-                      <template v-if="subTipos[item.id] === 'tarefa'" v-slot:item.id="{ item: tarefa }">
-                        <a :href="`/fila-tarefa/${tarefa.id}`" target="_blank" class="link-fila">
+                      <template
+                        v-if="subTipos[item.id] === 'tarefa'"
+                        #item.id="{ item: tarefa }"
+                      >
+                        <a
+                          :href="`/fila-tarefa/${tarefa.id}`"
+                          target="_blank"
+                          class="link-fila"
+                        >
                           {{ tarefa.id }}
                         </a>
                       </template>

@@ -1,28 +1,39 @@
 <template>
   <div>
     <div class="d-flex align-center gap-3 mb-3">
-      <div class="text-subtitle-1 font-weight-bold">Tarefas Abertas do Workflow</div>
+      <div class="text-subtitle-1 font-weight-bold">
+        Tarefas Abertas do Workflow
+      </div>
       <SpacerComponent />
       <ButtonComponent
         size="small"
         variant="text"
         color="primary"
         :loading="carregando"
-        @click="carregar"
         data-testid="ft-tarefas-abertas-btn-atualizar"
+        @click="carregar"
       >
-        <IconComponent start>mdi-refresh</IconComponent>
+        <IconComponent start>
+          mdi-refresh
+        </IconComponent>
         Atualizar
       </ButtonComponent>
     </div>
 
-    <CardComponent rounded="xl" variant="elevated">
-
+    <CardComponent
+      rounded="xl"
+      variant="elevated"
+    >
       <!-- Toolbar -->
       <div class="table-toolbar pa-4 d-flex align-center ga-3">
         <span class="text-subtitle-2 font-weight-semibold">
           Tarefas abertas
-          <ChipComponent size="x-small" color="primary" class="ml-2" data-testid="ft-tarefas-abertas-contador">
+          <ChipComponent
+            size="x-small"
+            color="primary"
+            class="ml-2"
+            data-testid="ft-tarefas-abertas-contador"
+          >
             {{ tarefasFiltradas.length }}
           </ChipComponent>
         </span>
@@ -41,8 +52,16 @@
       </div>
 
       <!-- Loading -->
-      <div v-if="carregando" class="d-flex justify-center py-10" data-testid="ft-tarefas-abertas-loading">
-        <ProgressCircularComponent indeterminate color="primary" size="36" />
+      <div
+        v-if="carregando"
+        class="d-flex justify-center py-10"
+        data-testid="ft-tarefas-abertas-loading"
+      >
+        <ProgressCircularComponent
+          indeterminate
+          color="primary"
+          size="36"
+        />
       </div>
 
       <!-- Tabela -->
@@ -70,7 +89,12 @@
         </template>
 
         <template #item.status_tarefa="{ item }">
-          <ChipComponent size="small" variant="tonal" color="primary" :data-testid="`ft-tarefas-abertas-status-${item.pco_tarefa_id}`">
+          <ChipComponent
+            size="small"
+            variant="tonal"
+            color="primary"
+            :data-testid="`ft-tarefas-abertas-status-${item.pco_tarefa_id}`"
+          >
             {{ item.status_tarefa ?? '—' }}
           </ChipComponent>
         </template>
@@ -87,13 +111,20 @@
         </template>
 
         <template #no-data>
-          <div class="py-10 text-center text-medium-emphasis" data-testid="ft-tarefas-abertas-vazio">
-            <IconComponent size="40" class="mb-2">mdi-clipboard-check-outline</IconComponent>
+          <div
+            class="py-10 text-center text-medium-emphasis"
+            data-testid="ft-tarefas-abertas-vazio"
+          >
+            <IconComponent
+              size="40"
+              class="mb-2"
+            >
+              mdi-clipboard-check-outline
+            </IconComponent>
             <div>Nenhuma tarefa aberta neste workflow.</div>
           </div>
         </template>
       </v-data-table>
-
     </CardComponent>
   </div>
 </template>

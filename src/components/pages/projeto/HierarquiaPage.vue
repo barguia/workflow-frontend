@@ -1,13 +1,12 @@
 <template>
   <CrudComponent
-      route="wf/hierarquias"
-      title="Hierarquias de Processos"
-      :fields="fields"
-      :headers="headers"
-      must-sort
-      data-testid="hierarquia-crud"
-  >
-  </CrudComponent>
+    route="wf/hierarquias"
+    title="Hierarquias de Processos"
+    :fields="fields"
+    :headers="headers"
+    must-sort
+    data-testid="hierarquia-crud"
+  />
 </template>
 
 <script setup>
@@ -17,9 +16,7 @@ import {ref} from "vue";
 const { index: fetchWorkflow } = useCrud('wf/workflows')
 const { index: fetchHierarquia } = useCrud('wf/hierarquias')
 
-const hierarquias = ref({})
 const opcoesHieraquia = ref({})
-const form = ref({})
 
 const fields = [
   {

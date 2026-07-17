@@ -1,10 +1,10 @@
 <template>
   <CrudComponent
-      route="app/menus"
-      title="Menus"
-      :fields="menuFields"
-      :headers="menuHeaders"
-      data-testid="menu-crud"
+    route="app/menus"
+    title="Menus"
+    :fields="menuFields"
+    :headers="menuHeaders"
+    data-testid="menu-crud"
   />
 </template>
 

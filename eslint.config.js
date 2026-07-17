@@ -17,6 +17,11 @@ export default [
         ...globals.browser,
       },
     },
+    rules: {
+      // Vuetify usa nomes de slot com ponto (ex.: #item.nome, #header.nome)
+      // como convenção, não como modificador de diretiva.
+      'vue/valid-v-slot': ['error', { allowModifiers: true }],
+    },
   },
   {
     files: [
