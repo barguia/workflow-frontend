@@ -117,6 +117,21 @@ describe('authStore', () => {
       expect(store.token).toBeNull()
       expect(store.loaded).toBe(false)
     })
+
+    it('limpa o estado em memória quando o localStorage foi invalidado externamente (ex: 401 em outra aba)', () => {
+      const store = useAuthStore()
+      // Simula uma store com sessão "grudada" em memória, mas sem token no localStorage
+      // (ex: outra aba/requisição já limpou a sessão).
+      store.token = 'token-obsoleto'
+      store.menus = [{ id: 1 }]
+      store.loaded = true
+
+      store.loadToken()
+
+      expect(store.token).toBeNull()
+      expect(store.menus).toEqual([])
+      expect(store.loaded).toBe(false)
+    })
   })
 
   describe('limpaSessao', () => {
@@ -152,13 +167,28 @@ describe('authStore', () => {
       expect(store.loaded).toBe(true)
     })
 
-    it('não re-executa quando já está carregado', async () => {
+    it('reavalia o localStorage mesmo quando já foi carregado antes (evita estado desatualizado)', async () => {
       const store = useAuthStore()
+      // Estado em memória "grudado" de uma sessão anterior, mas sem token
+      // persistido no localStorage (ex: já limpo por um 401 anterior).
       store.loaded = true
-      store.token = 'token-existente'
+      store.token = 'token-obsoleto'
+
+      const result = await store.checkAuth()
+
+      expect(result).toBe(false)
+      expect(store.token).toBeNull()
+    })
+
+    it('mantém autenticado em chamadas repetidas quando o token no localStorage continua válido', async () => {
+      localStorage.setItem('authToken', encryptToken('valid-token'))
+      const store = useAuthStore()
+
       await store.checkAuth()
-      // Token não deve ter sido sobrescrito
-      expect(store.token).toBe('token-existente')
+      const result = await store.checkAuth()
+
+      expect(result).toBe(true)
+      expect(store.token).toBe('valid-token')
     })
   })
 

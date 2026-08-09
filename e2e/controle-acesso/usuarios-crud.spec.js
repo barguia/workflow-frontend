@@ -13,8 +13,14 @@ let usuarioId
 async function mostrarTodosRegistros(page) {
   // O input do v-select fica coberto pelo span de exibição do Vuetify,
   // então o clique "normal" do Playwright nunca é aceito (fica travando).
-  await page.getByLabel('Items per page:').click({ force: true })
-  await page.getByRole('option', { name: 'Todos' }).click()
+  // Sob carga (suíte inteira rodando em paralelo) um único clique forçado pode
+  // não abrir o menu a tempo — por isso repetimos até o menu realmente abrir.
+  const opcaoTodos = page.getByRole('option', { name: 'Todos' })
+  await expect(async () => {
+    await page.getByLabel('Items per page:').click({ force: true })
+    await expect(opcaoTodos).toBeVisible({ timeout: 1000 })
+  }).toPass({ timeout: 15000 })
+  await opcaoTodos.click()
 }
 
 async function buscarLinha(page, termo) {
