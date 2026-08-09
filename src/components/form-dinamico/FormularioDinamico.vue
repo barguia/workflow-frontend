@@ -1,184 +1,193 @@
 <!-- src/components/forms/FormularioDinamico.vue -->
 <template>
-  <FormComponent ref="formRef" v-model="valid" lazy-validation>
+  <FormComponent
+    ref="formRef"
+    v-model="valid"
+    lazy-validation
+  >
     <!-- v-show = hidden, mas ainda no DOM -->
     <RowComponent dense>
-      <ColComponent v-for="field in visibleFields" :key="field.key" v-show="resolveVisible(field)" :class="'v-col-'+(field.col ?? 12)" class="pb-0">
+      <ColComponent
+        v-for="field in visibleFields"
+        v-show="resolveVisible(field)"
+        :key="field.key"
+        :class="'v-col-'+(field.col ?? 12)"
+        class="pb-0"
+      >
         <!-- v-if = remove do DOM -->
         <template v-if="resolveRenderIf(field)">
-
           <!-- TEXT / DATE / PASSWORD -->
           <TextFieldComponent
-              v-if="isType(field, ['text','date','password'])"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :type="field.type || 'text'"
-              :mask="field.mask || undefined"
-              :rules="resolveRules(field)"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-if="isType(field, ['text','date','password'])"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :type="field.type || 'text'"
+            :mask="field.mask || undefined"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- TEXTAREA -->
           <TextAreaComponent
-              v-else-if="isType(field, 'textarea')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :rules="resolveRules(field)"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'textarea')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- SELECT -->
           <SelectComponent
-              v-else-if="isType(field, 'select')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :items="fieldOptions[field.key] || []"
-              :rules="resolveRules(field)"
-              :multiple="field.multiple ?? false"
-              :sorted="field.sorted ?? false"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'select')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :multiple="field.multiple ?? false"
+            :sorted="field.sorted ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- RADIO -->
           <RadioComponent
-              v-else-if="isType(field, 'radio')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :items="fieldOptions[field.key] || []"
-              :rules="resolveRules(field)"
-              :inline="field.inline ?? false"
-              :sorted="field.sorted ?? false"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'radio')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :inline="field.inline ?? false"
+            :sorted="field.sorted ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- CHECKBOX -->
           <CheckboxComponent
-              v-else-if="isType(field, 'checkbox')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :items="fieldOptions[field.key] || []"
-              :rules="resolveRules(field)"
-              :multiple="field.multiple ?? false"
-              :chips="field.chips ?? false"
-              :inline="field.inline ?? false"
-              :sorted="field.sorted ?? false"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'checkbox')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :multiple="field.multiple ?? false"
+            :chips="field.chips ?? false"
+            :inline="field.inline ?? false"
+            :sorted="field.sorted ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- AUTOCOMPLETE -->
           <AutocompleteComponent
-              v-else-if="isType(field, 'autocomplete')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :items="fieldOptions[field.key] || []"
-              :rules="resolveRules(field)"
-              :multiple="field.multiple ?? false"
-              :no-filter="field.noFilter ?? false"
-              :sorted="field.sorted ?? false"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
-              @update:search="onAutocompleteSearch(field, $event)"
+            v-else-if="isType(field, 'autocomplete')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :multiple="field.multiple ?? false"
+            :no-filter="field.noFilter ?? false"
+            :sorted="field.sorted ?? false"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
+            @update:search="onAutocompleteSearch(field, $event)"
           />
 
           <!-- COMBOBOX -->
           <ComboboxComponent
-              v-else-if="isType(field, 'combobox')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :items="fieldOptions[field.key] || []"
-              :rules="resolveRules(field)"
-              :multiple="field.multiple"
-              :chips="field.chips"
-              :clearable="field.clearable"
-              :inline="field.inline"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'combobox')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :items="fieldOptions[field.key] || []"
+            :rules="resolveRules(field)"
+            :multiple="field.multiple"
+            :chips="field.chips"
+            :clearable="field.clearable"
+            :inline="field.inline"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- EMAIL -->
           <EmailComponent
-              v-else-if="isType(field, 'email')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :rules="resolveRules(field)"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'email')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- DATETIME -->
           <DatetimeComponent
-              v-else-if="isType(field, 'datetime')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :rules="resolveRules(field)"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'datetime')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- TIME -->
           <TimeComponent
-              v-else-if="isType(field, 'time')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :rules="resolveRules(field)"
-              :error-messages="validationErrors[field.key]"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'time')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :rules="resolveRules(field)"
+            :error-messages="validationErrors[field.key]"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- RANGE -->
           <RangeComponent
-              v-else-if="isType(field, 'range')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :min="field.min ?? 0"
-              :max="field.max ?? 100"
-              :step="field.step ?? 1"
-              :thumb-label="field.thumbLabel ?? true"
-              :show-ticks="field.showTicks ?? false"
-              :rules="resolveRules(field)"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'range')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :min="field.min ?? 0"
+            :max="field.max ?? 100"
+            :step="field.step ?? 1"
+            :thumb-label="field.thumbLabel ?? true"
+            :show-ticks="field.showTicks ?? false"
+            :rules="resolveRules(field)"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
 
           <!-- SWITCH -->
           <SwitchComponent
-              v-else-if="isType(field, 'switch')"
-              v-model="localForm[field.key]"
-              :label="field.label"
-              :true-label="field.trueLabel ?? 'Sim'"
-              :false-label="field.falseLabel ?? 'Não'"
-              :true-value="field.trueValue ?? true"
-              :false-value="field.falseValue ?? false"
-              :rules="resolveRules(field)"
-              :required="!field.optional"
-              :disabled="resolveDisabled(field)"
-              @update:modelValue="onFieldChange(field, $event)"
+            v-else-if="isType(field, 'switch')"
+            v-model="localForm[field.key]"
+            :label="field.label"
+            :true-label="field.trueLabel ?? 'Sim'"
+            :false-label="field.falseLabel ?? 'Não'"
+            :true-value="field.trueValue ?? true"
+            :false-value="field.falseValue ?? false"
+            :rules="resolveRules(field)"
+            :required="!field.optional"
+            :disabled="resolveDisabled(field)"
+            @update:model-value="onFieldChange(field, $event)"
           />
         </template>
       </ColComponent>

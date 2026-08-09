@@ -1,6 +1,11 @@
 <!-- UmParaMuitosComponent.vue -->
 <template>
-  <v-dialog v-model="aberto" :max-width="larguraMaxima" persistent @keydown.esc="fechar">
+  <v-dialog
+    v-model="aberto"
+    :max-width="larguraMaxima"
+    persistent
+    @keydown.esc="fechar"
+  >
     <CardComponent>
       <CardTitleComponent>
         <span class="text-h5">{{ titulo }}</span>
@@ -11,33 +16,35 @@
           <RowComponent>
             <!-- Com agrupamento -->
             <ColComponent
-                v-for="grupo in itensAgrupados"
-                :key="grupo.nome"
-                cols="12"
-                xs="12"
-                sm="6"
-                md="4"
-                lg="3"
-                xl="3"
+              v-for="grupo in itensAgrupados"
+              :key="grupo.nome"
+              cols="12"
+              xs="12"
+              sm="6"
+              md="4"
+              lg="3"
+              xl="3"
             >
               <v-divider class="mb-3" />
-              <div class="text-h6 text-center mb-2">{{ grupo.grupo }}</div>
+              <div class="text-h6 text-center mb-2">
+                {{ grupo.grupo }}
+              </div>
 
               <v-checkbox
-                  v-for="opcao in grupo.opcoes"
-                  :key="opcao.value"
-                  v-model="itensSelecionados"
-                  :value="opcao.value"
-                  hide-details
-                  density="compact"
-                  class="ma-0 my-1"
-                  style="height: 34px;"
+                v-for="opcao in grupo.opcoes"
+                :key="opcao.value"
+                v-model="itensSelecionados"
+                :value="opcao.value"
+                hide-details
+                density="compact"
+                class="ma-0 my-1"
+                style="height: 34px;"
               >
                 <template #label>
                   <v-chip
-                      :color="itensSelecionados.includes(opcao.value) ? 'primary' : 'grey-lighten-2'"
-                      size="small"
-                      class="px-2 text-caption font-weight-medium"
+                    :color="itensSelecionados.includes(opcao.value) ? 'primary' : 'grey-lighten-2'"
+                    size="small"
+                    class="px-2 text-caption font-weight-medium"
                   >
                     {{ opcao.text }}
                   </v-chip>
@@ -46,21 +53,24 @@
             </ColComponent>
 
             <!-- Sem agrupamento (fallback) -->
-            <ColComponent v-if="itensAgrupados.length === 0 && todosItens.length > 0" cols="12">
+            <ColComponent
+              v-if="itensAgrupados.length === 0 && todosItens.length > 0"
+              cols="12"
+            >
               <v-checkbox
-                  v-for="opcao in todosItens"
-                  :key="opcao.value"
-                  v-model="itensSelecionados"
-                  :value="opcao.value"
-                  hide-details
-                  density="compact"
-                  class="ma-0 my-1"
+                v-for="opcao in todosItens"
+                :key="opcao.value"
+                v-model="itensSelecionados"
+                :value="opcao.value"
+                hide-details
+                density="compact"
+                class="ma-0 my-1"
               >
                 <template #label>
                   <v-chip
-                      :color="itensSelecionados.includes(opcao.value) ? 'primary' : 'grey-lighten-2'"
-                      size="small"
-                      class="px-2"
+                    :color="itensSelecionados.includes(opcao.value) ? 'primary' : 'grey-lighten-2'"
+                    size="small"
+                    class="px-2"
                   >
                     {{ opcao.text }}
                   </v-chip>
@@ -73,15 +83,19 @@
 
       <CardActionsComponent>
         <v-spacer />
-        <ButtonComponent color="blue darken-1" text @click="fechar">
+        <ButtonComponent
+          color="blue darken-1"
+          text
+          @click="fechar"
+        >
           Cancelar
         </ButtonComponent>
         <ButtonComponent
-            color="primary"
-            text
-            :loading="salvando"
-            :disabled="!houveMudanca"
-            @click="salvar"
+          color="primary"
+          text
+          :loading="salvando"
+          :disabled="!houveMudanca"
+          @click="salvar"
         >
           Salvar
         </ButtonComponent>
@@ -91,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import api from '@/services/api.js'
 
 import CardComponent from "@/components/comuns/cards/CardComponent.vue"

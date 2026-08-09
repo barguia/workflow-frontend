@@ -1,6 +1,12 @@
 <template>
   <div class="d-flex align-center gap-3 mb-4 flex-wrap">
-    <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="$emit('voltar')" data-testid="ft-cabecalho-btn-voltar" />
+    <ButtonComponent
+      icon="mdi-arrow-left"
+      variant="text"
+      size="small"
+      data-testid="ft-cabecalho-btn-voltar"
+      @click="$emit('voltar')"
+    />
 
     <div class="flex-1-1">
       <div class="d-flex align-center gap-2 flex-wrap">
@@ -27,13 +33,19 @@
         <span>Projeto #{{ tarefa.pco_projeto_id }}</span>
         <span class="text-medium-emphasis">·</span>
         <span>
-          <IconComponent size="13" class="mr-1">mdi-calendar-plus-outline</IconComponent>
+          <IconComponent
+            size="13"
+            class="mr-1"
+          >mdi-calendar-plus-outline</IconComponent>
           {{ formatarDataHora(tarefa.created_at) }}
         </span>
         <template v-if="tarefa.finalized_at">
           <span class="text-medium-emphasis">·</span>
           <span class="text-success">
-            <IconComponent size="13" class="mr-1">mdi-calendar-check-outline</IconComponent>
+            <IconComponent
+              size="13"
+              class="mr-1"
+            >mdi-calendar-check-outline</IconComponent>
             Fechado em {{ formatarDataHora(tarefa.finalized_at) }}
           </span>
         </template>
@@ -43,7 +55,12 @@
           size="x-small"
           variant="tonal"
         >
-          <IconComponent start size="12">mdi-clock-outline</IconComponent>
+          <IconComponent
+            start
+            size="12"
+          >
+            mdi-clock-outline
+          </IconComponent>
           Aging: {{ tarefa.aging_workflow ?? 0 }}d
         </ChipComponent>
       </div>

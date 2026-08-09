@@ -38,14 +38,26 @@ async function enviaEmail () {
 
 <template>
   <ContainerComponent>
-    <RowComponent justify="center" align="center">
-      <ColComponent cols="12" sm="8" md="6" lg="4">
+    <RowComponent
+      justify="center"
+      align="center"
+    >
+      <ColComponent
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
+      >
         <CardComponent class="pa-6">
           <CardTitleComponent class="text-h5 text-center mb-6">
             Esqueci minha senha
           </CardTitleComponent>
           <CardTextComponent>
-            <FormComponent ref="formRef" v-model="valid" lazy-validation>
+            <FormComponent
+              ref="formRef"
+              v-model="valid"
+              lazy-validation
+            >
               <TextFieldComponent
                 v-model="email"
                 label="Email"
@@ -56,13 +68,16 @@ async function enviaEmail () {
                 data-testid="forgot-input-email"
               />
 
-              <RowComponent justify="space-between" class="mb-4">
+              <RowComponent
+                justify="space-between"
+                class="mb-4"
+              >
                 <ColComponent cols="auto">
                   <ButtonComponent
-                      variant="text"
-                      color="primary"
-                      @click="enviaEmail()"
-                      data-testid="forgot-btn-continuar"
+                    variant="text"
+                    color="primary"
+                    data-testid="forgot-btn-continuar"
+                    @click="enviaEmail()"
                   >
                     Continuar
                   </ButtonComponent>
@@ -70,7 +85,6 @@ async function enviaEmail () {
               </RowComponent>
             </FormComponent>
           </CardTextComponent>
-
         </CardComponent>
       </ColComponent>
     </RowComponent>

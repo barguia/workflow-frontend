@@ -4,7 +4,7 @@
     title="Permissões"
     :fields="fields"
     :headers="headers"
-    :filter_index="{guard_name: 'web'}"
+    :filter-index="{guard_name: 'web'}"
     data-testid="permissao-crud"
   />
 </template>

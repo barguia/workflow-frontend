@@ -1,6 +1,6 @@
 <template>
   <v-toolbar-title v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-toolbar-title>
 </template>
 

@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="d-flex align-center gap-3 mb-3">
-      <div class="text-subtitle-1 font-weight-bold">Histórico de Tratamentos</div>
+      <div class="text-subtitle-1 font-weight-bold">
+        Histórico de Tratamentos
+      </div>
       <SpacerComponent />
       <v-switch
         v-model="exibirSistemicos"
@@ -12,30 +14,60 @@
         class="flex-grow-0"
         data-testid="ft-historico-switch-sistemicos"
       />
-      <ButtonComponent size="small" variant="text" color="primary" :loading="carregando" @click="$emit('atualizar')" data-testid="ft-historico-btn-atualizar">
-        <IconComponent start>mdi-refresh</IconComponent>
+      <ButtonComponent
+        size="small"
+        variant="text"
+        color="primary"
+        :loading="carregando"
+        data-testid="ft-historico-btn-atualizar"
+        @click="$emit('atualizar')"
+      >
+        <IconComponent start>
+          mdi-refresh
+        </IconComponent>
         Atualizar
       </ButtonComponent>
     </div>
 
-    <CardComponent rounded="xl" variant="elevated">
-
+    <CardComponent
+      rounded="xl"
+      variant="elevated"
+    >
       <!-- Toolbar -->
       <div class="table-toolbar pa-4 d-flex align-center ga-3">
         <span class="text-subtitle-2 font-weight-semibold">
           Tratamentos
-          <ChipComponent size="x-small" color="primary" class="ml-2">{{ itensFiltrados.length }}</ChipComponent>
+          <ChipComponent
+            size="x-small"
+            color="primary"
+            class="ml-2"
+          >{{ itensFiltrados.length }}</ChipComponent>
         </span>
       </div>
 
       <!-- Loading -->
-      <div v-if="carregando" class="d-flex justify-center py-10">
-        <ProgressCircularComponent indeterminate color="primary" size="36" />
+      <div
+        v-if="carregando"
+        class="d-flex justify-center py-10"
+      >
+        <ProgressCircularComponent
+          indeterminate
+          color="primary"
+          size="36"
+        />
       </div>
 
       <!-- Vazio -->
-      <div v-else-if="itensFiltrados.length === 0" class="py-10 text-center text-medium-emphasis">
-        <IconComponent size="40" class="mb-2">mdi-clipboard-text-outline</IconComponent>
+      <div
+        v-else-if="itensFiltrados.length === 0"
+        class="py-10 text-center text-medium-emphasis"
+      >
+        <IconComponent
+          size="40"
+          class="mb-2"
+        >
+          mdi-clipboard-text-outline
+        </IconComponent>
         <div>Nenhum tratamento registrado.</div>
       </div>
 
@@ -87,7 +119,10 @@
                 variant="tonal"
                 class="font-weight-medium"
               >
-                <span class="text-body-2 font-weight-medium" v-if="item.tarefa_destino">De: </span>
+                <span
+                  v-if="item.tarefa_destino"
+                  class="text-body-2 font-weight-medium"
+                >De: </span>
                 <span class="text-body-2 font-weight-medium">{{ item.tarefa_origem }}</span>
               </ChipComponent>
 
@@ -109,23 +144,36 @@
 
             <div class="d-flex align-center gap-4 text-caption text-medium-emphasis mb-1">
               <span>
-                <IconComponent size="13" class="mr-1">mdi-clock-start</IconComponent>
+                <IconComponent
+                  size="13"
+                  class="mr-1"
+                >mdi-clock-start</IconComponent>
                 Início: {{ formatarDataHora(item.created_at) }}
               </span>
               <span>
-                <IconComponent size="13" class="mr-1">mdi-clock-end</IconComponent>
+                <IconComponent
+                  size="13"
+                  class="mr-1"
+                >mdi-clock-end</IconComponent>
                 Fim: {{ formatarDataHora(item.finalized_at) }}
               </span>
             </div>
 
-            <div v-if="item.descricao" class="text-caption text-medium-emphasis fst-italic mt-1">
-              <IconComponent size="13" class="mr-1">mdi-comment-text-outline</IconComponent>
+            <div
+              v-if="item.descricao"
+              class="text-caption text-medium-emphasis fst-italic mt-1"
+            >
+              <IconComponent
+                size="13"
+                class="mr-1"
+              >
+                mdi-comment-text-outline
+              </IconComponent>
               {{ item.descricao }}
             </div>
           </template>
         </v-timeline-item>
       </v-timeline>
-
     </CardComponent>
   </div>
 </template>

@@ -1,20 +1,25 @@
 <template>
   <div class="checkbox-group">
-    <v-label v-if="label" class="checkbox-group__label">{{ label }}</v-label>
+    <v-label
+      v-if="label"
+      class="checkbox-group__label"
+    >
+      {{ label }}
+    </v-label>
     <div :class="inline ? 'checkbox-group__inline' : 'checkbox-group__column'">
       <v-checkbox
-          v-for="item in sortedItems"
-          :key="item.value"
-          v-model="modelValue"
-          :label="item.text"
-          :value="item.value"
-          :rules="rules"
-          :inline="inline"
-          :required="required"
-          density="compact"
-          hide-details="auto"
-          chips
-          multiple
+        v-for="item in sortedItems"
+        :key="item.value"
+        v-model="modelValue"
+        :label="item.text"
+        :value="item.value"
+        :rules="rules"
+        :inline="inline"
+        :required="required"
+        density="compact"
+        hide-details="auto"
+        chips
+        multiple
       />
     </div>
   </div>
@@ -24,9 +29,9 @@ import { computed } from 'vue'
 
 //       @update:modelValue="$emit('update:modelValue', $event)" chamada duplicada
 const props = defineProps({
-  label: String,
-  items: Array,
-  rules: Array,
+  label: { type: String, default: '' },
+  items: { type: Array, default: () => [] },
+  rules: { type: Array, default: () => [] },
   inline: Boolean,
   required: Boolean,
   chips: Boolean,
@@ -34,7 +39,7 @@ const props = defineProps({
   sorted: { type: Boolean, default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: null })
 
 const sortedItems = computed(() => {
   if (!props.sorted || !props.items) return props.items

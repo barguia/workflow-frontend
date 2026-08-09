@@ -1,11 +1,11 @@
 <template>
   <v-text-field
-      v-bind="$attrs"
-      v-model="modelValue"
-      type="email"
-      :label="label"
-      :rules="allRules"
-      :required="required"
+    v-bind="$attrs"
+    v-model="modelValue"
+    type="email"
+    :label="label"
+    :rules="allRules"
+    :required="required"
   />
 </template>
 
@@ -13,12 +13,12 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: String })
 
 const emailRule = v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'E-mail inválido'
 

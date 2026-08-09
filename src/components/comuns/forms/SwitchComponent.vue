@@ -1,30 +1,32 @@
 <template>
   <v-switch
-      v-bind="$attrs"
-      v-model="modelValue"
-      :true-value="trueValue"
-      :false-value="falseValue"
-      :rules="rules"
-      :required="required"
-      color="primary"
-      hide-details="auto"
+    v-bind="$attrs"
+    v-model="modelValue"
+    :true-value="trueValue"
+    :false-value="falseValue"
+    :rules="rules"
+    :required="required"
+    color="primary"
+    hide-details="auto"
   >
     <template #label>
       <span>{{ label }}</span>
       <v-chip
-          size="x-small"
-          class="ml-2"
-          :color="modelValue === trueValue ? 'success' : undefined"
-          variant="tonal"
-      >{{ modelValue === trueValue ? trueLabel : falseLabel }}</v-chip>
+        size="x-small"
+        class="ml-2"
+        :color="modelValue === trueValue ? 'success' : undefined"
+        variant="tonal"
+      >
+        {{ modelValue === trueValue ? trueLabel : falseLabel }}
+      </v-chip>
     </template>
   </v-switch>
 </template>
 
 <script setup>
 defineProps({
-  label: String,
-  rules: Array,
+  label: { type: String, default: '' },
+  rules: { type: Array, default: () => [] },
   required: Boolean,
   trueLabel: { type: String, default: 'Sim' },
   falseLabel: { type: String, default: 'Não' },
@@ -32,5 +34,5 @@ defineProps({
   falseValue: { type: [Boolean, String, Number], default: false },
 })
 
-const modelValue = defineModel()
+const modelValue = defineModel({ type: [Boolean, String, Number] })
 </script>

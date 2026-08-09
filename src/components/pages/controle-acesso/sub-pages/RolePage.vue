@@ -7,17 +7,41 @@
     data-testid="role-crud"
   >
     <template #actionsField="{ item }">
-      <ButtonComponent icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" data-testid="role-btn-permissoes" />
+      <ButtonComponent
+        icon="mdi-account-key"
+        variant="text"
+        size="small"
+        color="primary"
+        data-testid="role-btn-permissoes"
+        @click="openModalRole(item)"
+      />
     </template>
   </CrudComponent>
 
-  <v-dialog v-if="dialog" v-model="dialog" max-width="1200px" scrollable @keydown.esc="closeModalRole">
+  <v-dialog
+    v-if="dialog"
+    v-model="dialog"
+    max-width="1200px"
+    scrollable
+    @keydown.esc="closeModalRole"
+  >
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <IconComponent color="primary" size="22">mdi-shield-key-outline</IconComponent>
+        <IconComponent
+          color="primary"
+          size="22"
+        >
+          mdi-shield-key-outline
+        </IconComponent>
         <span class="text-h6">Permissões do perfil: {{ role?.name }}</span>
         <v-spacer />
-        <ButtonComponent icon="mdi-close" variant="text" size="small" @click="closeModalRole" data-testid="role-modal-btn-fechar" />
+        <ButtonComponent
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          data-testid="role-modal-btn-fechar"
+          @click="closeModalRole"
+        />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-4">
@@ -25,9 +49,14 @@
           <ColComponent
             v-for="grupo in grupo_permissions"
             :key="grupo.grupo"
-            cols="12" sm="6" md="4" lg="3"
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
           >
-            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">{{ grupo.grupo }}</div>
+            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">
+              {{ grupo.grupo }}
+            </div>
             <v-divider class="mb-3" />
 
             <v-checkbox
@@ -43,7 +72,10 @@
             />
           </ColComponent>
 
-          <ColComponent v-if="grupo_permissions.length === 0" cols="12">
+          <ColComponent
+            v-if="grupo_permissions.length === 0"
+            cols="12"
+          >
             <p class="text-body-2 text-medium-emphasis text-center py-6">
               Carregando permissões…
             </p>
@@ -53,8 +85,20 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <v-spacer />
-        <ButtonComponent variant="text" @click="closeModalRole" data-testid="role-modal-btn-cancelar">Cancelar</ButtonComponent>
-        <ButtonComponent color="primary" variant="flat" :loading="salvando" @click="atualizarRole" data-testid="role-modal-btn-salvar">
+        <ButtonComponent
+          variant="text"
+          data-testid="role-modal-btn-cancelar"
+          @click="closeModalRole"
+        >
+          Cancelar
+        </ButtonComponent>
+        <ButtonComponent
+          color="primary"
+          variant="flat"
+          :loading="salvando"
+          data-testid="role-modal-btn-salvar"
+          @click="atualizarRole"
+        >
           Salvar
         </ButtonComponent>
       </CardActionsComponent>

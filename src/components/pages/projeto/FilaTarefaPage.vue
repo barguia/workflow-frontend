@@ -1,22 +1,41 @@
 <template>
-  <ContainerComponent fluid class="py-4">
-
+  <ContainerComponent
+    fluid
+    class="py-4"
+  >
     <!-- Cabeçalho -->
     <div class="d-flex align-center gap-3 mb-4">
-      <ButtonComponent icon="mdi-arrow-left" variant="text" size="small" @click="router.back()" data-testid="fila-tarefa-btn-voltar" />
+      <ButtonComponent
+        icon="mdi-arrow-left"
+        variant="text"
+        size="small"
+        data-testid="fila-tarefa-btn-voltar"
+        @click="router.back()"
+      />
       <div>
         <div class="d-flex align-center gap-2">
-          <IconComponent color="primary" size="20">mdi-format-list-checks</IconComponent>
+          <IconComponent
+            color="primary"
+            size="20"
+          >
+            mdi-format-list-checks
+          </IconComponent>
           <span class="text-h6 font-weight-bold">Fila de Tarefas</span>
         </div>
-        <div v-if="tarefas.length" class="text-caption text-medium-emphasis mt-1">
+        <div
+          v-if="tarefas.length"
+          class="text-caption text-medium-emphasis mt-1"
+        >
           {{ tarefas[0]?.nome }} · {{ tarefas[0]?.workflow }}
         </div>
       </div>
     </div>
 
     <!-- Tabela -->
-    <CardComponent rounded="xl" variant="elevated">
+    <CardComponent
+      rounded="xl"
+      variant="elevated"
+    >
       <v-data-table
         :headers="headers"
         :items="tarefas"
@@ -31,7 +50,11 @@
           <div class="table-toolbar pa-4 d-flex align-center ga-3">
             <span class="text-subtitle-1 font-weight-semibold">
               Tarefas
-              <ChipComponent size="small" color="primary" class="ml-2">{{ tarefas.length }}</ChipComponent>
+              <ChipComponent
+                size="small"
+                color="primary"
+                class="ml-2"
+              >{{ tarefas.length }}</ChipComponent>
             </span>
             <SpacerComponent />
             <TextFieldComponent
@@ -108,23 +131,46 @@
         <!-- Sem dados -->
         <template #no-data>
           <div class="py-8 text-center text-medium-emphasis">
-            <IconComponent size="40" class="mb-2">mdi-inbox-outline</IconComponent>
+            <IconComponent
+              size="40"
+              class="mb-2"
+            >
+              mdi-inbox-outline
+            </IconComponent>
             <div>Nenhuma tarefa encontrada.</div>
           </div>
         </template>
-
       </v-data-table>
     </CardComponent>
-
   </ContainerComponent>
 
-  <SnackbarComponent v-model="showErros" color="error" timeout="6000" location="top">
-    <div class="text-body-2 font-weight-medium mb-1">Erro de validação</div>
-    <div v-for="(msgs, campo) in validationErrors" :key="campo">
-      <span v-for="msg in msgs" :key="msg">· {{ msg }}</span>
+  <SnackbarComponent
+    v-model="showErros"
+    color="error"
+    timeout="6000"
+    location="top"
+  >
+    <div class="text-body-2 font-weight-medium mb-1">
+      Erro de validação
+    </div>
+    <div
+      v-for="(msgs, campo) in validationErrors"
+      :key="campo"
+    >
+      <span
+        v-for="msg in msgs"
+        :key="msg"
+      >· {{ msg }}</span>
     </div>
     <template #actions>
-      <ButtonComponent variant="text" color="white" size="small" @click="showErros = false">Fechar</ButtonComponent>
+      <ButtonComponent
+        variant="text"
+        color="white"
+        size="small"
+        @click="showErros = false"
+      >
+        Fechar
+      </ButtonComponent>
     </template>
   </SnackbarComponent>
 </template>

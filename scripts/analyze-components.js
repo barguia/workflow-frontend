@@ -161,7 +161,6 @@ if (topTags.length) {
   console.log(`  ${C.dim}Estas são candidatas prioritárias para substituição${C.reset}\n`)
   for (const [tag, count] of topTags) {
     const wrappers = (tagToWrapper[tag] ?? []).join(', ')
-    const pct      = ((count / coupled) * 100).toFixed(0)
     console.log(`  ${C.yellow}${tag.padEnd(28)}${C.reset}  ${String(count).padStart(3)} arquivos  →  use ${C.green}${wrappers}${C.reset}`)
   }
   console.log()

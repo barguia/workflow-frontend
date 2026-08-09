@@ -1,12 +1,12 @@
 <template>
   <CrudComponent
-      route="wf/forms/campos-regras"
-      title="Regras de Campos"
-      must-sort
-      :fields="fields"
-      :headers="headers"
-      :show-select="false"
-      data-testid="regras-campo-crud"
+    route="wf/forms/campos-regras"
+    title="Regras de Campos"
+    must-sort
+    :fields="fields"
+    :headers="headers"
+    :show-select="false"
+    data-testid="regras-campo-crud"
   />
 </template>
 

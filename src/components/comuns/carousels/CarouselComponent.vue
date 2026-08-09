@@ -1,6 +1,6 @@
 <template>
   <v-carousel v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-carousel>
 </template>
 

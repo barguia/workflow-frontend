@@ -2,9 +2,8 @@
   <!-- Grupo: tem filhos -->
   <ListGroupComponent
     v-if="hasChildren"
-    :value="groupKey"
     v-model:opened="opened"
-
+    :value="groupKey"
   >
     <template #activator="{ props: activatorProps }">
       <ListItemComponent

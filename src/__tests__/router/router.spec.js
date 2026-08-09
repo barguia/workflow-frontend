@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // --- vi.hoisted garante que as variáveis existam antes do hoisting dos vi.mock ---
 const { checkAuth, mockAuthStore } = vi.hoisted(() => {

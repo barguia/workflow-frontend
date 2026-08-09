@@ -1,10 +1,21 @@
 <template>
-  <CardComponent rounded="xl" variant="elevated" height="100%">
+  <CardComponent
+    rounded="xl"
+    variant="elevated"
+    height="100%"
+  >
     <CardTextComponent class="pa-5">
-      <div class="section-label mb-3">Dados do Projeto</div>
+      <div class="section-label mb-3">
+        Dados do Projeto
+      </div>
       <RowComponent dense>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Projeto</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Projeto
+          </div>
           <div class="field-value d-flex align-center gap-1">
             {{ tarefa.nome ?? '—' }}
             <ButtonComponent
@@ -18,48 +29,113 @@
             />
           </div>
         </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Prioridade</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Prioridade
+          </div>
           <div class="field-value">
-            <ChipComponent :color="corPrioridade(tarefa.prioridade)" size="small" variant="tonal" label>
+            <ChipComponent
+              :color="corPrioridade(tarefa.prioridade)"
+              size="small"
+              variant="tonal"
+              label
+            >
               {{ tarefa.prioridade ?? '—' }}
             </ChipComponent>
           </div>
         </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Data de Início</div>
-          <div class="field-value">{{ formatarData(tarefa.data_inicio) }}</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Data de Início
+          </div>
+          <div class="field-value">
+            {{ formatarData(tarefa.data_inicio) }}
+          </div>
         </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Data de Término</div>
-          <div class="field-value">{{ formatarData(tarefa.data_fim) }}</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Data de Término
+          </div>
+          <div class="field-value">
+            {{ formatarData(tarefa.data_fim) }}
+          </div>
         </ColComponent>
-        <ColComponent v-if="tarefa.duracao" cols="12" sm="6">
-          <div class="field-label">Duração</div>
-          <div class="field-value">{{ tarefa.duracao }}</div>
+        <ColComponent
+          v-if="tarefa.duracao"
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Duração
+          </div>
+          <div class="field-value">
+            {{ tarefa.duracao }}
+          </div>
         </ColComponent>
-        <ColComponent v-if="tarefa.descricao_projeto" cols="12">
-          <div class="field-label">Descrição</div>
-          <div class="field-value">{{ tarefa.descricao_projeto }}</div>
+        <ColComponent
+          v-if="tarefa.descricao_projeto"
+          cols="12"
+        >
+          <div class="field-label">
+            Descrição
+          </div>
+          <div class="field-value">
+            {{ tarefa.descricao_projeto }}
+          </div>
         </ColComponent>
       </RowComponent>
 
       <DividerComponent class="my-4" />
 
-      <div class="section-label mb-3">Workflow</div>
+      <div class="section-label mb-3">
+        Workflow
+      </div>
       <RowComponent dense>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Workflow</div>
-          <div class="field-value">{{ tarefa.workflow ?? '—' }}</div>
-        </ColComponent>
-        <ColComponent v-if="tarefa.descricao_workflow" cols="12" sm="6">
-          <div class="field-label">Descrição</div>
-          <div class="field-value">{{ tarefa.descricao_workflow }}</div>
-        </ColComponent>
-        <ColComponent cols="12" sm="6">
-          <div class="field-label">Aging do Workflow</div>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Workflow
+          </div>
           <div class="field-value">
-            <ChipComponent :color="agingColor(tarefa.aging_workflow)" size="small" variant="tonal">
+            {{ tarefa.workflow ?? '—' }}
+          </div>
+        </ColComponent>
+        <ColComponent
+          v-if="tarefa.descricao_workflow"
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Descrição
+          </div>
+          <div class="field-value">
+            {{ tarefa.descricao_workflow }}
+          </div>
+        </ColComponent>
+        <ColComponent
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Aging do Workflow
+          </div>
+          <div class="field-value">
+            <ChipComponent
+              :color="agingColor(tarefa.aging_workflow)"
+              size="small"
+              variant="tonal"
+            >
               {{ tarefa.aging_workflow ?? 0 }} dia{{ tarefa.aging_workflow !== 1 ? 's' : '' }}
             </ChipComponent>
           </div>

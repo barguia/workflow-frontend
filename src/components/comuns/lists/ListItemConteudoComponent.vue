@@ -1,6 +1,6 @@
 <template>
   <v-list-item-content v-bind="$attrs">
-    <slot/>
+    <slot />
   </v-list-item-content>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
   <CrudComponent
-      route="wf/tarefas"
-      title="Tarefas"
-      must-sort
-      :fields="tarefaFields"
-      :headers="userHeaders"
-      :show-select="false"
-      data-testid="tarefa-crud"
+    route="wf/tarefas"
+    title="Tarefas"
+    must-sort
+    :fields="tarefaFields"
+    :headers="userHeaders"
+    :show-select="false"
+    data-testid="tarefa-crud"
   >
     <template #previewField="{ item }">
       <ButtonComponent

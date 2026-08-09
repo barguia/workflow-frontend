@@ -27,13 +27,29 @@
     { id: entidadeId, [campoIdsAssociados]: number[] }
 -->
 <template>
-  <v-dialog v-model="aberto" :max-width="larguraMaxima" persistent scrollable @keydown.esc="fechar">
+  <v-dialog
+    v-model="aberto"
+    :max-width="larguraMaxima"
+    persistent
+    scrollable
+    @keydown.esc="fechar"
+  >
     <CardComponent rounded="lg">
       <CardTitleComponent class="d-flex align-center ga-2 py-4 px-6 border-b">
-        <v-icon color="primary" size="22">mdi-link-variant</v-icon>
+        <v-icon
+          color="primary"
+          size="22"
+        >
+          mdi-link-variant
+        </v-icon>
         <span class="text-h6">{{ titulo }}</span>
         <v-spacer />
-        <v-btn icon="mdi-close" variant="text" size="small" @click="fechar" />
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="fechar"
+        />
       </CardTitleComponent>
 
       <CardTextComponent class="pt-4">
@@ -41,9 +57,14 @@
           <ColComponent
             v-for="grupo in itensAgrupados"
             :key="grupo.grupo"
-            cols="12" sm="6" md="4" lg="3"
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
           >
-            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">{{ grupo.grupo }}</div>
+            <div class="text-subtitle-2 font-weight-bold text-primary mb-1">
+              {{ grupo.grupo }}
+            </div>
             <v-divider class="mb-3" />
 
             <v-checkbox
@@ -59,7 +80,10 @@
             />
           </ColComponent>
 
-          <ColComponent v-if="itensAgrupados.length === 0" cols="12">
+          <ColComponent
+            v-if="itensAgrupados.length === 0"
+            cols="12"
+          >
             <p class="text-body-2 text-medium-emphasis text-center py-6">
               Nenhum item disponível.
             </p>
@@ -69,8 +93,18 @@
 
       <CardActionsComponent class="px-6 py-4 border-t">
         <v-spacer />
-        <ButtonComponent variant="text" @click="fechar">Cancelar</ButtonComponent>
-        <ButtonComponent color="primary" variant="flat" :loading="salvando" @click="salvar">
+        <ButtonComponent
+          variant="text"
+          @click="fechar"
+        >
+          Cancelar
+        </ButtonComponent>
+        <ButtonComponent
+          color="primary"
+          variant="flat"
+          :loading="salvando"
+          @click="salvar"
+        >
           Salvar
         </ButtonComponent>
       </CardActionsComponent>

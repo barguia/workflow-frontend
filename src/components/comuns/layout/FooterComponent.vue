@@ -1,30 +1,47 @@
 <template>
-  <v-footer color="grey-darken-4" dark class="py-6">
+  <v-footer
+    color="grey-darken-4"
+    dark
+    class="py-6"
+  >
     <v-container>
       <v-row class="justify-center text-center">
-        <v-col cols="12" sm="6" md="4" class="mb-2">
-          <h3 class="footer-title">Conecte-se conosco</h3>
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+          class="mb-2"
+        >
+          <h3 class="footer-title">
+            Conecte-se conosco
+          </h3>
           <div class="social-links">
-
             <v-btn
-                v-for="link in getSocialLinks()"
-                :key="link.name"
-                :href="link.url"
-                target="_blank"
-                icon
+              v-for="link in getSocialLinks()"
+              :key="link.name"
+              :href="link.url"
+              target="_blank"
+              icon
             >
-              <v-icon :color="link.color">{{ link.icon }}</v-icon>
+              <v-icon :color="link.color">
+                {{ link.icon }}
+              </v-icon>
             </v-btn>
           </div>
         </v-col>
-        <v-col cols="12" class="text-center">
-          <p class="mb-0">&copy; {{ new Date().getFullYear() }} Auri Web. Todos os direitos reservados.</p>
+        <v-col
+          cols="12"
+          class="text-center"
+        >
+          <p class="mb-0">
+            &copy; {{ new Date().getFullYear() }} Auri Web. Todos os direitos reservados.
+          </p>
           <div class="flex justify-center space-x-4 mt-4">
             <RouterLink
-                :to="item.path"
-                v-for="item in menus"
-                :key="item.name"
-                class="nav-link ma-2 hover:text-blue-300"
+              v-for="item in menus"
+              :key="item.name"
+              :to="item.path"
+              class="nav-link ma-2 hover:text-blue-300"
             >
               {{ item.name }}
             </RouterLink>
@@ -38,7 +55,9 @@
 <script>
 
 export default {
-  props: ['menus'],
+  props: {
+    menus: { type: Array, default: () => [] },
+  },
   data() {
     return {
       socialLinks: [

@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar-nav-icon v-bind="$attrs"/>
+  <v-app-bar-nav-icon v-bind="$attrs" />
 </template>
 
 <script>

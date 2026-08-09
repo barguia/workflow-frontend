@@ -7,13 +7,26 @@
     data-testid="usuario-crud"
   >
     <template #actions="{ isEditing, form, closeModal }">
-      <ButtonComponent v-if="isEditing" color="warning" variant="text" @click="resetPassword(form, closeModal)" data-testid="usuario-btn-resetar-senha">
+      <ButtonComponent
+        v-if="isEditing"
+        color="warning"
+        variant="text"
+        data-testid="usuario-btn-resetar-senha"
+        @click="resetPassword(form, closeModal)"
+      >
         Resetar Senha
       </ButtonComponent>
     </template>
 
     <template #actionsField="{ item }">
-      <v-btn icon="mdi-account-key" variant="text" size="small" color="primary" @click="openModalRole(item)" data-testid="usuario-btn-perfis" />
+      <v-btn
+        icon="mdi-account-key"
+        variant="text"
+        size="small"
+        color="primary"
+        data-testid="usuario-btn-perfis"
+        @click="openModalRole(item)"
+      />
     </template>
   </CrudComponent>
 
