@@ -119,7 +119,6 @@ export default {
       todas_rotas: router.options.routes,
       isMobile: false,
       drawer: false,
-      autenticado: false,
     };
   },
   computed: {
@@ -135,7 +134,6 @@ export default {
   async mounted() {
     const authStore = useAuthStore();
     await authStore.checkAuth();
-    this.autenticado = authStore.isAuthenticated
   },
   created() {
     this.checkScreenSize();

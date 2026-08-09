@@ -36,40 +36,42 @@ export const useAuthStore = defineStore('auth', {
                 this.loaded = true;
             }
         },
-        // Descriptografa e carrega do LocalStorage
+        // Descriptografa e carrega do LocalStorage.
+        // Sempre reavalia o localStorage como fonte da verdade: se não houver
+        // mais token persistido (ex: removido por um 401 em outra aba, ou por
+        // limpaSessao() já ter rodado), garante que o estado em memória não
+        // fique "grudado" numa sessão que já não existe mais.
         loadToken() {
             const encrypted = localStorage.getItem('authToken');
-            const menusJson = localStorage.getItem('menus');
-            if (encrypted) {
-                try {
-                    const bytes = CryptoJS.AES.decrypt(encrypted, CRYPTO_KEY);
-                    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-                    this.token = decrypted;
-                    const menus = menusJson ? JSON.parse(menusJson) : [];
-                    this.menus = Array.isArray(menus) ? menus : [];
-                    this.loaded = true;
-                } catch (error) {
-                    console.error('Erro ao descriptografar token:', error);
+            if (!encrypted) {
+                if (this.token !== null || this.menus.length > 0) {
                     this.limpaSessao();
                 }
+                return;
+            }
+
+            try {
+                const bytes = CryptoJS.AES.decrypt(encrypted, CRYPTO_KEY);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                const menusJson = localStorage.getItem('menus');
+                const menus = menusJson ? JSON.parse(menusJson) : [];
+
+                this.token = decrypted;
+                this.menus = Array.isArray(menus) ? menus : [];
+                this.loaded = true;
+            } catch (error) {
+                console.error('Erro ao descriptografar token:', error);
+                this.limpaSessao();
             }
         },
+        // Reavalia o estado de autenticação a partir do localStorage a cada
+        // chamada (usado pelo guard de rotas). Antes, o uso de `loaded` como
+        // trava impedia que uma sessão invalidada fora do fluxo do interceptor
+        // (ex: localStorage limpo manualmente ou por outra aba) fosse detectada
+        // em navegações subsequentes dentro da mesma sessão de SPA.
         async checkAuth() {
-            if (!this.loaded) {
-                const encrypted = localStorage.getItem('authToken');
-                if (encrypted) {
-                    try {
-                        const bytes = CryptoJS.AES.decrypt(encrypted, CRYPTO_KEY);
-                        const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-                        this.token = decrypted;
-                        this.menus = localStorage.getItem('menus');
-                    } catch (error) {
-                        console.error('Erro ao descriptografar token:', error);
-                        this.limpaSessao();
-                    }
-                }
-                this.loaded = true;
-            }
+            this.loadToken();
+            this.loaded = true;
             return this.isAuthenticated;
         },
         async logout() {
