@@ -228,6 +228,28 @@ describe('interceptor de response — erro 401 (não autenticado)', () => {
       listener: 'notification',
     })
   })
+
+  it('múltiplas requisições em paralelo retornando 401 não quebram o redirecionamento (sem race condition)', async () => {
+    router.currentRoute.value.path = '/dashboard'
+    mockAdapterError(401, responseData)
+
+    const resultados = await Promise.allSettled([
+      api.get('/qualquer-1'),
+      api.get('/qualquer-2'),
+      api.get('/qualquer-3'),
+    ])
+
+    // Todas as chamadas são rejeitadas de forma consistente.
+    expect(resultados.every(r => r.status === 'rejected')).toBe(true)
+    resultados.forEach(r => {
+      expect(r.reason).toMatchObject({ type: 'unauthorized' })
+    })
+
+    // limpaSessao é chamada de forma idempotente para cada 401 recebido.
+    expect(limpaSessao).toHaveBeenCalledTimes(3)
+    // O redirecionamento para /login é sempre disparado.
+    expect(router.push).toHaveBeenCalledWith('/login')
+  })
 })
 
 describe('interceptor de response — erro 500 (servidor)', () => {

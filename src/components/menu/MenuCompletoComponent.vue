@@ -74,6 +74,7 @@
           </v-list-subheader>
 
           <ListItemComponent
+            v-if="authStore.isAuthenticated"
             prepend-icon="mdi-account-circle-outline"
             title="Perfil"
             rounded="lg"
@@ -82,12 +83,27 @@
           <DividerComponent class="my-1" />
 
           <ListItemComponent
+            v-if="authStore.isAuthenticated"
             prepend-icon="mdi-logout"
             title="Sair"
             rounded="lg"
             base-color="error"
             @click="efetuaLogout"
           />
+
+          <router-link
+            v-else
+            to="/login"
+            class="nav-link brand-title"
+          >
+            <ListItemComponent
+              prepend-icon="mdi-login"
+              title="Login"
+              rounded="lg"
+              base-color="sucess"
+            />
+          </router-link>
+
         </v-list>
       </CardComponent>
     </MenuComponent>
