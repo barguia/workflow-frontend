@@ -95,7 +95,7 @@
           color="primary"
           variant="tonal"
           size="small"
-          :disabled="!!tarefa.finalized_at"
+          :disabled="!!tarefa.data_fim_tarefa"
           @click="abrirDialog"
         >
           <IconComponent start>

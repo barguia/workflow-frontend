@@ -135,7 +135,7 @@ const userHeaders = [
   { title: '', value: 'preview',  key: 'preview' },
   { title: 'Tarefa', value: 'tarefa',  key: 'tarefa' },
   { title: 'Tipo', value: 'tipo_tarefa.tipo',  key: 'tipo_tarefa.tipo' },
-  { title: 'Ordem', value: 'ordenacao',  key: 'ordenacao' },
+  { title: 'Etapa', value: 'ordenacao',  key: 'ordenacao' },
   { title: 'Workflow', value: 'workflow.workflow',  key: 'workflow.workflow' },
   { title: 'Processo', value: 'processo.processo',  key: 'processo.processo' },
   { title: '', value: 'actions' },

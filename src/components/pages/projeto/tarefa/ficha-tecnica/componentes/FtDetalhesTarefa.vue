@@ -9,14 +9,6 @@
         Detalhes da Tarefa
       </div>
       <RowComponent dense>
-        <ColComponent cols="12">
-          <div class="field-label">
-            Tarefa
-          </div>
-          <div class="field-value">
-            {{ tarefa.tarefa ?? '—' }}
-          </div>
-        </ColComponent>
         <ColComponent
           v-if="tarefa.descricao_tarefa"
           cols="12"
@@ -28,34 +20,15 @@
             {{ tarefa.descricao_tarefa }}
           </div>
         </ColComponent>
-      </RowComponent>
-
-      <DividerComponent class="my-4" />
-
-      <div class="section-label mb-3">
-        Localização no Workflow
-      </div>
-      <RowComponent dense>
         <ColComponent
           cols="12"
           sm="6"
         >
           <div class="field-label">
-            Processo
+            Responsável pelo Tratamento
           </div>
           <div class="field-value">
-            {{ tarefa.processo ?? '—' }}
-          </div>
-        </ColComponent>
-        <ColComponent
-          cols="12"
-          sm="6"
-        >
-          <div class="field-label">
-            Macroprocesso / Fase
-          </div>
-          <div class="field-value">
-            {{ tarefa.descricao_processo ?? '—' }}
+            {{ tarefa.user_tratamento ?? '—' }}
           </div>
         </ColComponent>
         <ColComponent
@@ -73,54 +46,6 @@
             >
               {{ tarefa.aging_processo ?? 0 }} dia{{ tarefa.aging_processo !== 1 ? 's' : '' }}
             </ChipComponent>
-          </div>
-        </ColComponent>
-      </RowComponent>
-
-      <DividerComponent class="my-4" />
-
-      <div class="section-label mb-3">
-        Situação Atual
-      </div>
-      <RowComponent dense>
-        <ColComponent
-          cols="12"
-          sm="6"
-        >
-          <div class="field-label">
-            Status
-          </div>
-          <div class="field-value">
-            <ChipComponent
-              :color="tarefa.finalized_at ? 'success' : 'primary'"
-              size="small"
-              variant="tonal"
-            >
-              {{ tarefa.status_tarefa ?? (tarefa.finalized_at ? 'Finalizado' : 'Em andamento') }}
-            </ChipComponent>
-          </div>
-        </ColComponent>
-        <ColComponent
-          v-if="tarefa.descricao_status_status"
-          cols="12"
-          sm="6"
-        >
-          <div class="field-label">
-            Descrição do Status
-          </div>
-          <div class="field-value">
-            {{ tarefa.descricao_status_status }}
-          </div>
-        </ColComponent>
-        <ColComponent
-          cols="12"
-          sm="6"
-        >
-          <div class="field-label">
-            Responsável pelo Tratamento
-          </div>
-          <div class="field-value">
-            {{ tarefa.user_tratamento ?? '—' }}
           </div>
         </ColComponent>
         <ColComponent
@@ -141,6 +66,18 @@
           </div>
         </ColComponent>
         <ColComponent
+          v-if="tarefa.descricao_status_status"
+          cols="12"
+          sm="6"
+        >
+          <div class="field-label">
+            Descrição do Status
+          </div>
+          <div class="field-value">
+            {{ tarefa.descricao_status_status }}
+          </div>
+        </ColComponent>
+        <ColComponent
           cols="12"
           sm="6"
         >
@@ -148,7 +85,7 @@
             Data de Cadastro
           </div>
           <div class="field-value">
-            {{ formatarDataHora(tarefa.created_at) }}
+            {{ formatarDataHora(tarefa.data_inicio_tarefa) }}
           </div>
         </ColComponent>
         <ColComponent
@@ -159,7 +96,7 @@
             Fechado em
           </div>
           <div class="field-value">
-            {{ tarefa.finalized_at ? formatarDataHora(tarefa.finalized_at) : '—' }}
+            {{ tarefa.data_fim_tarefa ? formatarDataHora(tarefa.data_fim_tarefa) : '—' }}
           </div>
         </ColComponent>
       </RowComponent>
@@ -172,7 +109,6 @@ import CardComponent from '@/components/comuns/cards/CardComponent.vue'
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
-import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
 
 defineProps({
