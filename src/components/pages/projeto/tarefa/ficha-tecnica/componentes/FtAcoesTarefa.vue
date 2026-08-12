@@ -150,7 +150,8 @@
   <DialogComponent
     v-if="dialog"
     v-model="dialog"
-    max-width="560px"
+    max-width="1400"
+    scrollable
     @keydown.esc="fecharDialog"
   >
     <CardComponent rounded="lg">
@@ -196,6 +197,18 @@
           clearable
           class="mb-4"
         />
+
+        <template v-if="ctrlFormularioId">
+          <DividerComponent class="mb-4" />
+          <div class="text-caption text-medium-emphasis mb-3">
+            Formulário associado
+          </div>
+          <FormularioDinamicoPorId
+            v-model="dadosFormulario"
+            :formulario-id="ctrlFormularioId"
+            class="mb-4"
+          />
+        </template>
 
         <TextAreaComponent
           v-model="form.comentario"
@@ -244,9 +257,11 @@ import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
+import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
 import TextAreaComponent from '@/components/comuns/forms/TextAreaComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
+import FormularioDinamicoPorId from '@/components/form-dinamico/FormularioDinamicoPorId.vue'
 
 const props = defineProps({
   tarefa: { type: Object, required: true },
@@ -328,6 +343,7 @@ const carregandoTratamentos = ref(false)
 
 const todosTratamentos     = ref([])
 const tarefasDisponiveisGrupos = ref({})
+const ctrlTarefaOrigem     = ref(null)
 
 // Mapeamento: acao_sistemica → chave do grupo em tarefas-disponiveis
 const ACAO_TO_GRUPO = {
@@ -346,21 +362,42 @@ const opcoesTratamento = computed(() =>
     .map(t => ({ value: t.id, text: t.tratamento }))
 )
 
-// Tarefas do tratamento selecionado
-const tarefasDoTratamento = computed(() => {
+// Tarefas (ctrl_tarefa completas, com pivot) do tratamento selecionado
+const tarefasDoTratamentoRaw = computed(() => {
   const tratamento = todosTratamentos.value.find(t => t.id === form.value.tratamento_id)
   if (!tratamento) return []
   const grupo = ACAO_TO_GRUPO[tratamento.acao_sistemica]
-  const tarefas = grupo ? (tarefasDisponiveisGrupos.value[grupo] ?? []) : []
-  return tarefas.map(t => {
-    return { value: t.id, text: t.tarefa }
-  })
+  return grupo ? (tarefasDisponiveisGrupos.value[grupo] ?? []) : []
+})
+
+const tarefasDoTratamento = computed(() =>
+  tarefasDoTratamentoRaw.value.map(t => ({ value: t.id, text: t.tarefa }))
+)
+
+const tarefaDestinoSelecionada = computed(() =>
+  tarefasDoTratamentoRaw.value.find(t => t.id === form.value.ctrl_tarefa_destino_id) ?? null
+)
+
+// Hierarquia para localizar o formulário a exibir no tratamento:
+// 1. tarefa_origem_ctrl_formulario_id da própria ctrl_tarefa (tarefa atual)
+// 2. tarefa_destino_ctrl_formulario_id da ctrl_tarefa selecionada como destino
+// 3. ctrl_formulario_id da mobilidade específica (pivot) entre origem e destino
+const ctrlFormularioId = computed(() => {
+  if (ctrlTarefaOrigem.value?.tarefa_origem_ctrl_formulario_id) {
+    return ctrlTarefaOrigem.value.tarefa_origem_ctrl_formulario_id
+  }
+  const destino = tarefaDestinoSelecionada.value
+  return destino?.tarefa_destino_ctrl_formulario_id
+    ?? destino?.pivot?.ctrl_formulario_id
+    ?? null
 })
 
 const form = ref({ tratamento_id: null, ctrl_tarefa_destino_id: null, ctrl_status_id: null, comentario: '' })
+const dadosFormulario = ref({})
 
 async function abrirDialog() {
   form.value = { tratamento_id: null, ctrl_tarefa_destino_id: null, ctrl_status_id: null, comentario: '' }
+  dadosFormulario.value = {}
   dialog.value = true
 
   const promises = []
@@ -370,10 +407,12 @@ async function abrirDialog() {
     Promise.all([
       api.get('wf/get-tratamentos'),
       api.get(`wf/tratamento/tarefas-disponiveis/${props.tarefa.pco_tarefa_id}`),
+      api.get(`wf/tarefas/${props.tarefa.ctrl_tarefa_id}`),
     ])
-      .then(([resTratamentos, resTarefas]) => {
+      .then(([resTratamentos, resTarefas, resCtrlTarefa]) => {
         todosTratamentos.value = resTratamentos.data?.data ?? []
         tarefasDisponiveisGrupos.value = resTarefas.data?.data ?? {}
+        ctrlTarefaOrigem.value = resCtrlTarefa.data?.data ?? null
       })
       .finally(() => { carregandoTratamentos.value = false })
   )
@@ -385,6 +424,8 @@ function fecharDialog() {
   dialog.value = false
   setTimeout(() => {
     form.value = { tratamento_id: null, ctrl_tarefa_destino_id: null, ctrl_status_id: null, comentario: '' }
+    dadosFormulario.value = {}
+    ctrlTarefaOrigem.value = null
   }, 300)
 }
 
@@ -395,7 +436,8 @@ async function salvar() {
       pco_tarefa_id:      props.tarefa.pco_tarefa_id,
       ctrl_tratamento_id: form.value.tratamento_id,
       ctrl_tarefa_id:     form.value.ctrl_tarefa_destino_id || null,
-      descricao: form.value.comentario || null
+      descricao: form.value.comentario || null,
+      form: dadosFormulario.value,
     })
     fecharDialog()
     emit('tratamento-salvo')
