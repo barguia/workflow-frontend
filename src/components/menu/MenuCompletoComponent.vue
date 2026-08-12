@@ -103,7 +103,6 @@
               base-color="sucess"
             />
           </router-link>
-
         </v-list>
       </CardComponent>
     </MenuComponent>
