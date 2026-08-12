@@ -195,22 +195,29 @@
               </div>
 
               <div
-                v-for="grupo in gruposOrigens"
-                :key="grupo.grupo"
-                class="mb-5"
+                v-else
+                class="origens-grid"
               >
-                <div
-                  v-if="grupo.processo_pai"
-                  class="grupo-titulo-pai mb-0"
+                <template
+                  v-for="(grupo, idxGrupo) in gruposOrigens"
+                  :key="grupo.grupo"
                 >
-                  Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
-                </div>
-                <div class="grupo-titulo mb-1">
-                  Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}
-                </div>
-                <DividerComponent class="mb-2" />
-                <div class="d-flex flex-column gap-2 mt-2">
                   <div
+                    v-if="idxGrupo > 0"
+                    class="origens-grid-full grupo-spacer"
+                  />
+                  <div
+                    v-if="grupo.processo_pai"
+                    class="origens-grid-full grupo-titulo-pai mb-0"
+                  >
+                    Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
+                  </div>
+                  <div class="origens-grid-full grupo-titulo mb-1">
+                    Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}
+                  </div>
+                  <DividerComponent class="origens-grid-full mb-2" />
+
+                  <template
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
                   >
@@ -218,12 +225,31 @@
                       color="success"
                       size="small"
                       variant="tonal"
-                      class="font-weight-medium"
+                      class="font-weight-medium chip-tarefa-nome"
                     >
                       Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
                     </ChipComponent>
-                  </div>
-                </div>
+                    <ChipComponent
+                      v-if="opcao.tipo_id"
+                      size="small"
+                      variant="tonal"
+                      :color="corTipo(tipoPorId[opcao.tipo_id])"
+                      class="font-weight-medium"
+                    >
+                      {{ tipoPorId[opcao.tipo_id] ?? '—' }}
+                    </ChipComponent>
+                    <span
+                      v-else
+                      class="text-caption text-medium-emphasis"
+                    >—</span>
+                    <div
+                      class="text-body-2 text-truncate"
+                      :class="opcao.formulario_id ? '' : 'text-medium-emphasis font-italic'"
+                    >
+                      {{ opcao.formulario_id ? (formularioPorId[opcao.formulario_id] ?? '—') : 'Sem formulário' }}
+                    </div>
+                  </template>
+                </template>
               </div>
             </div>
           </CardTextComponent>
@@ -292,8 +318,7 @@
                       color="primary"
                       size="small"
                       variant="tonal"
-                      class="font-weight-medium"
-                      style="min-width: 0"
+                      class="font-weight-medium chip-tarefa-nome"
                     >
                       Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
                     </ChipComponent>
@@ -514,6 +539,14 @@ const opcoesFormulario = computed(() =>
   formularios.value.map(f => ({ value: f.id, text: f.formulario }))
 )
 
+const tipoPorId = computed(() =>
+  Object.fromEntries(tiposMobilidade.value.map(t => [t.id, t.tipo]))
+)
+
+const formularioPorId = computed(() =>
+  Object.fromEntries(formularios.value.map(f => [f.id, f.formulario]))
+)
+
 const snackbar = ref({ show: false, message: '', color: 'success' })
 
 // --- Funil de navegação ---
@@ -599,7 +632,13 @@ function agruparPorProcesso(tarefas) {
         options:      [],
       }
     }
-    agrupado[nomeGrupo].options.push({ value: t.id, text: t.tarefa, ordenacao: t.ordenacao ?? 0 })
+    agrupado[nomeGrupo].options.push({
+      value:         t.id,
+      text:          t.tarefa,
+      ordenacao:     t.ordenacao ?? 0,
+      tipo_id:       t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      formulario_id: t.pivot?.ctrl_formulario_id ?? null,
+    })
   })
   return Object.values(agrupado)
     .sort((a, b) => a.ordenacao_pai - b.ordenacao_pai || a.ordenacao - b.ordenacao)
@@ -802,7 +841,32 @@ onMounted(carregar)
   grid-column: 1 / -1;
 }
 
+.origens-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 220px;
+  column-gap: 16px;
+  row-gap: 12px;
+  align-items: center;
+}
+
+.origens-grid-full {
+  grid-column: 1 / -1;
+}
+
 .grupo-spacer {
   height: 8px;
+}
+
+.chip-tarefa-nome {
+  min-width: 0;
+  width: 100%;
+}
+
+.chip-tarefa-nome :deep(.v-chip__content) {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 </style>
