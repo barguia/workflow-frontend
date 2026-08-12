@@ -18,36 +18,78 @@
     class="py-4"
   >
     <!-- Cabeçalho -->
-    <div class="d-flex align-center gap-3 mb-4">
-      <div>
-        <div class="d-flex align-center gap-2">
-          <IconComponent
-            color="primary"
-            size="20"
-          >
-            mdi-transit-connection-variant
-          </IconComponent>
-          <span class="text-h6 font-weight-bold">Mobilidade da Tarefa</span>
-        </div>
-        <div
-          v-if="tarefa"
-          class="text-h5 font-weight-bold text-medium-emphasis mt-1"
+    <div class="mobilidade-header mb-6">
+      <div class="d-flex align-center gap-2 mb-4">
+        <IconComponent
+          color="primary"
+          size="18"
         >
-          {{ tarefa.tarefa }} · {{ tarefa.processo?.processo }}
-        </div>
-      </div>
-      <SpacerComponent />
-      <ButtonComponent
-        color="secondary"
-        variant="tonal"
-        data-testid="mobilidade-btn-associar"
-        @click="abrirDialogAssociacao"
-      >
-        <IconComponent start>
-          mdi-link-variant
+          mdi-transit-connection-variant
         </IconComponent>
-        Associar
-      </ButtonComponent>
+        <span class="text-overline text-medium-emphasis">Mobilidade da Tarefa</span>
+        <SpacerComponent />
+        <ButtonComponent
+          color="secondary"
+          variant="tonal"
+          data-testid="mobilidade-btn-associar"
+          @click="abrirDialogAssociacao"
+        >
+          <IconComponent start>
+            mdi-link-variant
+          </IconComponent>
+          Associar
+        </ButtonComponent>
+      </div>
+
+      <template v-if="tarefa">
+        <!-- Workflow -->
+        <h1 class="header-eyebrow mb-0">
+          Workflow
+        </h1>
+        <div class="header-workflow mb-4">
+          {{ tarefa.workflow?.workflow ?? '—' }}
+        </div>
+
+        <!-- Macroprocesso / Processo -->
+        <h2 class="header-caminho mb-4">
+          <div
+            v-if="tarefa.processo?.processo_pai"
+            class="caminho-item"
+          >
+            <div class="header-eyebrow">
+              Macroprocesso <span class="etapa-tag">· Etapa {{ tarefa.processo.processo_pai.ordenacao ?? 0 }}</span>
+            </div>
+            <div class="caminho-valor">
+              {{ tarefa.processo.processo_pai.processo }}
+            </div>
+          </div>
+          <IconComponent
+            v-if="tarefa.processo?.processo_pai"
+            size="18"
+            class="caminho-separador"
+          >
+            mdi-chevron-right
+          </IconComponent>
+          <div class="caminho-item">
+            <div class="header-eyebrow">
+              Processo <span class="etapa-tag">· Etapa {{ tarefa.processo?.ordenacao ?? 0 }}</span>
+            </div>
+            <div class="caminho-valor">
+              {{ tarefa.processo?.processo ?? '—' }}
+            </div>
+          </div>
+        </h2>
+
+        <!-- Tarefa atual -->
+        <h3 class="tarefa-destaque">
+          <div class="header-eyebrow tarefa-eyebrow">
+            Tarefa atual <span class="etapa-tag">· Etapa {{ tarefa.ordenacao ?? 0 }}</span>
+          </div>
+          <div class="tarefa-nome">
+            {{ tarefa.tarefa }}
+          </div>
+        </h3>
+      </template>
     </div>
 
     <!-- Funil de navegação entre tarefas -->
@@ -116,57 +158,12 @@
       </CardTextComponent>
     </CardComponent>
 
-    <!-- Detalhes da tarefa -->
-    <CardComponent
-      rounded="xl"
-      variant="elevated"
-      class="mb-4"
-    >
-      <CardTextComponent class="pa-4">
-        <RowComponent dense>
-          <ColComponent
-            cols="12"
-            sm="4"
-          >
-            <div class="field-label">
-              Tarefa
-            </div>
-            <div class="field-value">
-              Ordem: {{ tarefa?.ordenacao ?? 0 }}. {{ tarefa?.tarefa ?? '—' }}
-            </div>
-          </ColComponent>
-          <ColComponent
-            cols="12"
-            sm="4"
-          >
-            <div class="field-label">
-              Processo
-            </div>
-            <div class="field-value">
-              Ordem: {{ tarefa?.processo?.ordenacao ?? 0 }}. {{ tarefa?.processo?.processo ?? '—' }}
-            </div>
-          </ColComponent>
-          <ColComponent
-            cols="12"
-            sm="4"
-          >
-            <div class="field-label">
-              Workflow
-            </div>
-            <div class="field-value">
-              {{ tarefa?.workflow?.workflow ?? '—' }}
-            </div>
-          </ColComponent>
-        </RowComponent>
-      </CardTextComponent>
-    </CardComponent>
-
     <!-- Painéis de mobilidade -->
     <RowComponent>
       <!-- Origens: de onde pode vir -->
       <ColComponent
         cols="12"
-        md="6"
+        md="5"
       >
         <CardComponent
           rounded="xl"
@@ -195,22 +192,48 @@
               </div>
 
               <div
-                v-for="grupo in gruposOrigens"
-                :key="grupo.grupo"
-                class="mb-5"
+                v-else
+                class="origens-grid"
               >
-                <div
-                  v-if="grupo.processo_pai"
-                  class="grupo-titulo-pai mb-0"
+                <template
+                  v-for="(grupo, idxGrupo) in gruposOrigens"
+                  :key="grupo.grupo"
                 >
-                  Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
-                </div>
-                <div class="grupo-titulo mb-1">
-                  Ordem: {{ grupo.ordenacao }}. {{ grupo.grupo }}
-                </div>
-                <DividerComponent class="mb-2" />
-                <div class="d-flex flex-column gap-2 mt-2">
                   <div
+                    v-if="idxGrupo > 0"
+                    class="origens-grid-full grupo-spacer"
+                  />
+                  <div class="origens-grid-full grupo-caminho mb-1">
+                    <div
+                      v-if="grupo.processo_pai"
+                      class="grupo-caminho-item"
+                    >
+                      <div class="header-eyebrow">
+                        Macroprocesso <span class="etapa-tag">· Etapa {{ grupo.ordenacao_pai }}</span>
+                      </div>
+                      <div class="grupo-valor-pai">
+                        {{ grupo.processo_pai }}
+                      </div>
+                    </div>
+                    <IconComponent
+                      v-if="grupo.processo_pai"
+                      size="14"
+                      class="grupo-separador"
+                    >
+                      mdi-chevron-right
+                    </IconComponent>
+                    <div class="grupo-caminho-item">
+                      <div class="header-eyebrow">
+                        Processo <span class="etapa-tag">· Etapa {{ grupo.ordenacao }}</span>
+                      </div>
+                      <div class="grupo-valor">
+                        {{ grupo.grupo }}
+                      </div>
+                    </div>
+                  </div>
+                  <DividerComponent class="origens-grid-full mb-2" />
+
+                  <template
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
                   >
@@ -218,12 +241,31 @@
                       color="success"
                       size="small"
                       variant="tonal"
+                      class="font-weight-medium chip-tarefa-nome"
+                    >
+                      <span class="etapa-tag">Etapa {{ opcao.ordenacao }} ·</span> {{ opcao.text }}
+                    </ChipComponent>
+                    <ChipComponent
+                      v-if="opcao.tipo_id"
+                      size="small"
+                      variant="tonal"
+                      :color="corTipo(tipoPorId[opcao.tipo_id])"
                       class="font-weight-medium"
                     >
-                      Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
+                      {{ tipoPorId[opcao.tipo_id] ?? '—' }}
                     </ChipComponent>
-                  </div>
-                </div>
+                    <span
+                      v-else
+                      class="text-caption text-medium-emphasis"
+                    >—</span>
+                    <div
+                      class="text-body-2 text-truncate"
+                      :class="opcao.formulario_id ? '' : 'text-medium-emphasis font-italic'"
+                    >
+                      {{ opcao.formulario_id ? (formularioPorId[opcao.formulario_id] ?? '—') : 'Sem formulário' }}
+                    </div>
+                  </template>
+                </template>
               </div>
             </div>
           </CardTextComponent>
@@ -233,7 +275,7 @@
       <!-- Destinos: para onde pode ir -->
       <ColComponent
         cols="12"
-        md="6"
+        md="7"
       >
         <CardComponent
           rounded="xl"
@@ -262,41 +304,65 @@
               </div>
 
               <div
-                v-for="grupo in gruposDestinos"
-                :key="grupo.grupo"
-                class="mb-5"
+                v-else
+                class="destinos-grid"
               >
-                <div
-                  v-if="grupo.processo_pai"
-                  class="grupo-titulo-pai mb-0"
+                <template
+                  v-for="(grupo, idxGrupo) in gruposDestinos"
+                  :key="grupo.grupo"
                 >
-                  Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
-                </div>
-                <div class="grupo-titulo mb-1">
-                  Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}
-                </div>
-                <DividerComponent class="mb-2" />
-                <div class="d-flex flex-column mt-2">
                   <div
+                    v-if="idxGrupo > 0"
+                    class="destinos-grid-full grupo-spacer"
+                  />
+                  <div class="destinos-grid-full grupo-caminho mb-1">
+                    <div
+                      v-if="grupo.processo_pai"
+                      class="grupo-caminho-item"
+                    >
+                      <div class="header-eyebrow">
+                        Macroprocesso <span class="etapa-tag">· Etapa {{ grupo.ordenacao_pai }}</span>
+                      </div>
+                      <div class="grupo-valor-pai">
+                        {{ grupo.processo_pai }}
+                      </div>
+                    </div>
+                    <IconComponent
+                      v-if="grupo.processo_pai"
+                      size="14"
+                      class="grupo-separador"
+                    >
+                      mdi-chevron-right
+                    </IconComponent>
+                    <div class="grupo-caminho-item">
+                      <div class="header-eyebrow">
+                        Processo <span class="etapa-tag">· Etapa {{ grupo.ordenacao }}</span>
+                      </div>
+                      <div class="grupo-valor">
+                        {{ grupo.grupo }}
+                      </div>
+                    </div>
+                  </div>
+                  <DividerComponent class="destinos-grid-full mb-2" />
+
+                  <template
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
-                    class="d-flex align-center gap-4 mb-3"
                   >
                     <ChipComponent
                       color="primary"
                       size="small"
                       variant="tonal"
-                      class="font-weight-medium flex-grow-1"
-                      style="min-width: 0"
+                      class="font-weight-medium chip-tarefa-nome"
                     >
-                      Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
+                      <span class="etapa-tag">Etapa {{ opcao.ordenacao }} ·</span> {{ opcao.text }}
                     </ChipComponent>
                     <ChipComponent
                       v-if="opcao.is_interrupcao"
                       color="warning"
                       size="small"
                       variant="tonal"
-                      class="flex-shrink-0 font-weight-medium"
+                      class="font-weight-medium"
                     >
                       <IconComponent
                         start
@@ -312,9 +378,8 @@
                       density="compact"
                       variant="outlined"
                       rounded="lg"
-                      class="flex-shrink-0"
                       :data-testid="`mobilidade-toggle-tipo-${opcao.mobilidade_id}`"
-                      @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
+                      @update:model-value="val => atualizarMobilidade(opcao, { tipoId: val })"
                     >
                       <ButtonComponent
                         v-for="tipo in tiposMobilidade"
@@ -322,14 +387,25 @@
                         :value="tipo.id"
                         size="x-small"
                         :color="corTipo(tipo.tipo)"
-                        :loading="atualizandoTipo === opcao.mobilidade_id"
+                        :loading="atualizandoMobilidade === opcao.mobilidade_id"
                         :data-testid="`mobilidade-btn-tipo-${tipo.id}`"
                       >
                         {{ tipo.tipo }}
                       </ButtonComponent>
                     </v-btn-toggle>
-                  </div>
-                </div>
+                    <SelectComponent
+                      :model-value="opcao.formulario_id"
+                      :items="opcoesFormulario"
+                      label="Formulário"
+                      clearable
+                      hide-details
+                      density="compact"
+                      :loading="atualizandoMobilidade === opcao.mobilidade_id"
+                      :data-testid="`mobilidade-select-formulario-${opcao.mobilidade_id}`"
+                      @update:model-value="val => atualizarMobilidade(opcao, { formularioId: val })"
+                    />
+                  </template>
+                </template>
               </div>
             </div>
           </CardTextComponent>
@@ -457,6 +533,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import api from '@/services/api.js'
+import { useCrud } from '@/services/useCrud.js'
 
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
@@ -479,16 +556,31 @@ import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 const route  = useRoute()
 const router = useRouter()
 
+const { index: fetchFormularios } = useCrud('wf/forms/formularios?order_by=formulario')
+
 const tarefaId = computed(() => Number(route.params.id))
 
 const carregando = ref(true)
 
-const tarefa           = ref(null)
-const gruposDestinos   = ref([])
-const gruposOrigens    = ref([])
-const tiposMobilidade  = ref([])
-const todasTarefas     = ref([])
-const atualizandoTipo  = ref(null)
+const tarefa              = ref(null)
+const gruposDestinos      = ref([])
+const gruposOrigens       = ref([])
+const tiposMobilidade     = ref([])
+const formularios         = ref([])
+const todasTarefas        = ref([])
+const atualizandoMobilidade = ref(null)
+
+const opcoesFormulario = computed(() =>
+  formularios.value.map(f => ({ value: f.id, text: f.formulario }))
+)
+
+const tipoPorId = computed(() =>
+  Object.fromEntries(tiposMobilidade.value.map(t => [t.id, t.tipo]))
+)
+
+const formularioPorId = computed(() =>
+  Object.fromEntries(formularios.value.map(f => [f.id, f.formulario]))
+)
 
 const snackbar = ref({ show: false, message: '', color: 'success' })
 
@@ -502,7 +594,7 @@ const opsMacro = computed(() => {
   todasTarefas.value.forEach(t => {
     const pai = t.processo?.processo_pai
     if (pai && !map[pai.id]) {
-      map[pai.id] = { id: pai.id, nome: `${pai.ordenacao}. ${pai.processo}`, ordenacao: pai.ordenacao ?? 0 }
+      map[pai.id] = { id: pai.id, nome: `Etapa ${pai.ordenacao}. ${pai.processo}`, ordenacao: pai.ordenacao ?? 0 }
     }
   })
   return Object.values(map).sort((a, b) => a.ordenacao - b.ordenacao)
@@ -515,7 +607,7 @@ const opsProcesso = computed(() => {
     .forEach(t => {
       const p = t.processo
       if (p && !map[p.id]) {
-        map[p.id] = { id: p.id, nome: `${p.ordenacao}. ${p.processo}`, ordenacao: p.ordenacao ?? 0 }
+        map[p.id] = { id: p.id, nome: `Etapa ${p.ordenacao}. ${p.processo}`, ordenacao: p.ordenacao ?? 0 }
       }
     })
   return Object.values(map).sort((a, b) => a.ordenacao - b.ordenacao)
@@ -575,7 +667,13 @@ function agruparPorProcesso(tarefas) {
         options:      [],
       }
     }
-    agrupado[nomeGrupo].options.push({ value: t.id, text: t.tarefa, ordenacao: t.ordenacao ?? 0 })
+    agrupado[nomeGrupo].options.push({
+      value:         t.id,
+      text:          t.tarefa,
+      ordenacao:     t.ordenacao ?? 0,
+      tipo_id:       t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      formulario_id: t.pivot?.ctrl_formulario_id ?? null,
+    })
   })
   return Object.values(agrupado)
     .sort((a, b) => a.ordenacao_pai - b.ordenacao_pai || a.ordenacao - b.ordenacao)
@@ -601,6 +699,7 @@ function agruparDestinosPorProcesso(destinos) {
       ordenacao:      t.ordenacao ?? 0,
       mobilidade_id:  t.pivot?.id ?? null,
       tipo_id:        t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      formulario_id:  t.pivot?.ctrl_formulario_id ?? null,
       is_interrupcao: t.tipo_tarefa?.tipo === 'Interrupção',
     })
   })
@@ -615,31 +714,40 @@ function corTipo(tipoNome) {
   return 'primary'
 }
 
-async function atualizarTipo(mobilidadeId, tipoId) {
+async function atualizarMobilidade(opcao, { tipoId, formularioId } = {}) {
+  const mobilidadeId = opcao?.mobilidade_id
   if (!mobilidadeId) return
-  atualizandoTipo.value = mobilidadeId
+  atualizandoMobilidade.value = mobilidadeId
   try {
-    await api.put(`wf/mobilidades/${mobilidadeId}`, { ctrl_mobilidade_tipo_id: tipoId })
-    snackbar.value = { show: true, message: 'Tipo de mobilidade atualizado!', color: 'success' }
+    await api.put(`wf/mobilidades/${mobilidadeId}`, {
+      ctrl_mobilidade_tipo_id: tipoId !== undefined ? tipoId : opcao.tipo_id,
+      ctrl_formulario_id: formularioId !== undefined ? formularioId : opcao.formulario_id,
+    })
+    snackbar.value = { show: true, message: 'Mobilidade atualizada!', color: 'success' }
     await carregar()
   } finally {
-    atualizandoTipo.value = null
+    atualizandoMobilidade.value = null
   }
 }
 
 async function carregar() {
   carregando.value = true
   try {
-    const [resTarefa, resMobilidades, resTipos] = await Promise.all([
+    const [resTarefa, resMobilidades, resTipos, resFormularios] = await Promise.all([
       api.get(`wf/tarefas/${tarefaId.value}`),
       api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
       tiposMobilidade.value.length ? Promise.resolve(null) : api.get('wf/mobilidades-tipos'),
+      formularios.value.length ? Promise.resolve(null) : fetchFormularios(),
     ])
 
     tarefa.value = resTarefa.data?.data ?? null
 
     if (resTipos) {
       tiposMobilidade.value = resTipos.data?.data ?? []
+    }
+
+    if (resFormularios) {
+      formularios.value = resFormularios
     }
 
     const mobilidade = resMobilidades.data?.data ?? {}
@@ -721,38 +829,138 @@ onMounted(carregar)
 </script>
 
 <style scoped>
-.field-label {
-  font-size: 0.72rem;
-  font-weight: 600;
+.header-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.55;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
   margin-bottom: 2px;
 }
 
-.field-value {
-  font-size: 0.925rem;
+.etapa-tag {
   font-weight: 500;
+  opacity: 0.75;
+}
+
+.header-workflow {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.header-caminho {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  font-weight: normal;
+}
+
+.caminho-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.caminho-valor {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.caminho-separador {
+  opacity: 0.4;
+  margin-bottom: 2px;
+}
+
+.tarefa-destaque {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: rgba(var(--v-theme-primary), 0.1);
+  border: 1px solid rgba(var(--v-theme-primary), 0.25);
+  border-left: 4px solid rgb(var(--v-theme-primary));
+  font-weight: normal;
+}
+
+.tarefa-eyebrow {
+  color: rgb(var(--v-theme-primary));
+  opacity: 0.75;
+}
+
+.tarefa-nome {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: rgb(var(--v-theme-primary));
+  line-height: 1.25;
 }
 
 .painel-header {
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
-.grupo-titulo-pai {
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  opacity: 0.45;
+.grupo-caminho {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
 }
 
-.grupo-titulo {
-  font-size: 0.75rem;
+.grupo-caminho-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.grupo-valor-pai {
+  font-size: 0.90rem;
+  font-weight: 600;
+}
+
+.grupo-valor {
+  font-size: 0.88rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: rgb(var(--v-theme-primary));
-  opacity: 0.8;
+}
+
+.grupo-separador {
+  opacity: 0.35;
+  margin-bottom: 3px;
+}
+
+.destinos-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 220px;
+  column-gap: 16px;
+  row-gap: 12px;
+  align-items: center;
+}
+
+.destinos-grid-full {
+  grid-column: 1 / -1;
+}
+
+.origens-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 220px;
+  column-gap: 16px;
+  row-gap: 12px;
+  align-items: center;
+}
+
+.origens-grid-full {
+  grid-column: 1 / -1;
+}
+
+.grupo-spacer {
+  height: 8px;
+}
+
+.chip-tarefa-nome {
+  min-width: 0;
+  width: 100%;
+}
+
+.chip-tarefa-nome :deep(.v-chip__content) {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 </style>

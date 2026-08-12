@@ -14,26 +14,6 @@
           sm="6"
         >
           <div class="field-label">
-            Projeto
-          </div>
-          <div class="field-value d-flex align-center gap-1">
-            {{ tarefa.nome ?? '—' }}
-            <ButtonComponent
-              v-if="tarefa.pco_projeto_id"
-              icon="mdi-open-in-new"
-              variant="text"
-              size="x-small"
-              color="primary"
-              :href="`/ficha-tecnica/${tarefa.pco_projeto_id}`"
-              target="_blank"
-            />
-          </div>
-        </ColComponent>
-        <ColComponent
-          cols="12"
-          sm="6"
-        >
-          <div class="field-label">
             Prioridade
           </div>
           <div class="field-value">
@@ -101,17 +81,6 @@
       </div>
       <RowComponent dense>
         <ColComponent
-          cols="12"
-          sm="6"
-        >
-          <div class="field-label">
-            Workflow
-          </div>
-          <div class="field-value">
-            {{ tarefa.workflow ?? '—' }}
-          </div>
-        </ColComponent>
-        <ColComponent
           v-if="tarefa.descricao_workflow"
           cols="12"
           sm="6"
@@ -148,7 +117,6 @@
 <script setup>
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
 import CardTextComponent from '@/components/comuns/cards/CardTextComponent.vue'
-import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
 import RowComponent from '@/components/comuns/layout/RowComponent.vue'
 import ColComponent from '@/components/comuns/layout/ColComponent.vue'
 import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'

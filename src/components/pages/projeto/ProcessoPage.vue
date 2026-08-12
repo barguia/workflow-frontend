@@ -142,6 +142,8 @@ const fields = [
 
 const headers = [
   { title: 'Processo', value: 'processo' },
+  { title: 'Etapa Macroprocesso', value: 'processo_pai.ordenacao' },
+  { title: 'Etapa Processo', value: 'ordenacao' },
   { title: 'Processo Relacionado', value: 'processo_pai.processo' },
   { title: 'Hierarquia', value: 'hierarquia.hierarquia' },
   { title: 'Workflow', value: 'workflow.workflow' },
