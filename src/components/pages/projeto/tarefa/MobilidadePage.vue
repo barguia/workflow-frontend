@@ -166,7 +166,7 @@
       <!-- Origens: de onde pode vir -->
       <ColComponent
         cols="12"
-        md="6"
+        md="5"
       >
         <CardComponent
           rounded="xl"
@@ -233,7 +233,7 @@
       <!-- Destinos: para onde pode ir -->
       <ColComponent
         cols="12"
-        md="6"
+        md="7"
       >
         <CardComponent
           rounded="xl"
@@ -262,31 +262,37 @@
               </div>
 
               <div
-                v-for="grupo in gruposDestinos"
-                :key="grupo.grupo"
-                class="mb-5"
+                v-else
+                class="destinos-grid"
               >
-                <div
-                  v-if="grupo.processo_pai"
-                  class="grupo-titulo-pai mb-0"
+                <template
+                  v-for="(grupo, idxGrupo) in gruposDestinos"
+                  :key="grupo.grupo"
                 >
-                  Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
-                </div>
-                <div class="grupo-titulo mb-1">
-                  Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}
-                </div>
-                <DividerComponent class="mb-2" />
-                <div class="d-flex flex-column mt-2">
                   <div
+                    v-if="idxGrupo > 0"
+                    class="destinos-grid-full grupo-spacer"
+                  />
+                  <div
+                    v-if="grupo.processo_pai"
+                    class="destinos-grid-full grupo-titulo-pai mb-0"
+                  >
+                    Ordem: {{ grupo.ordenacao_pai }}. {{ grupo.processo_pai }}
+                  </div>
+                  <div class="destinos-grid-full grupo-titulo mb-1">
+                    Ordem: {{ grupo.ordenacao_pai }}.{{ grupo.ordenacao }}. {{ grupo.grupo }}
+                  </div>
+                  <DividerComponent class="destinos-grid-full mb-2" />
+
+                  <template
                     v-for="opcao in grupo.options"
                     :key="opcao.value"
-                    class="d-flex align-center gap-4 mb-3"
                   >
                     <ChipComponent
                       color="primary"
                       size="small"
                       variant="tonal"
-                      class="font-weight-medium flex-grow-1"
+                      class="font-weight-medium"
                       style="min-width: 0"
                     >
                       Ordem: {{ opcao.ordenacao }}. {{ opcao.text }}
@@ -296,7 +302,7 @@
                       color="warning"
                       size="small"
                       variant="tonal"
-                      class="flex-shrink-0 font-weight-medium"
+                      class="font-weight-medium"
                     >
                       <IconComponent
                         start
@@ -312,9 +318,8 @@
                       density="compact"
                       variant="outlined"
                       rounded="lg"
-                      class="flex-shrink-0"
                       :data-testid="`mobilidade-toggle-tipo-${opcao.mobilidade_id}`"
-                      @update:model-value="val => atualizarTipo(opcao.mobilidade_id, val)"
+                      @update:model-value="val => atualizarMobilidade(opcao, { tipoId: val })"
                     >
                       <ButtonComponent
                         v-for="tipo in tiposMobilidade"
@@ -322,14 +327,25 @@
                         :value="tipo.id"
                         size="x-small"
                         :color="corTipo(tipo.tipo)"
-                        :loading="atualizandoTipo === opcao.mobilidade_id"
+                        :loading="atualizandoMobilidade === opcao.mobilidade_id"
                         :data-testid="`mobilidade-btn-tipo-${tipo.id}`"
                       >
                         {{ tipo.tipo }}
                       </ButtonComponent>
                     </v-btn-toggle>
-                  </div>
-                </div>
+                    <SelectComponent
+                      :model-value="opcao.formulario_id"
+                      :items="opcoesFormulario"
+                      label="Formulário"
+                      clearable
+                      hide-details
+                      density="compact"
+                      :loading="atualizandoMobilidade === opcao.mobilidade_id"
+                      :data-testid="`mobilidade-select-formulario-${opcao.mobilidade_id}`"
+                      @update:model-value="val => atualizarMobilidade(opcao, { formularioId: val })"
+                    />
+                  </template>
+                </template>
               </div>
             </div>
           </CardTextComponent>
@@ -457,6 +473,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import api from '@/services/api.js'
+import { useCrud } from '@/services/useCrud.js'
 
 import ContainerComponent from '@/components/comuns/containers/ContainerComponent.vue'
 import CardComponent from '@/components/comuns/cards/CardComponent.vue'
@@ -479,16 +496,23 @@ import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 const route  = useRoute()
 const router = useRouter()
 
+const { index: fetchFormularios } = useCrud('wf/forms/formularios?order_by=formulario')
+
 const tarefaId = computed(() => Number(route.params.id))
 
 const carregando = ref(true)
 
-const tarefa           = ref(null)
-const gruposDestinos   = ref([])
-const gruposOrigens    = ref([])
-const tiposMobilidade  = ref([])
-const todasTarefas     = ref([])
-const atualizandoTipo  = ref(null)
+const tarefa              = ref(null)
+const gruposDestinos      = ref([])
+const gruposOrigens       = ref([])
+const tiposMobilidade     = ref([])
+const formularios         = ref([])
+const todasTarefas        = ref([])
+const atualizandoMobilidade = ref(null)
+
+const opcoesFormulario = computed(() =>
+  formularios.value.map(f => ({ value: f.id, text: f.formulario }))
+)
 
 const snackbar = ref({ show: false, message: '', color: 'success' })
 
@@ -601,6 +625,7 @@ function agruparDestinosPorProcesso(destinos) {
       ordenacao:      t.ordenacao ?? 0,
       mobilidade_id:  t.pivot?.id ?? null,
       tipo_id:        t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      formulario_id:  t.pivot?.ctrl_formulario_id ?? null,
       is_interrupcao: t.tipo_tarefa?.tipo === 'Interrupção',
     })
   })
@@ -615,31 +640,40 @@ function corTipo(tipoNome) {
   return 'primary'
 }
 
-async function atualizarTipo(mobilidadeId, tipoId) {
+async function atualizarMobilidade(opcao, { tipoId, formularioId } = {}) {
+  const mobilidadeId = opcao?.mobilidade_id
   if (!mobilidadeId) return
-  atualizandoTipo.value = mobilidadeId
+  atualizandoMobilidade.value = mobilidadeId
   try {
-    await api.put(`wf/mobilidades/${mobilidadeId}`, { ctrl_mobilidade_tipo_id: tipoId })
-    snackbar.value = { show: true, message: 'Tipo de mobilidade atualizado!', color: 'success' }
+    await api.put(`wf/mobilidades/${mobilidadeId}`, {
+      ctrl_mobilidade_tipo_id: tipoId !== undefined ? tipoId : opcao.tipo_id,
+      ctrl_formulario_id: formularioId !== undefined ? formularioId : opcao.formulario_id,
+    })
+    snackbar.value = { show: true, message: 'Mobilidade atualizada!', color: 'success' }
     await carregar()
   } finally {
-    atualizandoTipo.value = null
+    atualizandoMobilidade.value = null
   }
 }
 
 async function carregar() {
   carregando.value = true
   try {
-    const [resTarefa, resMobilidades, resTipos] = await Promise.all([
+    const [resTarefa, resMobilidades, resTipos, resFormularios] = await Promise.all([
       api.get(`wf/tarefas/${tarefaId.value}`),
       api.get(`wf/tarefas-mobilidades/${tarefaId.value}`),
       tiposMobilidade.value.length ? Promise.resolve(null) : api.get('wf/mobilidades-tipos'),
+      formularios.value.length ? Promise.resolve(null) : fetchFormularios(),
     ])
 
     tarefa.value = resTarefa.data?.data ?? null
 
     if (resTipos) {
       tiposMobilidade.value = resTipos.data?.data ?? []
+    }
+
+    if (resFormularios) {
+      formularios.value = resFormularios
     }
 
     const mobilidade = resMobilidades.data?.data ?? {}
@@ -754,5 +788,21 @@ onMounted(carregar)
   letter-spacing: 0.06em;
   color: rgb(var(--v-theme-primary));
   opacity: 0.8;
+}
+
+.destinos-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 220px;
+  column-gap: 16px;
+  row-gap: 12px;
+  align-items: center;
+}
+
+.destinos-grid-full {
+  grid-column: 1 / -1;
+}
+
+.grupo-spacer {
+  height: 8px;
 }
 </style>

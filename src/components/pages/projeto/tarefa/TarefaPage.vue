@@ -40,6 +40,7 @@ import {useCrud} from "@/services/useCrud.js";
 const { index: fetchProcessos } = useCrud('wf/processos')
 const { index: fetchWorkflow } = useCrud('wf/workflows')
 const { index: fetchTiposTarefa } = useCrud('wf/tarefas-tipos')
+const { index: fetchFormulario } = useCrud('wf/forms/formularios?order_by=formulario')
 
 const TIPO_ESTEIRA_ID = 1
 
@@ -74,6 +75,26 @@ const tarefaFields = [
     defaultValue: null,
     rules: [v => !!v || 'Tipo de tarefa é obrigatório'],
     optional: false,
+  },
+  {
+    key: 'tarefa_origem_ctrl_formulario_id',
+    label: 'Form.Tratamento Origem',
+    type: 'select',
+    options: async () => {
+      const forms = await fetchFormulario()
+      return forms.map(t => ({ value: t.id, text: t.formulario }))
+    },
+    defaultValue: null,
+  },
+  {
+    key: 'tarefa_destino_ctrl_formulario_id',
+    label: 'Form.Tratamento Destino',
+    type: 'select',
+    options: async () => {
+      const forms = await fetchFormulario()
+      return forms.map(t => ({ value: t.id, text: t.formulario }))
+    },
+    defaultValue: null,
   },
   {
     key: 'ctrl_processo_id',
