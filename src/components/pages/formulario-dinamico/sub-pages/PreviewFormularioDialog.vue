@@ -30,12 +30,22 @@
           v-if="modo === 'readonly'"
           :snapshot="dadosForm.snapshot"
           :dados="dadosForm.dados"
+          :snapshot-version="dadosForm.snapshot_version"
         />
 
         <template v-if="mostrarDados">
           <DividerComponent class="my-4" />
-          <div class="text-caption text-medium-emphasis mb-2">
-            Dados do Formulário (debug)
+          <div class="d-flex align-center justify-space-between mb-2">
+            <div class="text-caption text-medium-emphasis">
+              Dados do Formulário (debug)
+            </div>
+            <ButtonComponent
+              icon="mdi-content-copy"
+              variant="text"
+              size="small"
+              data-testid="preview-copiar-dados"
+              @click="copiarDados"
+            />
           </div>
           <pre>{{ dadosForm }}</pre>
         </template>
@@ -129,6 +139,19 @@ watch(() => props.formulario, (formulario) => {
 }, { immediate: true })
 
 const validar = () => formularioRef.value?.validate?.()
+
+const copiarDados = async () => {
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(dadosForm.value, null, 2))
+    window.dispatchEvent(new CustomEvent('notification', {
+      detail: { type: 'success', message: 'Dados copiados para a área de transferência!' },
+    }))
+  } catch {
+    window.dispatchEvent(new CustomEvent('notification', {
+      detail: { type: 'error', message: 'Não foi possível copiar os dados.' },
+    }))
+  }
+}
 </script>
 
 <style scoped>

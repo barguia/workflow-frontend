@@ -40,6 +40,7 @@ import api from '@/services/api.js'
 import ProgressLinearComponent from '@/components/comuns/progress/ProgressLinearComponent.vue'
 import AlerComponent from '@/components/comuns/alerts/AlerComponent.vue'
 import FormularioDinamico from '@/components/form-dinamico/FormularioDinamico.vue'
+import { SNAPSHOT_VERSION_ATUAL } from '@/components/form-dinamico/snapshot-versoes/index.js'
 
 const props = defineProps({
   formularioId: { type: [Number, String], default: null },
@@ -191,7 +192,7 @@ const snapshot = computed(() =>
 )
 
 watch([form, snapshot], () => {
-  emit('update:modelValue', { dados: form.value, snapshot: snapshot.value })
+  emit('update:modelValue', { dados: form.value, snapshot: snapshot.value, snapshot_version: SNAPSHOT_VERSION_ATUAL })
 }, { deep: true })
 
 const carregarCampos = async (id) => {

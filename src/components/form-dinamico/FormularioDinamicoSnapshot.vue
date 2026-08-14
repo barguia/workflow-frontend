@@ -1,66 +1,23 @@
 <!-- src/components/form-dinamico/FormularioDinamicoSnapshot.vue -->
+<!-- Dispatcher: escolhe o renderer certo em snapshot-versoes/ de acordo com a versão em que o -->
+<!-- snapshot foi salvo. Componentes que consomem isso não precisam saber que versões existem. -->
 <template>
-  <RowComponent dense>
-    <ColComponent
-      v-for="(campo, key) in snapshot"
-      :key="key"
-      :class="'v-col-' + (campo.pivot?.cols ?? 12)"
-      class="pb-3"
-    >
-      <div class="text-caption text-medium-emphasis">
-        {{ campo.label }}
-      </div>
-
-      <div
-        v-if="isSelecionavel(campo.type)"
-        class="d-flex flex-wrap ga-1 mt-1"
-      >
-        <ChipComponent
-          v-for="opcao in opcoesSelecionadas(campo)"
-          :key="opcao.value"
-          size="small"
-          variant="tonal"
-          color="primary"
-        >
-          {{ opcao.text }}
-        </ChipComponent>
-        <span
-          v-if="opcoesSelecionadas(campo).length === 0"
-          class="text-body-2 text-disabled"
-        >
-          —
-        </span>
-      </div>
-
-      <div
-        v-else-if="campo.type === 'switch'"
-        class="text-body-2"
-      >
-        {{ dados[key] === campo.trueValue ? campo.trueLabel : campo.falseLabel }}
-      </div>
-
-      <div
-        v-else
-        class="text-body-2"
-      >
-        {{ valorExibido(dados[key]) }}
-      </div>
-    </ColComponent>
-  </RowComponent>
+  <component
+    :is="componenteVersao"
+    :snapshot="snapshot"
+    :dados="dados"
+  />
 </template>
 
 <script setup>
-import RowComponent from '@/components/comuns/layout/RowComponent.vue'
-import ColComponent from '@/components/comuns/layout/ColComponent.vue'
-import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
+import { computed } from 'vue'
+import { SNAPSHOT_VERSION_ATUAL, versoes } from '@/components/form-dinamico/snapshot-versoes/index.js'
 
-defineProps({
+const props = defineProps({
   snapshot: { type: Object, default: () => ({}) },
   dados: { type: Object, default: () => ({}) },
+  snapshotVersion: { type: Number, default: SNAPSHOT_VERSION_ATUAL },
 })
 
-const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox', 'autocomplete']
-const isSelecionavel = (type) => tiposSelecionais.includes(type)
-const opcoesSelecionadas = (campo) => (campo.campos_opcoes ?? []).filter(o => o.selected)
-const valorExibido = (valor) => (valor === null || valor === undefined || valor === '') ? '—' : valor
+const componenteVersao = computed(() => versoes[props.snapshotVersion] ?? versoes[SNAPSHOT_VERSION_ATUAL])
 </script>
