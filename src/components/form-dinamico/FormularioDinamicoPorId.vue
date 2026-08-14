@@ -178,7 +178,6 @@ const snapshot = computed(() =>
       type: campo.tipo,
       pivot: {
         cols: campo.pivot?.cols ?? 12,
-        ctrl_formulario_id: campo.pivot?.ctrl_formulario_id ?? null,
       },
       ...(tiposSelecionais.includes(campo.tipo) && { campos_opcoes: resolverOpcoesSnapshot(campo) }),
       ...(campo.tipo === 'switch' && {
@@ -192,7 +191,12 @@ const snapshot = computed(() =>
 )
 
 watch([form, snapshot], () => {
-  emit('update:modelValue', { dados: form.value, snapshot: snapshot.value, snapshot_version: SNAPSHOT_VERSION_ATUAL })
+  emit('update:modelValue', {
+    snapshot_version: SNAPSHOT_VERSION_ATUAL,
+    ctrl_formulario_id: props.formularioId,
+    dados: form.value,
+    snapshot: snapshot.value,
+  })
 }, { deep: true })
 
 const carregarCampos = async (id) => {

@@ -23,13 +23,13 @@ const snapshot = {
     id: 1,
     label: 'Nome',
     type: 'text',
-    pivot: { cols: 3, ctrl_formulario_id: 1 },
+    pivot: { cols: 3 },
   },
   processo: {
     id: 2,
     label: 'Processo',
     type: 'select',
-    pivot: { cols: 3, ctrl_formulario_id: 1 },
+    pivot: { cols: 3 },
     campos_opcoes: [
       { value: 3, text: 'Análise de Viabilidade', selected: true },
     ],
@@ -38,7 +38,7 @@ const snapshot = {
     id: 4,
     label: 'Linguagem de programação',
     type: 'checkbox',
-    pivot: { cols: 3, ctrl_formulario_id: 1 },
+    pivot: { cols: 3 },
     campos_opcoes: [
       { value: 'java', text: 'Java', selected: true },
       { value: 'php', text: 'PHP', selected: true },
@@ -49,7 +49,7 @@ const snapshot = {
     id: 5,
     label: 'Sexo',
     type: 'radio',
-    pivot: { cols: 3, ctrl_formulario_id: 1 },
+    pivot: { cols: 3 },
     campos_opcoes: [
       { value: 'feminino', text: 'Feminino', selected: false },
       { value: 'masculino', text: 'Masculino', selected: true },
@@ -97,7 +97,7 @@ describe('snapshot-versoes/v1.vue', () => {
       id: 9,
       label: 'Vazio',
       type: 'select',
-      pivot: { cols: 12, ctrl_formulario_id: 1 },
+      pivot: { cols: 12 },
       campos_opcoes: [{ value: 1, text: 'Opção', selected: false }],
     }
     const wrapper = montar({ snapshot: { vazio: semSelecao }, dados: {} })
@@ -111,7 +111,7 @@ describe('snapshot-versoes/v1.vue', () => {
       id: 10,
       label: 'Ativo',
       type: 'switch',
-      pivot: { cols: 12, ctrl_formulario_id: 1 },
+      pivot: { cols: 12 },
       trueLabel: 'Sim',
       falseLabel: 'Não',
       trueValue: 'S',
