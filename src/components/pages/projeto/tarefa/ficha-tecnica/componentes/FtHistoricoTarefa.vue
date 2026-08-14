@@ -239,7 +239,8 @@ function parseFormulario(item) {
       snapshot: JSON.parse(item.snapshot_formulario),
       snapshotVersion: item.snapshot_version,
     }
-  } catch {
+  } catch (e) {
+    console.warn(`[FtHistoricoTarefa] snapshot_formulario inválido no tratamento ${item.pco_tratamento_id}`, e)
     return null
   }
 }
