@@ -5,7 +5,6 @@
   <component
     :is="componenteVersao"
     :snapshot="snapshot"
-    :dados="dados"
   />
 </template>
 
@@ -15,7 +14,6 @@ import { SNAPSHOT_VERSION_ATUAL, versoes } from '@/components/form-dinamico/snap
 
 const props = defineProps({
   snapshot: { type: Object, default: () => ({}) },
-  dados: { type: Object, default: () => ({}) },
   snapshotVersion: { type: Number, default: SNAPSHOT_VERSION_ATUAL },
 })
 

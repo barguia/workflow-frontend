@@ -10,20 +10,15 @@ const stubs = {
   ChipComponent: { template: '<span class="chip-stub"><slot /></span>' },
 }
 
-// Baseado num payload real emitido por FormularioDinamicoPorId.vue.
-const dados = {
-  nome: 'Eduardo',
-  processo: 3,
-  linguagem_programacao: ['python', 'php', 'java'],
-  sexo: 'masculino',
-}
-
+// Baseado num payload real emitido por FormularioDinamicoPorId.vue. O componente
+// depende só do snapshot — tipos sem campos_opcoes carregam o valor em `value`.
 const snapshot = {
   nome: {
     id: 1,
     label: 'Nome',
     type: 'text',
     cols: 3,
+    value: 'Eduardo',
   },
   processo: {
     id: 2,
@@ -62,22 +57,22 @@ function montar(props) {
 }
 
 describe('snapshot-versoes/v1.vue', () => {
-  it('exibe o label e o valor bruto de um campo de texto', () => {
-    const wrapper = montar({ snapshot: { nome: snapshot.nome }, dados })
+  it('exibe o label e o value de um campo de texto', () => {
+    const wrapper = montar({ snapshot: { nome: snapshot.nome } })
 
     expect(wrapper.text()).toContain('Nome')
     expect(wrapper.text()).toContain('Eduardo')
   })
 
-  it('exibe "—" quando o valor de um campo de texto é nulo ou vazio', () => {
-    const wrapper = montar({ snapshot: { nome: snapshot.nome }, dados: { nome: '' } })
+  it('exibe "—" quando o value de um campo de texto é nulo ou vazio', () => {
+    const wrapper = montar({ snapshot: { nome: { ...snapshot.nome, value: '' } } })
 
     expect(wrapper.text()).toContain('—')
     expect(wrapper.text()).not.toContain('Eduardo')
   })
 
   it('renderiza como chip apenas as opções marcadas como selected', () => {
-    const wrapper = montar({ snapshot: { linguagem_programacao: snapshot.linguagem_programacao }, dados })
+    const wrapper = montar({ snapshot: { linguagem_programacao: snapshot.linguagem_programacao } })
 
     const chips = wrapper.findAll('.chip-stub').map(c => c.text())
     expect(chips).toEqual(['Java', 'PHP'])
@@ -85,7 +80,7 @@ describe('snapshot-versoes/v1.vue', () => {
   })
 
   it('não renderiza a opção não selecionada de um radio', () => {
-    const wrapper = montar({ snapshot: { sexo: snapshot.sexo }, dados })
+    const wrapper = montar({ snapshot: { sexo: snapshot.sexo } })
 
     const chips = wrapper.findAll('.chip-stub').map(c => c.text())
     expect(chips).toEqual(['Masculino'])
@@ -100,7 +95,7 @@ describe('snapshot-versoes/v1.vue', () => {
       cols: 12,
       campos_opcoes: [{ value: 1, text: 'Opção', selected: false }],
     }
-    const wrapper = montar({ snapshot: { vazio: semSelecao }, dados: {} })
+    const wrapper = montar({ snapshot: { vazio: semSelecao } })
 
     expect(wrapper.findAll('.chip-stub')).toHaveLength(0)
     expect(wrapper.text()).toContain('—')
@@ -118,16 +113,16 @@ describe('snapshot-versoes/v1.vue', () => {
       falseValue: 'N',
     }
 
-    const ligado = montar({ snapshot: { ativo: campoSwitch }, dados: { ativo: 'S' } })
+    const ligado = montar({ snapshot: { ativo: { ...campoSwitch, value: 'S' } } })
     expect(ligado.text()).toContain('Sim')
     expect(ligado.text()).not.toContain('Não')
 
-    const desligado = montar({ snapshot: { ativo: campoSwitch }, dados: { ativo: 'N' } })
+    const desligado = montar({ snapshot: { ativo: { ...campoSwitch, value: 'N' } } })
     expect(desligado.text()).toContain('Não')
   })
 
   it('aplica a classe de grid a partir de cols', () => {
-    const wrapper = montar({ snapshot: { processo: snapshot.processo }, dados })
+    const wrapper = montar({ snapshot: { processo: snapshot.processo } })
 
     expect(wrapper.find('.v-col-3').exists()).toBe(true)
   })

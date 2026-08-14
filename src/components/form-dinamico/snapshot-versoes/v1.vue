@@ -38,14 +38,14 @@
         v-else-if="campo.type === 'switch'"
         class="text-body-2"
       >
-        {{ dados[key] === campo.trueValue ? campo.trueLabel : campo.falseLabel }}
+        {{ campo.value === campo.trueValue ? campo.trueLabel : campo.falseLabel }}
       </div>
 
       <div
         v-else
         class="text-body-2"
       >
-        {{ valorExibido(dados[key]) }}
+        {{ valorExibido(campo.value) }}
       </div>
     </ColComponent>
   </RowComponent>
@@ -60,7 +60,6 @@ defineOptions({ name: 'FormularioDinamicoSnapshotV1' })
 
 defineProps({
   snapshot: { type: Object, default: () => ({}) },
-  dados: { type: Object, default: () => ({}) },
 })
 
 const tiposSelecionais = ['select', 'checkbox', 'radio', 'combobox', 'autocomplete']

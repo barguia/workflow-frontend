@@ -177,7 +177,9 @@ const snapshot = computed(() =>
       label: campo.label || campo.campo,
       type: campo.tipo,
       cols: campo.pivot?.cols ?? 12,
-      ...(tiposSelecionais.includes(campo.tipo) && { campos_opcoes: resolverOpcoesSnapshot(campo) }),
+      ...(tiposSelecionais.includes(campo.tipo)
+        ? { campos_opcoes: resolverOpcoesSnapshot(campo) }
+        : { value: form.value[campo.campo] }),
       ...(campo.tipo === 'switch' && {
         trueLabel:  campo.pivot?.switch_true_label  || 'Sim',
         falseLabel: campo.pivot?.switch_false_label || 'Não',

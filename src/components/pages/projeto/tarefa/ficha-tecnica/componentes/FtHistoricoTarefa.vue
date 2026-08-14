@@ -81,7 +81,7 @@
       >
         <v-timeline-item
           v-for="item in itensFiltrados"
-          :key="item.id"
+          :key="item.pco_tratamento_id"
           :dot-color="corTratamento(item.tratamento)"
           size="small"
         >
@@ -171,6 +171,35 @@
               </IconComponent>
               {{ item.descricao }}
             </div>
+
+            <div v-if="item.formularioPreenchido">
+              <ButtonComponent
+                size="small"
+                variant="text"
+                color="secondary"
+                class="mt-1 px-0"
+                data-testid="ft-historico-toggle-formulario"
+                @click="toggleFormulario(item.pco_tratamento_id)"
+              >
+                <IconComponent
+                  start
+                  size="14"
+                >
+                  {{ expandidos.has(item.pco_tratamento_id) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                </IconComponent>
+                {{ expandidos.has(item.pco_tratamento_id) ? 'Ocultar formulário preenchido' : 'Ver formulário preenchido' }}
+              </ButtonComponent>
+
+              <div
+                v-if="expandidos.has(item.pco_tratamento_id)"
+                class="formulario-preenchido mt-1 pa-3"
+              >
+                <FormularioDinamicoSnapshot
+                  :snapshot="item.formularioPreenchido.snapshot"
+                  :snapshot-version="item.formularioPreenchido.snapshotVersion"
+                />
+              </div>
+            </div>
           </template>
         </v-timeline-item>
       </v-timeline>
@@ -186,6 +215,7 @@ import IconComponent    from '@/components/comuns/icons/IconComponent.vue'
 import SpacerComponent  from '@/components/comuns/layout/SpacerComponent.vue'
 import ChipComponent    from '@/components/comuns/chips/ChipComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
+import FormularioDinamicoSnapshot from '@/components/form-dinamico/FormularioDinamicoSnapshot.vue'
 
 const props = defineProps({
   tratamentos: { type: Array,   default: () => [] },
@@ -195,11 +225,28 @@ const props = defineProps({
 defineEmits(['atualizar'])
 
 const exibirSistemicos = ref(false)
+const expandidos = ref(new Set())
+
+function toggleFormulario(id) {
+  if (expandidos.value.has(id)) expandidos.value.delete(id)
+  else expandidos.value.add(id)
+}
+
+function parseFormulario(item) {
+  if (!item.dados_formulario || !item.snapshot_formulario) return null
+  try {
+    return {
+      snapshot: JSON.parse(item.snapshot_formulario),
+      snapshotVersion: item.snapshot_version,
+    }
+  } catch {
+    return null
+  }
+}
 
 const itensFiltrados = computed(() =>
-  exibirSistemicos.value
-    ? props.tratamentos
-    : props.tratamentos.filter(t => !t.sistemico)
+  (exibirSistemicos.value ? props.tratamentos : props.tratamentos.filter(t => !t.sistemico))
+    .map(item => ({ ...item, formularioPreenchido: parseFormulario(item) }))
 )
 
 const COR_TRATAMENTO = {
@@ -225,5 +272,11 @@ function formatarDataHora(val) {
 <style scoped>
 .table-toolbar {
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.formulario-preenchido {
+  background: rgba(var(--v-theme-on-surface), 0.03);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 8px;
 }
 </style>

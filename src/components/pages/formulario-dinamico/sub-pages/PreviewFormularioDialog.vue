@@ -29,7 +29,6 @@
         <FormularioDinamicoSnapshot
           v-if="modo === 'readonly'"
           :snapshot="dadosForm.snapshot"
-          :dados="dadosForm.dados"
           :snapshot-version="dadosForm.snapshot_version"
         />
 
