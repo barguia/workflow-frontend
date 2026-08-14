@@ -172,8 +172,20 @@ const snapshot = computed(() =>
   Object.fromEntries(campos.value.map(campo => [
     campo.campo,
     {
-      ...campo,
+      id: campo.id,
+      label: campo.label || campo.campo,
+      type: campo.tipo,
+      pivot: {
+        cols: campo.pivot?.cols ?? 12,
+        ctrl_formulario_id: campo.pivot?.ctrl_formulario_id ?? null,
+      },
       ...(tiposSelecionais.includes(campo.tipo) && { campos_opcoes: resolverOpcoesSnapshot(campo) }),
+      ...(campo.tipo === 'switch' && {
+        trueLabel:  campo.pivot?.switch_true_label  || 'Sim',
+        falseLabel: campo.pivot?.switch_false_label || 'Não',
+        trueValue:  campo.pivot?.switch_true_value  ?? true,
+        falseValue: campo.pivot?.switch_false_value ?? false,
+      }),
     },
   ]))
 )
