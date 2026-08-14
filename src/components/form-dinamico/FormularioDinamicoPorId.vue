@@ -153,15 +153,19 @@ const fields = computed(() =>
 )
 
 const resolverOpcoesSnapshot = (campo) => {
-  if (campo.opcoes_por_uri === 1) {
-    return tiposComOpcoesCompletas.includes(campo.tipo)
-      ? (opcoesUriCompletas.value[campo.campo] || [])
-      : (opcaoSelecionadaAtual.value[campo.campo] || [])
-  }
-  const opcoes = opcoesEstaticas(campo)
-  if (tiposComOpcoesCompletas.includes(campo.tipo)) return opcoes
   const valores = Array.isArray(form.value[campo.campo]) ? form.value[campo.campo] : [form.value[campo.campo]]
-  return opcoes.filter(o => valores.includes(o.value))
+
+  if (tiposComOpcoesCompletas.includes(campo.tipo)) {
+    const opcoes = campo.opcoes_por_uri === 1
+      ? (opcoesUriCompletas.value[campo.campo] || [])
+      : opcoesEstaticas(campo)
+    return opcoes.map(o => ({ ...o, selected: valores.includes(o.value) }))
+  }
+
+  const opcoes = campo.opcoes_por_uri === 1
+    ? (opcaoSelecionadaAtual.value[campo.campo] || [])
+    : opcoesEstaticas(campo).filter(o => valores.includes(o.value))
+  return opcoes.map(o => ({ ...o, selected: true }))
 }
 
 const snapshot = computed(() =>
