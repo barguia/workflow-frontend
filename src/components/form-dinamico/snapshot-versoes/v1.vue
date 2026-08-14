@@ -6,7 +6,7 @@
     <ColComponent
       v-for="(campo, key) in snapshot"
       :key="key"
-      :class="'v-col-' + (campo.pivot?.cols ?? 12)"
+      :class="'v-col-' + (campo.cols ?? 12)"
       class="pb-3"
     >
       <div class="text-caption text-medium-emphasis">
