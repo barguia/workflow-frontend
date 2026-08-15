@@ -64,6 +64,7 @@ const userFields = [
 const userHeaders = [
   { title: 'Nome',  value: 'name' },
   { title: 'Email', value: 'email' },
+  { title: 'Cadastro', value: 'created_at', format: 'date' },
   { title: '',      value: 'actions' },
 ]
 

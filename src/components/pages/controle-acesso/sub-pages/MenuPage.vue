@@ -67,6 +67,7 @@ const menuHeaders = [
   { title: 'Menu Pai', value: 'acl_menu_pai.menu' },
   { title: 'Página Associada', value: 'page_menu.path' },
   { title: 'Permissões', value: 'permissions' },
+  { title: 'Cadastro', value: 'created_at', format: 'date' },
   { title: 'Ações', value: 'actions', sortable: false }
 ]
 </script>

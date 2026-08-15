@@ -32,6 +32,7 @@ const headers = [
   { title: 'Permissão', value: 'name' },
   { title: 'Tipo de Permissão', value: 'guard_name' },
   { title: 'Grupo', value: 'grupo' },
+  { title: 'Cadastro', value: 'created_at', format: 'date' },
   { title: '', value: 'actions'}
 ]
 </script>

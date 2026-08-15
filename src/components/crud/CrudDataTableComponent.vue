@@ -66,6 +66,15 @@
         />
       </slot>
     </template>
+    <template
+      v-for="header in headersCustomizados"
+      :key="chaveHeader(header)"
+      #[`item.${chaveHeader(header)}`]="{ value, item }"
+    >
+      <span :class="{ 'font-weight-bold': header.bold, 'font-italic': header.italic }">
+        {{ formatarValor(header, value, item) }}
+      </span>
+    </template>
   </v-data-table-server>
 
   <!-- Seletor de colunas -->
@@ -212,6 +221,7 @@ defineOptions({ inheritAttrs: false })
 import TextFieldComponent from "@/components/comuns/forms/TextFieldComponent.vue";
 import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 import ButtonComponent from '@/components/comuns/buttons/ButtonComponent.vue'
+import { chaveHeader, formatarValor, headersComFormatacao } from '@/composables/useColumnFormatting.js'
 
 const props = defineProps({
   headers: { type: Array, default: () => [] },
@@ -247,6 +257,10 @@ const formatColumnTitle = (key) => {
   if (key === 'actions') return 'Ações'
   return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 }
+
+// Formatação/estilo por coluna (só na listagem): header.format (nome em formatters.js),
+// header.formatter (função custom) e/ou header.bold / header.italic (estilo, combinável com format).
+const headersCustomizados = computed(() => headersComFormatacao(effectiveHeaders.value))
 
 // Seletor de colunas — duas listas separadas (visíveis / ocultas)
 const columnDialog = ref(false)
