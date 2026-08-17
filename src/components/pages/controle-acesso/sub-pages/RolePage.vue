@@ -139,7 +139,8 @@ const fields = [
 
 const headers = [
   { title: 'Role',       value: 'name' },
-  { title: 'Guard Name', value: 'guard_name' },
+  { title: 'Guard Name', value: 'guard_name', bold: true, format: 'upper' },
+  { title: 'Cadastro', value: 'created_at', format: 'date' },
   { title: '',           value: 'actions' },
 ]
 

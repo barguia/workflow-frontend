@@ -80,6 +80,7 @@ const headers = [
   { title: 'Telefone', value: 'telefone' },
   { title: 'Cidade', value: 'cidade' },
   { title: 'SP', value: 'uf' },
+  { title: 'Cadastro', value: 'created_at', format: 'date' },
   { title: '', value: 'actions'}
 ]
 </script>
