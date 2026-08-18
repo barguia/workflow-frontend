@@ -6,19 +6,7 @@ import appRoutes from "@/components/pages/aplicacao/routes/routes.js"
 import workflowRoutes from "@/components/pages/projeto/routes/routes.js"
 import formDinamicoRoutes from "@/components/pages/formulario-dinamico/routes/routes.js"
 import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
-import MobilidadeExemploPage from "@/components/pages/mobilidade/MobilidadeExemploPage.vue";
-import MobilidadeVueFlowPage from "@/components/pages/mobilidade/MobilidadeVueFlowPage.vue";
-import MobilidadeVueFlowTiposEdgePage from "@/components/pages/mobilidade/MobilidadeVueFlowTiposEdgePage.vue";
-import MobilidadeVueFlowLayoutDagrePage from "@/components/pages/mobilidade/MobilidadeVueFlowLayoutDagrePage.vue";
-import MobilidadeVueFlowNestingPage from "@/components/pages/mobilidade/MobilidadeVueFlowNestingPage.vue";
 import MobilidadeVueFlowGruposProcessoPage from "@/components/pages/mobilidade/MobilidadeVueFlowGruposProcessoPage.vue";
-import MobilidadeVisNetworkSimplesPage from "@/components/pages/mobilidade/MobilidadeVisNetworkSimplesPage.vue";
-import MobilidadeVisNetworkPage from "@/components/pages/mobilidade/MobilidadeVisNetworkPage.vue";
-import MobilidadeVisNetworkLivrePage from "@/components/pages/mobilidade/MobilidadeVisNetworkLivrePage.vue";
-import MobilidadeNomeadaVueFlowSimplesPage from "@/components/pages/mobilidade/MobilidadeNomeadaVueFlowSimplesPage.vue";
-import MobilidadeNomeadaVueFlowPage from "@/components/pages/mobilidade/MobilidadeNomeadaVueFlowPage.vue";
-import MobilidadeNomeadaVisNetworkSimplesPage from "@/components/pages/mobilidade/MobilidadeNomeadaVisNetworkSimplesPage.vue";
-import MobilidadeNomeadaVisNetworkPage from "@/components/pages/mobilidade/MobilidadeNomeadaVisNetworkPage.vue";
 
 const routes = [
     ...controleAcessoRoutes,
@@ -32,77 +20,9 @@ const routes = [
         component: FormExemploPage,
     },
     {
-        path: '/mobilidade-exemplo',
-        name: 'Mobilidade Exemplo',
-        component: MobilidadeExemploPage,
-    },
-    {
-        path: '/mobilidade-vue-flow',
-        name: 'Mobilidade Vue Flow',
-        component: MobilidadeVueFlowPage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-vue-flow-tipos-edge',
-        name: 'Mobilidade Vue Flow Tipos de Edge',
-        component: MobilidadeVueFlowTiposEdgePage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-vue-flow-layout-dagre',
-        name: 'Mobilidade Vue Flow Layout Dagre',
-        component: MobilidadeVueFlowLayoutDagrePage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-vue-flow-nesting',
-        name: 'Mobilidade Vue Flow Nesting',
-        component: MobilidadeVueFlowNestingPage,
-        meta: { requiresAuth: true },
-    },
-    {
         path: '/mobilidade-vue-flow-grupos-processo',
         name: 'Mobilidade Vue Flow Grupos de Processo',
         component: MobilidadeVueFlowGruposProcessoPage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-vis-network-simples',
-        name: 'Mobilidade Vis Network Simples',
-        component: MobilidadeVisNetworkSimplesPage,
-    },
-    {
-        path: '/mobilidade-vis-network',
-        name: 'Mobilidade Vis Network',
-        component: MobilidadeVisNetworkPage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-vis-network-livre',
-        name: 'Mobilidade Vis Network Livre',
-        component: MobilidadeVisNetworkLivrePage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-nomeada-vue-flow-simples',
-        name: 'Mobilidade Nomeada Vue Flow Simples',
-        component: MobilidadeNomeadaVueFlowSimplesPage,
-    },
-    {
-        path: '/mobilidade-nomeada-vue-flow',
-        name: 'Mobilidade Nomeada Vue Flow',
-        component: MobilidadeNomeadaVueFlowPage,
-        meta: { requiresAuth: true },
-    },
-    {
-        path: '/mobilidade-nomeada-vis-network-simples',
-        name: 'Mobilidade Nomeada Vis Network Simples',
-        component: MobilidadeNomeadaVisNetworkSimplesPage,
-    },
-    {
-        path: '/mobilidade-nomeada-vis-network',
-        name: 'Mobilidade Nomeada Vis Network',
-        component: MobilidadeNomeadaVisNetworkPage,
         meta: { requiresAuth: true },
     },
     {

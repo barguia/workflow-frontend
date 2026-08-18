@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { VueFlow } from '@vue-flow/core'
+import { computed, ref } from 'vue'
+import { Handle, Panel, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
@@ -8,6 +8,8 @@ import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import '@vue-flow/controls/dist/style.css'
 import '@vue-flow/minimap/dist/style.css'
+import CheckboxComponent from '@/components/comuns/forms/CheckboxComponent.vue'
+import MobilidadeAvancoTransitionEdge from './MobilidadeAvancoTransitionEdge.vue'
 
 // Grupos de processo do PMBOK — vão virar os nodes "parent".
 const gruposProcesso = [
@@ -114,12 +116,12 @@ const GRUPO_OFFSET_BOTTOM = 20
 const GRUPO_GAP_X = 60
 const SUBPROCESSO_OFFSET_X = 20
 const SUBPROCESSO_GAP_X = 16
-const SUBPROCESSO_OFFSET_TOP = 40
+const SUBPROCESSO_OFFSET_TOP = 60
 const SUBPROCESSO_OFFSET_BOTTOM = 10
-const TAREFA_WIDTH = 130
+const TAREFA_WIDTH = 140
 const TAREFA_HEIGHT = 46
 const TAREFA_OFFSET_X = 10
-const TAREFA_GAP_Y = 10
+const TAREFA_GAP_Y = 32
 
 // Subprocessos continuam lado a lado (largura fixa), mas as tarefas agora
 // ficam empilhadas na vertical dentro do subprocesso — então é a largura do
@@ -204,6 +206,9 @@ const nodesSubprocessos = subprocessos.map((subprocesso) => ({
     border: '1px solid rgba(44, 62, 80, 0.3)',
     width: `${SUBPROCESSO_WIDTH}px`,
     height: `${subprocesso.altura}px`,
+    padding: '8px 10px',
+    fontSize: '11px',
+    lineHeight: '1.25',
   },
 }))
 
@@ -218,6 +223,7 @@ const nodesTarefas = subprocessos.flatMap((subprocesso) =>
 
     return {
       id,
+      type: 'tarefa',
       data: { label: tarefa.label },
       position: {
         x: TAREFA_OFFSET_X,
@@ -244,8 +250,8 @@ const nodesTarefas = subprocessos.flatMap((subprocesso) =>
 const nodes = ref([...nodesGrupos, ...nodesSubprocessos, ...nodesTarefas])
 
 // Relacionamentos hardcoded entre tarefas — ainda de forma simples, sem
-// estilo/curvatura customizada, só ligando origem e destino pelo label.
-const relacionamentos = [
+// curvatura customizada, só ligando origem e destino pelo label.
+const relacionamentosAvanco = [
   { origem: 'Registrar solicitação do projeto', destino: 'Descrever problema/oportunidade' },
   { origem: 'Descrever problema/oportunidade', destino: 'Definir objetivo inicial' },
   { origem: 'Definir objetivo inicial', destino: 'Classificar tipo de projeto' },
@@ -302,16 +308,185 @@ const relacionamentos = [
   { origem: 'Registrar lições aprendidas', destino: 'Arquivar projeto' },
   { origem: 'Arquivar projeto', destino: 'Liberar equipe' },
   { origem: 'Liberar equipe', destino: 'Encerrar contratos' },
-  { origem: 'Encerrar contratos', destino: 'Finalizar custos'},
+  { origem: 'Encerrar contratos', destino: 'Finalizar custos' },
 ]
 
-const edges = ref(
-  relacionamentos.map((relacionamento, indice) => ({
-    id: `e${indice}`,
-    source: tarefaIdPorLabel.get(relacionamento.origem),
-    target: tarefaIdPorLabel.get(relacionamento.destino),
-  })),
+// Relacionamentos de devolução — mesmo formato do avanço.
+const relacionamentosDevolucao = [
+  { origem: 'Descrever problema/oportunidade', destino: 'Registrar solicitação do projeto' },
+  { origem: 'Definir objetivo inicial', destino: 'Descrever problema/oportunidade' },
+  { origem: 'Classificar tipo de projeto', destino: 'Definir objetivo inicial' },
+  { origem: 'Levantar requisitos iniciais', destino: 'Classificar tipo de projeto' },
+  { origem: 'Estimar esforço (alto nível)', destino: 'Levantar requisitos iniciais' },
+  { origem: 'Analisar viabilidade técnica', destino: 'Estimar esforço (alto nível)' },
+  { origem: 'Analisar viabilidade financeira', destino: 'Analisar viabilidade técnica' },
+  { origem: 'Identificar riscos iniciais', destino: 'Analisar viabilidade financeira' },
+  { origem: 'Submeter proposta para aprovação', destino: 'Identificar riscos iniciais' },
+  { origem: 'Avaliação gerencial', destino: 'Submeter proposta para aprovação' },
+  { origem: 'Aprovação ou rejeição', destino: 'Avaliação gerencial' },
+  { origem: 'Priorização no portfólio', destino: 'Aprovação ou rejeição' },
+  { origem: 'Criar EAP (estrutura analítica do projeto)', destino: 'Definir escopo detalhado' },
+  { origem: 'Validar escopo com stakeholders', destino: 'Criar EAP (estrutura analítica do projeto)' },
+  { origem: 'Definir atividades', destino: 'Validar escopo com stakeholders' },
+  { origem: 'Sequenciar atividades', destino: 'Definir atividades' },
+  { origem: 'Estimar duração', destino: 'Sequenciar atividades' },
+  { origem: 'Montar cronograma', destino: 'Estimar duração' },
+  { origem: 'Definir equipe', destino: 'Montar cronograma' },
+  { origem: 'Alocar responsáveis', destino: 'Definir equipe' },
+  { origem: 'Planejar uso de ferramentas/infraestrutura', destino: 'Alocar responsáveis' },
+  { origem: 'Estimar custos', destino: 'Planejar uso de ferramentas/infraestrutura' },
+  { origem: 'Definir orçamento', destino: 'Estimar custos' },
+  { origem: 'Aprovar orçamento', destino: 'Definir orçamento' },
+  { origem: 'Identificar riscos', destino: 'Aprovar orçamento' },
+  { origem: 'Classificar riscos', destino: 'Identificar riscos' },
+  { origem: 'Definir plano de mitigação', destino: 'Classificar riscos' },
+  { origem: 'Executar tarefa', destino: 'Iniciar atividade' },
+  { origem: 'Atualizar status', destino: 'Executar tarefa' },
+  { origem: 'Registrar impedimentos', destino: 'Atualizar status' },
+  { origem: 'Atribuir tarefas', destino: 'Registrar impedimentos' },
+  { origem: 'Monitorar produtividade', destino: 'Atribuir tarefas' },
+  { origem: 'Resolver conflitos', destino: 'Monitorar produtividade' },
+  { origem: 'Realizar reuniões de alinhamento', destino: 'Resolver conflitos' },
+  { origem: 'Enviar status report', destino: 'Realizar reuniões de alinhamento' },
+  { origem: 'Realizar reuniões', destino: 'Enviar status report' },
+  { origem: 'Registrar feedback', destino: 'Realizar reuniões' },
+  { origem: 'Identificar atrasos', destino: 'Comparar planejado vs realizado' },
+  { origem: 'Replanejar cronograma', destino: 'Identificar atrasos' },
+  { origem: 'Monitorar gastos', destino: 'Replanejar cronograma' },
+  { origem: 'Comparar com orçamento', destino: 'Monitorar gastos' },
+  { origem: 'Ajustar custos', destino: 'Comparar com orçamento' },
+  { origem: 'Validar entregas', destino: 'Ajustar custos' },
+  { origem: 'Executar testes', destino: 'Validar entregas' },
+  { origem: 'Registrar não conformidades', destino: 'Executar testes' },
+  { origem: 'Solicitar mudança', destino: 'Registrar não conformidades' },
+  { origem: 'Avaliar impacto', destino: 'Solicitar mudança' },
+  { origem: 'Aprovar/rejeitar mudança', destino: 'Avaliar impacto' },
+  { origem: 'Atualizar planejamento', destino: 'Aprovar/rejeitar mudança' },
+  { origem: 'Obter aceite do cliente', destino: 'Validar entregáveis' },
+  { origem: 'Formalizar entrega', destino: 'Obter aceite do cliente' },
+  { origem: 'Consolidar documentação', destino: 'Formalizar entrega' },
+  { origem: 'Registrar lições aprendidas', destino: 'Consolidar documentação' },
+  { origem: 'Arquivar projeto', destino: 'Registrar lições aprendidas' },
+  { origem: 'Liberar equipe', destino: 'Arquivar projeto' },
+  { origem: 'Encerrar contratos', destino: 'Liberar equipe' },
+  { origem: 'Finalizar custos', destino: 'Encerrar contratos' },
+]
+
+// Todo relacionamento tem animação (igual ao edge 1-2 do exemplo do Vue Flow).
+// O que muda por tipo é a cor da linha (devolução fica vermelha, para indicar
+// que é um retorno/algo negativo) e o par de handles usado no node "tarefa":
+// avanço sai/entra por cima/baixo, devolução sai/entra pela lateral — assim
+// as duas direções não se sobrepõem visualmente.
+const TIPO_AVANCO = 'avanco'
+const TIPO_DEVOLUCAO = 'devolucao'
+
+const CORES_RELACIONAMENTO = {
+  [TIPO_AVANCO]: undefined,
+  [TIPO_DEVOLUCAO]: '#EF4444',
+}
+
+const HANDLES_RELACIONAMENTO = {
+  [TIPO_AVANCO]: { sourceHandle: 'bottom-source', targetHandle: 'top-target' },
+  [TIPO_DEVOLUCAO]: { sourceHandle: 'left-source', targetHandle: 'right-target' },
+}
+
+const tipoItems = [
+  { text: 'Avanço', value: TIPO_AVANCO },
+  { text: 'Devolução', value: TIPO_DEVOLUCAO },
+]
+const tiposVisiveis = ref([TIPO_AVANCO, TIPO_DEVOLUCAO])
+
+// Movimentação manual dos nodes vem desabilitada por padrão, já que o layout
+// inteiro é calculado — o usuário liga quando quiser reorganizar na mão.
+const movimentacaoHabilitada = ref(false)
+
+const relacionamentos = [
+  ...relacionamentosAvanco.map((relacionamento) => ({ ...relacionamento, tipo: TIPO_AVANCO })),
+  ...relacionamentosDevolucao.map((relacionamento) => ({ ...relacionamento, tipo: TIPO_DEVOLUCAO })),
+]
+
+const edgesBase = ref(
+  relacionamentos.map((relacionamento, indice) => {
+    const cor = CORES_RELACIONAMENTO[relacionamento.tipo]
+    const handles = HANDLES_RELACIONAMENTO[relacionamento.tipo]
+    const ehAvanco = relacionamento.tipo === TIPO_AVANCO
+
+    return {
+      id: `e${indice}`,
+      source: tarefaIdPorLabel.get(relacionamento.origem),
+      target: tarefaIdPorLabel.get(relacionamento.destino),
+      ...handles,
+      // Só o avanço usa o edge custom com o "trenzinho" — a devolução, por
+      // enquanto, fica só com a linha animada padrão.
+      ...(ehAvanco ? { type: 'avanco-transition' } : {}),
+      animated: true,
+      data: { tipo: relacionamento.tipo },
+      ...(cor ? { style: { stroke: cor } } : {}),
+    }
+  }),
 )
+
+const edges = computed(() => edgesBase.value.filter((edge) => tiposVisiveis.value.includes(edge.data.tipo)))
+
+// Percurso do "duplo clique": anda a cadeia de avanço inteira, sempre da
+// primeira tarefa até a última — não importa em qual node do meio da cadeia
+// o usuário dá o duplo clique.
+const proximoAvancoPorNode = new Map()
+const anteriorAvancoPorNode = new Map()
+const avancoEdgeIdPorPar = new Map()
+
+for (const edge of edgesBase.value) {
+  if (edge.data.tipo !== TIPO_AVANCO) continue
+  proximoAvancoPorNode.set(edge.source, edge.target)
+  anteriorAvancoPorNode.set(edge.target, edge.source)
+  avancoEdgeIdPorPar.set(`${edge.source}->${edge.target}`, edge.id)
+}
+
+function encontrarInicioCadeiaAvanco(nodeId) {
+  let atual = nodeId
+  while (anteriorAvancoPorNode.has(atual)) {
+    atual = anteriorAvancoPorNode.get(atual)
+  }
+  return atual
+}
+
+function montarCadeiaAvancoEdgeIds(nodeInicial) {
+  const idsCadeia = []
+  let atual = nodeInicial
+
+  while (proximoAvancoPorNode.has(atual)) {
+    const proximo = proximoAvancoPorNode.get(atual)
+    idsCadeia.push(avancoEdgeIdPorPar.get(`${atual}->${proximo}`))
+    atual = proximo
+  }
+
+  return idsCadeia
+}
+
+const edgeAtivaId = ref(null)
+const filaAnimacaoAvanco = ref([])
+
+function avancarFilaAnimacaoAvanco() {
+  edgeAtivaId.value = filaAnimacaoAvanco.value.shift() ?? null
+}
+
+function iniciarAnimacaoCadeiaAvanco(nodeId) {
+  // Enquanto uma cadeia está tocando, ignora novos duplos cliques.
+  if (edgeAtivaId.value) return
+
+  const inicio = encontrarInicioCadeiaAvanco(nodeId)
+  const cadeia = montarCadeiaAvancoEdgeIds(inicio)
+  if (cadeia.length === 0) return
+
+  filaAnimacaoAvanco.value = cadeia
+  avancarFilaAnimacaoAvanco()
+}
+
+const { onNodeDoubleClick } = useVueFlow()
+
+onNodeDoubleClick(({ node }) => {
+  iniciarAnimacaoCadeiaAvanco(node.id)
+})
 </script>
 
 <template>
@@ -319,9 +494,82 @@ const edges = ref(
     <VueFlow
       :nodes="nodes"
       :edges="edges"
+      :nodes-draggable="movimentacaoHabilitada"
       fit-view-on-init
       elevate-edges-on-select
     >
+      <template #node-tarefa="{ data }">
+        <Handle
+          id="top-target"
+          type="target"
+          :position="Position.Top"
+        />
+        <Handle
+          id="top-source"
+          type="source"
+          :position="Position.Top"
+        />
+        <Handle
+          id="bottom-target"
+          type="target"
+          :position="Position.Bottom"
+        />
+        <Handle
+          id="bottom-source"
+          type="source"
+          :position="Position.Bottom"
+        />
+        <Handle
+          id="left-target"
+          type="target"
+          :position="Position.Left"
+        />
+        <Handle
+          id="left-source"
+          type="source"
+          :position="Position.Left"
+        />
+        <Handle
+          id="right-target"
+          type="target"
+          :position="Position.Right"
+        />
+        <Handle
+          id="right-source"
+          type="source"
+          :position="Position.Right"
+        />
+        {{ data.label }}
+      </template>
+
+      <template #edge-avanco-transition="edgeProps">
+        <MobilidadeAvancoTransitionEdge
+          v-bind="edgeProps"
+          :tocando="edgeAtivaId === edgeProps.id"
+          @concluido="avancarFilaAnimacaoAvanco"
+        />
+      </template>
+
+      <Panel
+        class="filtro-panel"
+        position="top-right"
+      >
+        <CheckboxComponent
+          v-model="tiposVisiveis"
+          :items="tipoItems"
+          inline
+        />
+
+        <v-divider class="my-1" />
+
+        <v-checkbox
+          v-model="movimentacaoHabilitada"
+          label="Movimentação manual"
+          density="compact"
+          hide-details
+        />
+      </Panel>
+
       <MiniMap />
 
       <Controls />
@@ -346,5 +594,19 @@ const edges = ref(
 .grupos-processo-flow :deep(.vue-flow__minimap) {
   transform: scale(75%);
   transform-origin: bottom right;
+}
+
+.grupos-processo-flow :deep(.vue-flow__node-tarefa .vue-flow__handle) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.filtro-panel {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-transform: none;
+  color: #2c3e50;
 }
 </style>
