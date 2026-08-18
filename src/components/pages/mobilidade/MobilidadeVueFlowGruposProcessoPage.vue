@@ -11,11 +11,11 @@ import '@vue-flow/minimap/dist/style.css'
 
 // Grupos de processo do PMBOK — vão virar os nodes "parent".
 const gruposProcesso = [
-  { id: 'iniciacao', label: 'Iniciação', x: 0, cor: 'rgba(59, 130, 246, 0.5)' },
-  { id: 'planejamento', label: 'Planejamento', x: 320, cor: 'rgba(139, 92, 246, 0.5)' },
-  { id: 'execucao', label: 'Execução', x: 640, cor: 'rgba(16, 185, 129, 0.5)' },
-  { id: 'monitoramento-controle', label: 'Monitoramento e Controle', x: 960, cor: 'rgba(245, 158, 11, 0.5)' },
-  { id: 'encerramento', label: 'Encerramento', x: 1280, cor: 'rgba(239, 68, 68, 0.5)' },
+  { id: 'iniciacao', label: 'Iniciação', cor: 'rgba(59, 130, 246, 0.5)' },
+  { id: 'planejamento', label: 'Planejamento', cor: 'rgba(139, 92, 246, 0.5)' },
+  { id: 'execucao', label: 'Execução', cor: 'rgba(16, 185, 129, 0.5)' },
+  { id: 'monitoramento-controle', label: 'Monitoramento e Controle', cor: 'rgba(245, 158, 11, 0.5)' },
+  { id: 'encerramento', label: 'Encerramento', cor: 'rgba(239, 68, 68, 0.5)' },
 ]
 
 // Subprocessos hardcoded — viram nodes "subparent" (aninhados no grupo via
@@ -42,13 +42,14 @@ const subprocessos = [
   { label: 'Encerramento Administrativo', ordenacao: 2, grupoId: 'encerramento' },
 ]
 
-const GRUPO_WIDTH = 280
 const GRUPO_OFFSET_TOP = 50
 const GRUPO_OFFSET_BOTTOM = 20
-const SUBPROCESSO_WIDTH = 240
-const SUBPROCESSO_HEIGHT = 44
+const GRUPO_GAP_X = 60
+const GRUPO_HEIGHT = GRUPO_OFFSET_TOP + 70 + GRUPO_OFFSET_BOTTOM
+const SUBPROCESSO_WIDTH = 170
+const SUBPROCESSO_HEIGHT = 70
 const SUBPROCESSO_OFFSET_X = 20
-const SUBPROCESSO_GAP_Y = 16
+const SUBPROCESSO_GAP_X = 16
 
 function slugify(texto) {
   return texto
@@ -59,32 +60,38 @@ function slugify(texto) {
     .replace(/(^-|-$)/g, '')
 }
 
-function alturaGrupo(quantidadeSubprocessos) {
+function larguraGrupo(quantidadeSubprocessos) {
   return (
-    GRUPO_OFFSET_TOP +
-    quantidadeSubprocessos * SUBPROCESSO_HEIGHT +
-    (quantidadeSubprocessos - 1) * SUBPROCESSO_GAP_Y +
-    GRUPO_OFFSET_BOTTOM
+    SUBPROCESSO_OFFSET_X * 2 +
+    quantidadeSubprocessos * SUBPROCESSO_WIDTH +
+    (quantidadeSubprocessos - 1) * SUBPROCESSO_GAP_X
   )
 }
 
+let proximoX = 0
+
 const nodesGrupos = gruposProcesso.map((grupo) => {
   const quantidade = subprocessos.filter((subprocesso) => subprocesso.grupoId === grupo.id).length
+  const largura = larguraGrupo(quantidade)
 
-  return {
+  const node = {
     id: grupo.id,
     data: { label: grupo.label },
-    position: { x: grupo.x, y: 0 },
-    style: { backgroundColor: grupo.cor, width: `${GRUPO_WIDTH}px`, height: `${alturaGrupo(quantidade)}px` },
+    position: { x: proximoX, y: 0 },
+    style: { backgroundColor: grupo.cor, width: `${largura}px`, height: `${GRUPO_HEIGHT}px` },
   }
+
+  proximoX += largura + GRUPO_GAP_X
+
+  return node
 })
 
 const nodesSubprocessos = subprocessos.map((subprocesso) => ({
   id: `${subprocesso.grupoId}-${slugify(subprocesso.label)}`,
   data: { label: subprocesso.label },
   position: {
-    x: SUBPROCESSO_OFFSET_X,
-    y: GRUPO_OFFSET_TOP + subprocesso.ordenacao * (SUBPROCESSO_HEIGHT + SUBPROCESSO_GAP_Y),
+    x: SUBPROCESSO_OFFSET_X + subprocesso.ordenacao * (SUBPROCESSO_WIDTH + SUBPROCESSO_GAP_X),
+    y: GRUPO_OFFSET_TOP,
   },
   parentNode: subprocesso.grupoId,
   extent: 'parent',
