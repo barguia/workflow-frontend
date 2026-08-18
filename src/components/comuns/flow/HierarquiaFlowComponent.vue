@@ -9,7 +9,10 @@ import { calcularLayoutHierarquico } from './useHierarquiaFlowLayout.js'
 defineOptions({ name: 'HierarquiaFlowComponent' })
 
 const props = defineProps({
-  // [{ nivel, nivelPai, orientacao, espacamentoIrmaos, paddingConteudo, largura, altura }]
+  // [{ nivel, nivelPai, orientacao, espacamentoIrmaos, paddingConteudo, largura, altura,
+  //   textoMaiusculo, textoCentralizado }] — os dois últimos controlam o
+  //   estilo do texto do node (texto em uppercase e centralizado); ambos
+  //   default `true` (ver normalizarHierarquia em useHierarquiaFlowLayout.js).
   hierarquias: { type: Array, required: true },
   // [{ id, label, nivel, parentId, ordenacao, cor, estilo, largura, altura }]
   nodes: { type: Array, required: true },
@@ -53,6 +56,8 @@ const vueFlowNodes = computed(() => {
         height: `${tamanho?.altura ?? 0}px`,
         backgroundColor: node.cor ?? (ehFolha ? CORES_PADRAO.folha : CORES_PADRAO.container),
         border: CORES_PADRAO.borda,
+        ...((definicao?.textoMaiusculo ?? true) ? { textTransform: 'uppercase' } : {}),
+        ...((definicao?.textoCentralizado ?? true) ? { textAlign: 'center' } : {}),
         ...(ehFolha
           ? {
               display: 'flex',

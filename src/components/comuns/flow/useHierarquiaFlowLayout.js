@@ -24,6 +24,8 @@ function normalizarHierarquia(hierarquias) {
       paddingConteudo: { ...PADDING_CONTEUDO_PADRAO, ...(definicaoBruta.paddingConteudo ?? {}) },
       largura: definicaoBruta.largura,
       altura: definicaoBruta.altura,
+      textoMaiusculo: definicaoBruta.textoMaiusculo ?? true,
+      textoCentralizado: definicaoBruta.textoCentralizado ?? true,
     })
   }
 
@@ -41,6 +43,47 @@ function normalizarHierarquia(hierarquias) {
 export function calcularLayoutHierarquico({ hierarquias, nodes }) {
   const definicoes = normalizarHierarquia(hierarquias)
   const nodesPorId = new Map(nodes.map((node) => [String(node.id), node]))
+
+  // Nodes cujo `nivel` não bate com nenhuma hierarquia declarada (dado
+  // inconsistente — ex: ctrl_hierarquia_id apontando pra uma hierarquia de
+  // outro workflow) caem aqui como um nível genérico "desconhecido" em vez de
+  // quebrar o layout inteiro. `ehFolha: false` é só o valor declarado — quem
+  // decide se um node específico desce para os filhos é sempre o par
+  // `ehFolha || idsFilhosBrutos.length === 0` em calcularTamanho/
+  // posicionarIrmaos, então um node desse nível sem filhos reais ainda vira
+  // folha normalmente. O importante é NÃO forçar `ehFolha: true` aqui: isso
+  // faria a árvore esconder filhos de verdade (e as arestas de mobilidade
+  // apontando pra eles quebrariam no Vue Flow). Cacheado no Map de
+  // definições para o resultado ficar estável e visível para quem consome
+  // `layout.value.definicoes` (ex: estilo dos nodes).
+  const niveisNaoEncontradosAvisados = new Set()
+
+  function obterDefinicao(nivel) {
+    const definicaoExistente = definicoes.get(nivel)
+    if (definicaoExistente) return definicaoExistente
+
+    if (!niveisNaoEncontradosAvisados.has(nivel)) {
+      niveisNaoEncontradosAvisados.add(nivel)
+      console.warn(
+        `[HierarquiaFlowComponent] nível "${nivel}" não corresponde a nenhuma hierarquia declarada — usando um nível genérico para node(s) desse nível.`,
+      )
+    }
+
+    const definicaoDesconhecida = {
+      nivel,
+      nivelPai: null,
+      orientacao: 'horizontal',
+      espacamentoIrmaos: ESPACAMENTO_IRMAOS_PADRAO,
+      paddingConteudo: PADDING_CONTEUDO_PADRAO,
+      largura: undefined,
+      altura: undefined,
+      textoMaiusculo: true,
+      textoCentralizado: true,
+      ehFolha: false,
+    }
+    definicoes.set(nivel, definicaoDesconhecida)
+    return definicaoDesconhecida
+  }
 
   const filhosPorParentId = new Map()
   const idsRaiz = []
@@ -76,7 +119,7 @@ export function calcularLayoutHierarquico({ hierarquias, nodes }) {
   // Passo 1 — bottom-up: tamanho de cada node.
   function calcularTamanho(id) {
     const node = nodesPorId.get(id)
-    const definicao = definicoes.get(node.nivel)
+    const definicao = obterDefinicao(node.nivel)
     const idsFilhosBrutos = filhosPorParentId.get(id) ?? []
 
     if (definicao.ehFolha || idsFilhosBrutos.length === 0) {
@@ -90,7 +133,7 @@ export function calcularLayoutHierarquico({ hierarquias, nodes }) {
 
     const idsFilhos = ordenarPorOrdenacao(idsFilhosBrutos)
     const tamanhosFilhos = idsFilhos.map(calcularTamanho)
-    const definicaoFilho = definicoes.get(nodesPorId.get(idsFilhos[0]).nivel)
+    const definicaoFilho = obterDefinicao(nodesPorId.get(idsFilhos[0]).nivel)
     const { topo, fundo, lateral } = definicao.paddingConteudo
     const gap = definicaoFilho.espacamentoIrmaos * Math.max(0, idsFilhos.length - 1)
 
@@ -129,7 +172,7 @@ export function calcularLayoutHierarquico({ hierarquias, nodes }) {
         definicaoIrmaos.espacamentoIrmaos
 
       const node = nodesPorId.get(id)
-      const definicao = definicoes.get(node.nivel)
+      const definicao = obterDefinicao(node.nivel)
       const idsFilhosBrutos = filhosPorParentId.get(id) ?? []
 
       // Mesma condição de `calcularTamanho`: se o node é folha pela
@@ -137,7 +180,7 @@ export function calcularLayoutHierarquico({ hierarquias, nodes }) {
       // dados) não tiveram tamanho calculado e não podem ser posicionados.
       if (!definicao.ehFolha && idsFilhosBrutos.length > 0) {
         const idsFilhos = ordenarPorOrdenacao(idsFilhosBrutos)
-        const definicaoFilho = definicoes.get(nodesPorId.get(idsFilhos[0]).nivel)
+        const definicaoFilho = obterDefinicao(nodesPorId.get(idsFilhos[0]).nivel)
         posicionarIrmaos(idsFilhos, definicaoFilho, definicao.paddingConteudo.lateral, definicao.paddingConteudo.topo)
       }
     }
@@ -147,7 +190,7 @@ export function calcularLayoutHierarquico({ hierarquias, nodes }) {
   idsRaizOrdenados.forEach(calcularTamanho)
 
   if (idsRaizOrdenados.length > 0) {
-    const definicaoRaiz = definicoes.get(nodesPorId.get(idsRaizOrdenados[0]).nivel)
+    const definicaoRaiz = obterDefinicao(nodesPorId.get(idsRaizOrdenados[0]).nivel)
     posicionarIrmaos(idsRaizOrdenados, definicaoRaiz, 0, 0)
   }
 

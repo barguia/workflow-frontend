@@ -61,15 +61,26 @@ const nivelFolhaId = computed(() => {
   const hierarquias = estrutura.value?.hierarquias ?? []
   if (hierarquias.length === 0) return null
 
-  return hierarquias.reduce((mais, atual) => (atual.profundidade > mais.profundidade ? atual : mais)).id
+  // Folha = nível que nenhum outro declara como `nivelPai` (ver comentário
+  // em `hierarquias` abaixo — não dá pra confiar em `profundidade`).
+  const niveisComFilhos = new Set(hierarquias.filter((nivel) => nivel.nivelPai != null).map((nivel) => nivel.nivelPai))
+  return hierarquias.find((nivel) => !niveisComFilhos.has(nivel.id))?.id ?? null
 })
 
 const hierarquias = computed(() => {
   const niveis = estrutura.value?.hierarquias ?? []
 
-  return niveis.map((nivel, indice) => {
+  // Folha = nível que nenhum outro declara como `nivelPai` — não dá pra
+  // assumir que o último item do array (ordenado por `profundidade`) é a
+  // folha, porque isso depende de `profundidade` estar corretamente
+  // configurado em todo workflow (não estava para o workflow 2, o que fazia
+  // as tarefas caírem no nível errado e ficarem horizontais em vez de
+  // verticais).
+  const niveisComFilhos = new Set(niveis.filter((nivel) => nivel.nivelPai != null).map((nivel) => nivel.nivelPai))
+
+  return niveis.map((nivel) => {
     const ehRaiz = nivel.nivelPai == null
-    const ehFolha = indice === niveis.length - 1
+    const ehFolha = !niveisComFilhos.has(nivel.id)
 
     return {
       nivel: nivel.id,
