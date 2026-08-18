@@ -33,6 +33,35 @@ const HANDLES_TIPO = {
 }
 const TIPO_COM_ANIMACAO_EM_CADEIA = 'Devolução'
 
+// Marcação visual das tarefas de início/fim de fluxo (`inicial`/`final`
+// vindos do backend) — pill arredondado com fundo colorido e fonte branca,
+// se sobrepondo ao cinza padrão das folhas.
+const CORES_MARCACAO = {
+  inicial: { fundo: '#22C55E', fonte: '#FFFFFF' },
+  final: { fundo: '#F87171', fonte: '#FFFFFF' },
+}
+
+// Paleta padrão para os macroprocessos (nodes raiz) quando o backend não
+// define uma `cor` — ciclada por node raiz (ordenado por `ordenacao`) pra
+// não repetir cor entre irmãos. Igual à abordagem do exemplo
+// (ExemploVueFlowGruposProcessoPage): só a raiz recebe cor própria, e
+// semitransparente (alpha 0.5) — os níveis abaixo (processo/tarefa) não têm
+// `cor` definida, então usam o fundo quase-opaco padrão do
+// HierarquiaFlowComponent por cima, deixando a cor da raiz "vazar" de leve
+// por trás em vez de cada nível ter sua própria cor sólida.
+const PALETA_CORES_RAIZ = [
+  'rgba(59, 130, 246, 0.5)', // azul
+  'rgba(139, 92, 246, 0.5)', // roxo
+  'rgba(16, 185, 129, 0.5)', // verde
+  'rgba(245, 158, 11, 0.5)', // âmbar
+  'rgba(239, 68, 68, 0.5)', // vermelho
+  'rgba(20, 184, 166, 0.5)', // teal
+  'rgba(99, 102, 241, 0.5)', // índigo
+  'rgba(236, 72, 153, 0.5)', // rosa
+  'rgba(132, 204, 22, 0.5)', // lima
+  'rgba(6, 182, 212, 0.5)', // ciano
+]
+
 const carregando = ref(true)
 const erro = ref(null)
 const estrutura = ref(null)
@@ -98,17 +127,34 @@ const nodes = computed(() => {
   // (ver EngineCtrlWorkflowService::estruturaComMobilidades) — os ids das
   // duas tabelas não são únicos entre si, então precisam desse prefixo.
   const tarefaDestaqueId = props.tarefaDestaqueId != null ? `tarefa-${props.tarefaDestaqueId}` : null
+  const brutos = estrutura.value?.nodes ?? []
 
-  return (estrutura.value?.nodes ?? []).map((node) => ({
-    id: node.id,
-    label: node.label,
-    nivel: node.nivel ?? nivelFolhaId.value,
-    parentId: node.parentId,
-    ordenacao: node.ordenacao,
-    ...(node.id === tarefaDestaqueId
-      ? { estilo: { border: '3px solid #fdd023', boxShadow: '0 0 0 2px rgba(253, 208, 35, 0.3)' } }
-      : {}),
-  }))
+  const corRaizPorId = new Map(
+    brutos
+      .filter((node) => node.parentId == null)
+      .sort((a, b) => (a.ordenacao ?? 0) - (b.ordenacao ?? 0))
+      .map((node, indice) => [node.id, PALETA_CORES_RAIZ[indice % PALETA_CORES_RAIZ.length]]),
+  )
+
+  return brutos.map((node) => {
+    const marcacao = node.inicial ? CORES_MARCACAO.inicial : node.final ? CORES_MARCACAO.final : null
+    const cor = marcacao?.fundo ?? node.cor ?? corRaizPorId.get(node.id)
+
+    return {
+      id: node.id,
+      label: node.label,
+      nivel: node.nivel ?? nivelFolhaId.value,
+      parentId: node.parentId,
+      ordenacao: node.ordenacao,
+      ...(cor ? { cor } : {}),
+      estilo: {
+        ...(marcacao ? { borderRadius: '999px', color: marcacao.fonte } : {}),
+        ...(node.id === tarefaDestaqueId
+          ? { border: '3px solid #fdd023', boxShadow: '0 0 0 2px rgba(253, 208, 35, 0.3)' }
+          : {}),
+      },
+    }
+  })
 })
 
 const tiposRelacionamento = computed(() =>
