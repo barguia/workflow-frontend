@@ -28,12 +28,22 @@ const props = defineProps({
 // o enum estável do backend (CtrlMobilidadeTipoEnum: Avanço/Devolução). Cores
 // sempre via variável CSS do tema (`rgb(var(--v-theme-X))`), nunca hex fixo —
 // assim acompanham automaticamente qualquer um dos temas do projeto.
-const CORES_TIPO = { Devolução: 'rgb(var(--v-theme-error))' }
+const CORES_TIPO = { Devolução: 'rgb(var(--v-theme-error))', 'Caminho Crítico': 'rgb(var(--v-theme-error))' }
 const HANDLES_TIPO = {
   Avanço: { source: 'bottom', target: 'top' },
   Devolução: { source: 'left', target: 'right' },
   'Caminho Crítico': { source: 'right', target: 'left' },
 }
+
+// `caminho_critico` vem do backend como uma flag por mobilidade (pivot), não
+// como um tipo de relacionamento próprio (só existem Avanço e Devolução —
+// CtrlMobilidadeTipoEnum). Pro diagrama, ele é tratado como se fosse mais um
+// tipo (`CAMINHO_CRITICO_ID`, só do frontend): cada mobilidade com
+// `caminho_critico: true` gera uma edge ADICIONAL desse tipo entre a mesma
+// origem/destino, junto (não no lugar) da edge de Avanço/Devolução — assim
+// aparece no painel de filtro do mesmo jeito que os outros tipos, sem
+// esconder nada.
+const CAMINHO_CRITICO_ID = 'caminho-critico'
 
 // Marcação visual das tarefas de início/fim de fluxo (`inicial`/`final`
 // vindos do backend) — pill arredondado com fundo colorido, se sobrepondo ao
@@ -44,9 +54,10 @@ const CORES_MARCACAO = {
   final: { fundo: 'rgb(var(--v-theme-error))', fonte: 'rgb(var(--v-theme-on-error))' },
 }
 
-// Tarefas que participam de algum relacionamento "Caminho Crítico" (origem
-// ou destino) recebem o mesmo tratamento visual de marcação (fundo colorido
-// + fonte de contraste), mas sem o pill arredondado das tarefas de início/fim.
+// Tarefas que participam de algum relacionamento com `caminho_critico: true`
+// (origem ou destino) recebem o mesmo tratamento visual de marcação (fundo
+// colorido + fonte de contraste), mas sem o pill arredondado das tarefas de
+// início/fim. Cor de perigo (danger), já que representa o caminho crítico.
 const COR_CAMINHO_CRITICO = { fundo: 'rgb(var(--v-theme-error))', fonte: 'rgb(var(--v-theme-on-error))' }
 
 // Paleta padrão para os macroprocessos (nodes raiz) quando o backend não
@@ -130,28 +141,52 @@ const hierarquias = computed(() => {
   })
 })
 
-const tiposRelacionamento = computed(() =>
-  (estrutura.value?.tiposRelacionamento ?? []).map((tipo) => ({
+const tiposRelacionamento = computed(() => [
+  ...(estrutura.value?.tiposRelacionamento ?? []).map((tipo) => ({
     id: tipo.id,
     label: tipo.label,
     animado: true,
     cor: CORES_TIPO[tipo.label],
     handles: HANDLES_TIPO[tipo.label],
   })),
+  {
+    id: CAMINHO_CRITICO_ID,
+    label: 'Caminho Crítico',
+    animado: true,
+    cor: CORES_TIPO['Caminho Crítico'],
+    handles: HANDLES_TIPO['Caminho Crítico'],
+  },
+])
+
+const relacionamentosBrutos = computed(() => estrutura.value?.relacionamentos ?? [])
+
+// Cada mobilidade com `caminho_critico: true` gera uma edge extra do tipo
+// "Caminho Crítico" (ver comentário em CAMINHO_CRITICO_ID acima), mantendo a
+// edge original do seu tipo real (Avanço/Devolução) intacta — as duas
+// aparecem ao mesmo tempo no diagrama, cada uma filtrável pelo seu próprio
+// checkbox no painel.
+const relacionamentos = computed(() =>
+  relacionamentosBrutos.value.flatMap((relacionamento) => {
+    const edge = {
+      id: relacionamento.id,
+      origemId: relacionamento.origemId,
+      destinoId: relacionamento.destinoId,
+      tipoId: relacionamento.tipoId,
+    }
+    if (!relacionamento.caminho_critico) return [edge]
+    return [edge, { ...edge, id: `${relacionamento.id}-critico`, tipoId: CAMINHO_CRITICO_ID }]
+  }),
 )
 
-const relacionamentos = computed(() => estrutura.value?.relacionamentos ?? [])
-
 // Ids das tarefas (origem ou destino) que participam de algum relacionamento
-// "Caminho Crítico" — usado pra colorir o node independente da direção em
-// que ele aparece na cadeia.
+// com `caminho_critico: true` — usado pra colorir o node independente da
+// direção em que ele aparece na cadeia. Não depende do checkbox de filtro:
+// uma tarefa continua marcada como crítica mesmo com a edge "Caminho Crítico"
+// escondida.
 const idsCaminhoCritico = computed(() => {
-  const tipo = tiposRelacionamento.value.find((tipo) => tipo.label === 'Caminho Crítico')
-  if (!tipo) return new Set()
-
   const ids = new Set()
-  for (const relacionamento of relacionamentos.value) {
-    if (relacionamento.tipoId !== tipo.id) continue
+  for (const relacionamento of relacionamentosBrutos.value) {
+    if (!relacionamento.caminho_critico) continue
     ids.add(relacionamento.origemId)
     ids.add(relacionamento.destinoId)
   }
@@ -200,6 +235,10 @@ const nodes = computed(() => {
   })
 })
 
+// "Caminho Crítico" já entra em `tiposRelacionamento` (ver acima) como se
+// fosse mais um tipo, então cai naturalmente no mesmo grupo de checkboxes de
+// Avanço/Devolução, com filtro por `tipoId` igual aos demais — sem tratamento
+// especial aqui.
 const tipoItems = computed(() => tiposRelacionamento.value.map((tipo) => ({ text: tipo.label, value: tipo.id })))
 const tiposVisiveis = ref([])
 
