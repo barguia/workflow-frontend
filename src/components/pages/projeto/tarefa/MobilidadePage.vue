@@ -242,6 +242,8 @@
                       size="small"
                       variant="tonal"
                       class="font-weight-medium chip-tarefa-nome"
+                      :to="{ name: route.name, params: { id: opcao.value } }"
+                      :data-testid="`mobilidade-link-origem-${opcao.value}`"
                     >
                       <IconComponent
                         v-if="opcao.caminho_critico"
@@ -362,6 +364,8 @@
                       size="small"
                       variant="tonal"
                       class="font-weight-medium chip-tarefa-nome"
+                      :to="{ name: route.name, params: { id: opcao.value } }"
+                      :data-testid="`mobilidade-link-destino-${opcao.value}`"
                     >
                       <span class="etapa-tag">Etapa {{ opcao.ordenacao }} ·</span> {{ opcao.text }}
                     </ChipComponent>
