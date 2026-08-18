@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Handle, Position, VueFlow, useVueFlow } from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
@@ -14,9 +14,12 @@ const props = defineProps({
   //   estilo do texto do node (texto em uppercase e centralizado); ambos
   //   default `true` (ver normalizarHierarquia em useHierarquiaFlowLayout.js).
   hierarquias: { type: Array, required: true },
-  // [{ id, label, nivel, parentId, ordenacao, cor, estilo, largura, altura }]
+  // [{ id, label, nivel, parentId, ordenacao, cor, estilo, largura, altura,
+  //   inicial, final }] — `inicial`/`final` marcam o node como início/fim de
+  //   um fluxo; são o gatilho de "animar cadeia no duplo clique" (ver
+  //   `iniciarAnimacaoCadeia` abaixo).
   nodes: { type: Array, required: true },
-  // [{ id, label, cor, animado, animarCadeiaDuploClique, handles: { source, target } }]
+  // [{ id, label, cor, animado, handles: { source, target } }]
   tiposRelacionamento: { type: Array, default: () => [] },
   // [{ id, origemId, destinoId, tipoId }]
   relacionamentos: { type: Array, default: () => [] },
@@ -26,10 +29,12 @@ const props = defineProps({
   fitViewOnInit: { type: Boolean, default: true },
 })
 
+// Sempre via variável CSS do tema (`rgb(var(--v-theme-X))`), nunca hex fixo —
+// assim os nodes acompanham automaticamente qualquer um dos temas do projeto.
 const CORES_PADRAO = {
-  container: 'rgba(255, 255, 255, 0.85)',
-  folha: 'rgba(226, 232, 240, 0.9)',
-  borda: '1px solid rgba(44, 62, 80, 0.3)',
+  container: 'rgba(var(--v-theme-surface), 0.85)',
+  folha: 'rgb(var(--v-theme-background))',
+  borda: '1px solid rgba(var(--v-theme-on-surface), 0.3)',
 }
 
 const layout = computed(() => calcularLayoutHierarquico({ hierarquias: props.hierarquias, nodes: props.nodes }))
@@ -93,31 +98,28 @@ const vueFlowEdges = computed(() =>
         animated: tipo.animado ?? false,
         data: { tipoId: relacionamento.tipoId },
         ...(tipo.cor ? { style: { stroke: tipo.cor } } : {}),
-        ...(tipo.animarCadeiaDuploClique ? { type: 'transicao-cadeia' } : {}),
+        type: 'transicao-cadeia',
       }
     }),
 )
 
-// Percurso do "duplo clique": para cada tipo de relacionamento marcado como
-// `animarCadeiaDuploClique`, monta um mapa de encadeamento (nodeId -> próximo
-// nodeId). Ao dar duplo clique em qualquer node da cadeia, anda pra trás até
-// achar o início e anima edge por edge até o fim.
+// Percurso do "duplo clique": um mapa de encadeamento por tipo de
+// relacionamento (nodeId -> próximo nodeId), só com os tipos atualmente
+// visíveis (`vueFlowEdges` já vem filtrado por `tiposVisiveis`). O duplo
+// clique só dispara em nodes de início/fim de fluxo (`origem.inicial`/
+// `origem.final`) — esses nodes já SÃO o início da própria cadeia (em
+// qualquer direção: uma cadeia de devolução, por exemplo, tem `source` no
+// node final e caminha até o inicial), então não precisa procurar o início
+// andando pra trás — só anda pra frente a partir do node clicado, usando o
+// primeiro tipo visível que tiver uma cadeia de fato a partir dele.
 const cadeiasPorTipo = computed(() => {
   const mapa = new Map()
 
-  for (const tipo of props.tiposRelacionamento) {
-    if (tipo.animarCadeiaDuploClique) {
-      mapa.set(tipo.id, { proximo: new Map(), anterior: new Map(), edgeIdPorPar: new Map() })
-    }
-  }
-
   for (const edge of vueFlowEdges.value) {
-    const cadeia = mapa.get(edge.data.tipoId)
-    if (!cadeia) continue
-
+    const cadeia = mapa.get(edge.data.tipoId) ?? { proximo: new Map(), edgeIdPorPar: new Map() }
     cadeia.proximo.set(edge.source, edge.target)
-    cadeia.anterior.set(edge.target, edge.source)
     cadeia.edgeIdPorPar.set(`${edge.source}->${edge.target}`, edge.id)
+    mapa.set(edge.data.tipoId, cadeia)
   }
 
   return mapa
@@ -130,23 +132,26 @@ function avancarFilaAnimacaoCadeia() {
   edgeAtivaId.value = filaAnimacaoCadeia.value.shift() ?? null
 }
 
-function iniciarAnimacaoCadeia(nodeId) {
-  // Enquanto uma cadeia está tocando, ignora novos duplos cliques. Se o node
-  // clicado participar de mais de um tipo animável, usa o primeiro que tiver
-  // uma cadeia de fato (ordem de declaração em `tiposRelacionamento`).
+function iniciarAnimacaoCadeia(nodeId, { ehInicial, ehFinal }) {
   if (edgeAtivaId.value) return
+  if (!ehInicial && !ehFinal) return
 
   for (const cadeia of cadeiasPorTipo.value.values()) {
-    let inicio = nodeId
-    while (cadeia.anterior.has(inicio)) {
-      inicio = cadeia.anterior.get(inicio)
-    }
+    if (!cadeia.proximo.has(nodeId)) continue
 
+    // `visitados` corta o percurso assim que reencontra um node já
+    // passado — dados reais de devolução podem formar ciclos (ex: A devolve
+    // pra B e B devolve de volta pra A), e sem esse corte o `while` andaria
+    // pra sempre, estourando o tamanho máximo de array (RangeError).
     const idsCadeia = []
-    let atual = inicio
+    const visitados = new Set([nodeId])
+    let atual = nodeId
     while (cadeia.proximo.has(atual)) {
       const proximo = cadeia.proximo.get(atual)
+      if (visitados.has(proximo)) break
+
       idsCadeia.push(cadeia.edgeIdPorPar.get(`${atual}->${proximo}`))
+      visitados.add(proximo)
       atual = proximo
     }
 
@@ -158,10 +163,39 @@ function iniciarAnimacaoCadeia(nodeId) {
   }
 }
 
-const { onNodeDoubleClick } = useVueFlow()
+const { onNodeDoubleClick, findNode, setCenter } = useVueFlow()
 
 onNodeDoubleClick(({ node }) => {
-  iniciarAnimacaoCadeia(node.id)
+  iniciarAnimacaoCadeia(node.id, { ehInicial: !!node.data?.origem?.inicial, ehFinal: !!node.data?.origem?.final })
+})
+
+// Zoom fixo pra câmera de acompanhamento — usar `fitBounds` (enquadra pelos
+// dois nodes da edge) fazia o zoom oscilar a cada passo da cadeia, dando
+// zoom out sozinho sempre que dois nodes ficavam mais distantes entre si.
+// Com `setCenter` + zoom fixo, só a posição muda: o zoom escolhido pro
+// primeiro passo se mantém constante até o fim da cadeia.
+const ZOOM_ANIMACAO = 2
+
+// Acompanha a animação da cadeia: a cada edge que entra em `tocando`, a
+// câmera centraliza no meio dela (origem + destino) em vez de deixar o
+// usuário procurar a animação num diagrama grande.
+watch(edgeAtivaId, (id) => {
+  if (!id) return
+
+  const edge = vueFlowEdges.value.find((edge) => edge.id === id)
+  const origem = edge && findNode(edge.source)
+  const destino = edge && findNode(edge.target)
+  if (!origem?.dimensions?.width || !destino?.dimensions?.width) return
+
+  const centroOrigemX = origem.computedPosition.x + origem.dimensions.width / 2
+  const centroOrigemY = origem.computedPosition.y + origem.dimensions.height / 2
+  const centroDestinoX = destino.computedPosition.x + destino.dimensions.width / 2
+  const centroDestinoY = destino.computedPosition.y + destino.dimensions.height / 2
+
+  setCenter((centroOrigemX + centroDestinoX) / 2, (centroOrigemY + centroDestinoY) / 2, {
+    zoom: ZOOM_ANIMACAO,
+    duration: 500,
+  })
 })
 </script>
 
@@ -171,6 +205,7 @@ onNodeDoubleClick(({ node }) => {
     :edges="vueFlowEdges"
     :nodes-draggable="nodesDraggable"
     :fit-view-on-init="fitViewOnInit"
+    :max-zoom="4"
     elevate-edges-on-select
     class="hierarquia-flow-component"
   >

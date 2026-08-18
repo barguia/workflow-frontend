@@ -90,6 +90,6 @@ export default {
     cy="0"
     cx="0"
     :transform="`translate(${posicaoPonto.x}, ${posicaoPonto.y})`"
-    style="fill: #fdd023"
+    style="fill: rgb(var(--v-theme-warning))"
   />
 </template>

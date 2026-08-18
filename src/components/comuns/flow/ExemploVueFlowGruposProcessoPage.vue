@@ -309,7 +309,7 @@ const TIPO_AVANCO = 'avanco'
 const TIPO_DEVOLUCAO = 'devolucao'
 
 const tiposRelacionamento = [
-  { id: TIPO_AVANCO, label: 'Avanço', animado: true, handles: { source: 'bottom', target: 'top' }, animarCadeiaDuploClique: true },
+  { id: TIPO_AVANCO, label: 'Avanço', animado: true, handles: { source: 'bottom', target: 'top' } },
   { id: TIPO_DEVOLUCAO, label: 'Devolução', animado: true, cor: '#EF4444', handles: { source: 'left', target: 'right' } },
 ]
 

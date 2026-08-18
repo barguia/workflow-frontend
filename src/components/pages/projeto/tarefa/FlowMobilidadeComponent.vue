@@ -20,26 +20,34 @@ const props = defineProps({
   // Se informado, destaca visualmente o node da tarefa correspondente
   // (ex: a tarefa que está sendo visualizada na página).
   tarefaDestaqueId: { type: [Number, String], default: null },
-  height: { type: String, default: '600px' },
+  height: { type: String, default: '900px' },
 })
 
 // Cores/handles por tipo de relacionamento são decisão do frontend — o
 // backend só devolve `{ id, label }`. Chaveado pelo label porque ele reflete
-// o enum estável do backend (CtrlMobilidadeTipoEnum: Avanço/Devolução).
-const CORES_TIPO = { Devolução: '#EF4444' }
+// o enum estável do backend (CtrlMobilidadeTipoEnum: Avanço/Devolução). Cores
+// sempre via variável CSS do tema (`rgb(var(--v-theme-X))`), nunca hex fixo —
+// assim acompanham automaticamente qualquer um dos temas do projeto.
+const CORES_TIPO = { Devolução: 'rgb(var(--v-theme-error))' }
 const HANDLES_TIPO = {
   Avanço: { source: 'bottom', target: 'top' },
   Devolução: { source: 'left', target: 'right' },
+  'Caminho Crítico': { source: 'right', target: 'left' },
 }
-const TIPO_COM_ANIMACAO_EM_CADEIA = 'Devolução'
 
 // Marcação visual das tarefas de início/fim de fluxo (`inicial`/`final`
-// vindos do backend) — pill arredondado com fundo colorido e fonte branca,
-// se sobrepondo ao cinza padrão das folhas.
+// vindos do backend) — pill arredondado com fundo colorido, se sobrepondo ao
+// cinza padrão das folhas. Fonte usa o `on-X` correspondente (contraste
+// calculado automaticamente pelo Vuetify pra cada tema) em vez de branco fixo.
 const CORES_MARCACAO = {
-  inicial: { fundo: '#22C55E', fonte: '#FFFFFF' },
-  final: { fundo: '#F87171', fonte: '#FFFFFF' },
+  inicial: { fundo: 'rgb(var(--v-theme-success))', fonte: 'rgb(var(--v-theme-on-success))' },
+  final: { fundo: 'rgb(var(--v-theme-error))', fonte: 'rgb(var(--v-theme-on-error))' },
 }
+
+// Tarefas que participam de algum relacionamento "Caminho Crítico" (origem
+// ou destino) recebem o mesmo tratamento visual de marcação (fundo colorido
+// + fonte de contraste), mas sem o pill arredondado das tarefas de início/fim.
+const COR_CAMINHO_CRITICO = { fundo: 'rgb(var(--v-theme-error))', fonte: 'rgb(var(--v-theme-on-error))' }
 
 // Paleta padrão para os macroprocessos (nodes raiz) quando o backend não
 // define uma `cor` — ciclada por node raiz (ordenado por `ordenacao`) pra
@@ -48,18 +56,18 @@ const CORES_MARCACAO = {
 // semitransparente (alpha 0.5) — os níveis abaixo (processo/tarefa) não têm
 // `cor` definida, então usam o fundo quase-opaco padrão do
 // HierarquiaFlowComponent por cima, deixando a cor da raiz "vazar" de leve
-// por trás em vez de cada nível ter sua própria cor sólida.
+// por trás em vez de cada nível ter sua própria cor sólida. Usa os tokens
+// semânticos do tema (definidos em `main.js` pra todos os temas) em vez de
+// hex fixo, pra não ficar fora de paleta em temas como `dark`/`aurora`.
 const PALETA_CORES_RAIZ = [
-  'rgba(59, 130, 246, 0.5)', // azul
-  'rgba(139, 92, 246, 0.5)', // roxo
-  'rgba(16, 185, 129, 0.5)', // verde
-  'rgba(245, 158, 11, 0.5)', // âmbar
-  'rgba(239, 68, 68, 0.5)', // vermelho
-  'rgba(20, 184, 166, 0.5)', // teal
-  'rgba(99, 102, 241, 0.5)', // índigo
-  'rgba(236, 72, 153, 0.5)', // rosa
-  'rgba(132, 204, 22, 0.5)', // lima
-  'rgba(6, 182, 212, 0.5)', // ciano
+  'rgba(var(--v-theme-primary), 0.5)',
+  'rgba(var(--v-theme-secondary), 0.5)',
+  'rgba(var(--v-theme-accent), 0.5)',
+  'rgba(var(--v-theme-success), 0.5)',
+  'rgba(var(--v-theme-warning), 0.5)',
+  'rgba(var(--v-theme-error), 0.5)',
+  'rgba(var(--v-theme-info), 0.5)',
+  'rgba(var(--v-theme-teal), 0.5)',
 ]
 
 const carregando = ref(true)
@@ -122,6 +130,34 @@ const hierarquias = computed(() => {
   })
 })
 
+const tiposRelacionamento = computed(() =>
+  (estrutura.value?.tiposRelacionamento ?? []).map((tipo) => ({
+    id: tipo.id,
+    label: tipo.label,
+    animado: true,
+    cor: CORES_TIPO[tipo.label],
+    handles: HANDLES_TIPO[tipo.label],
+  })),
+)
+
+const relacionamentos = computed(() => estrutura.value?.relacionamentos ?? [])
+
+// Ids das tarefas (origem ou destino) que participam de algum relacionamento
+// "Caminho Crítico" — usado pra colorir o node independente da direção em
+// que ele aparece na cadeia.
+const idsCaminhoCritico = computed(() => {
+  const tipo = tiposRelacionamento.value.find((tipo) => tipo.label === 'Caminho Crítico')
+  if (!tipo) return new Set()
+
+  const ids = new Set()
+  for (const relacionamento of relacionamentos.value) {
+    if (relacionamento.tipoId !== tipo.id) continue
+    ids.add(relacionamento.origemId)
+    ids.add(relacionamento.destinoId)
+  }
+  return ids
+})
+
 const nodes = computed(() => {
   // Nodes de processo/tarefa vêm com id no formato `processo-{id}`/`tarefa-{id}`
   // (ver EngineCtrlWorkflowService::estruturaComMobilidades) — os ids das
@@ -138,7 +174,8 @@ const nodes = computed(() => {
 
   return brutos.map((node) => {
     const marcacao = node.inicial ? CORES_MARCACAO.inicial : node.final ? CORES_MARCACAO.final : null
-    const cor = marcacao?.fundo ?? node.cor ?? corRaizPorId.get(node.id)
+    const caminhoCritico = !marcacao && idsCaminhoCritico.value.has(node.id) ? COR_CAMINHO_CRITICO : null
+    const cor = marcacao?.fundo ?? caminhoCritico?.fundo ?? node.cor ?? corRaizPorId.get(node.id)
 
     return {
       id: node.id,
@@ -146,29 +183,22 @@ const nodes = computed(() => {
       nivel: node.nivel ?? nivelFolhaId.value,
       parentId: node.parentId,
       ordenacao: node.ordenacao,
+      inicial: node.inicial,
+      final: node.final,
       ...(cor ? { cor } : {}),
       estilo: {
         ...(marcacao ? { borderRadius: '999px', color: marcacao.fonte } : {}),
+        ...(caminhoCritico ? { color: caminhoCritico.fonte } : {}),
         ...(node.id === tarefaDestaqueId
-          ? { border: '3px solid #fdd023', boxShadow: '0 0 0 2px rgba(253, 208, 35, 0.3)' }
+          ? {
+              border: '3px solid rgb(var(--v-theme-warning))',
+              boxShadow: '0 0 0 2px rgba(var(--v-theme-warning), 0.3)',
+            }
           : {}),
       },
     }
   })
 })
-
-const tiposRelacionamento = computed(() =>
-  (estrutura.value?.tiposRelacionamento ?? []).map((tipo) => ({
-    id: tipo.id,
-    label: tipo.label,
-    animado: true,
-    cor: CORES_TIPO[tipo.label],
-    handles: HANDLES_TIPO[tipo.label],
-    animarCadeiaDuploClique: tipo.label === TIPO_COM_ANIMACAO_EM_CADEIA,
-  })),
-)
-
-const relacionamentos = computed(() => estrutura.value?.relacionamentos ?? [])
 
 const tipoItems = computed(() => tiposRelacionamento.value.map((tipo) => ({ text: tipo.label, value: tipo.id })))
 const tiposVisiveis = ref([])
@@ -264,10 +294,10 @@ const movimentacaoHabilitada = ref(false)
 }
 
 .filtro-panel {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(var(--v-theme-surface), 0.95);
   border-radius: 8px;
   padding: 8px 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  color: #2c3e50;
+  box-shadow: 0 0 10px rgba(var(--v-theme-on-surface), 0.3);
+  color: rgb(var(--v-theme-on-surface));
 }
 </style>
