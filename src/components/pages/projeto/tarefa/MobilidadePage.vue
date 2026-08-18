@@ -242,7 +242,17 @@
                       size="small"
                       variant="tonal"
                       class="font-weight-medium chip-tarefa-nome"
+                      :to="{ name: route.name, params: { id: opcao.value } }"
+                      :data-testid="`mobilidade-link-origem-${opcao.value}`"
                     >
+                      <IconComponent
+                        v-if="opcao.caminho_critico"
+                        start
+                        size="14"
+                        color="warning"
+                      >
+                        mdi-alert-decagram
+                      </IconComponent>
                       <span class="etapa-tag">Etapa {{ opcao.ordenacao }} ·</span> {{ opcao.text }}
                     </ChipComponent>
                     <ChipComponent
@@ -354,6 +364,8 @@
                       size="small"
                       variant="tonal"
                       class="font-weight-medium chip-tarefa-nome"
+                      :to="{ name: route.name, params: { id: opcao.value } }"
+                      :data-testid="`mobilidade-link-destino-${opcao.value}`"
                     >
                       <span class="etapa-tag">Etapa {{ opcao.ordenacao }} ·</span> {{ opcao.text }}
                     </ChipComponent>
@@ -393,6 +405,16 @@
                         {{ tipo.tipo }}
                       </ButtonComponent>
                     </v-btn-toggle>
+                    <SwitchComponent
+                      :model-value="opcao.caminho_critico"
+                      label="Crítico"
+                      hide-details
+                      density="compact"
+                      class="switch-critico"
+                      :loading="atualizandoMobilidade === opcao.mobilidade_id"
+                      :data-testid="`mobilidade-switch-critico-${opcao.mobilidade_id}`"
+                      @update:model-value="val => atualizarMobilidade(opcao, { caminhoCritico: val })"
+                    />
                     <SelectComponent
                       :model-value="opcao.formulario_id"
                       :items="opcoesFormulario"
@@ -550,6 +572,7 @@ import ChipComponent from '@/components/comuns/chips/ChipComponent.vue'
 import DialogComponent from '@/components/comuns/dialogs/DialogComponent.vue'
 import CheckboxItemComponent from '@/components/comuns/forms/CheckboxItemComponent.vue'
 import SelectComponent from '@/components/comuns/forms/SelectComponent.vue'
+import SwitchComponent from '@/components/comuns/forms/SwitchComponent.vue'
 import ProgressCircularComponent from '@/components/comuns/progress/ProgressCircularComponent.vue'
 import SnackbarComponent from '@/components/comuns/alerts/SnackbarComponent.vue'
 
@@ -668,11 +691,12 @@ function agruparPorProcesso(tarefas) {
       }
     }
     agrupado[nomeGrupo].options.push({
-      value:         t.id,
-      text:          t.tarefa,
-      ordenacao:     t.ordenacao ?? 0,
-      tipo_id:       t.pivot?.ctrl_mobilidade_tipo_id ?? null,
-      formulario_id: t.pivot?.ctrl_formulario_id ?? null,
+      value:          t.id,
+      text:           t.tarefa,
+      ordenacao:      t.ordenacao ?? 0,
+      tipo_id:        t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      formulario_id:  t.pivot?.ctrl_formulario_id ?? null,
+      caminho_critico: !!t.pivot?.caminho_critico,
     })
   })
   return Object.values(agrupado)
@@ -694,13 +718,14 @@ function agruparDestinosPorProcesso(destinos) {
       }
     }
     agrupado[nomeGrupo].options.push({
-      value:          t.id,
-      text:           t.tarefa,
-      ordenacao:      t.ordenacao ?? 0,
-      mobilidade_id:  t.pivot?.id ?? null,
-      tipo_id:        t.pivot?.ctrl_mobilidade_tipo_id ?? null,
-      formulario_id:  t.pivot?.ctrl_formulario_id ?? null,
-      is_interrupcao: t.tipo_tarefa?.tipo === 'Interrupção',
+      value:           t.id,
+      text:            t.tarefa,
+      ordenacao:       t.ordenacao ?? 0,
+      mobilidade_id:   t.pivot?.id ?? null,
+      tipo_id:         t.pivot?.ctrl_mobilidade_tipo_id ?? null,
+      formulario_id:   t.pivot?.ctrl_formulario_id ?? null,
+      caminho_critico: !!t.pivot?.caminho_critico,
+      is_interrupcao:  t.tipo_tarefa?.tipo === 'Interrupção',
     })
   })
   return Object.values(agrupado)
@@ -714,7 +739,7 @@ function corTipo(tipoNome) {
   return 'primary'
 }
 
-async function atualizarMobilidade(opcao, { tipoId, formularioId } = {}) {
+async function atualizarMobilidade(opcao, { tipoId, formularioId, caminhoCritico } = {}) {
   const mobilidadeId = opcao?.mobilidade_id
   if (!mobilidadeId) return
   atualizandoMobilidade.value = mobilidadeId
@@ -722,6 +747,7 @@ async function atualizarMobilidade(opcao, { tipoId, formularioId } = {}) {
     await api.put(`wf/mobilidades/${mobilidadeId}`, {
       ctrl_mobilidade_tipo_id: tipoId !== undefined ? tipoId : opcao.tipo_id,
       ctrl_formulario_id: formularioId !== undefined ? formularioId : opcao.formulario_id,
+      caminho_critico: caminhoCritico !== undefined ? caminhoCritico : opcao.caminho_critico,
     })
     snackbar.value = { show: true, message: 'Mobilidade atualizada!', color: 'success' }
     await carregar()
@@ -925,10 +951,19 @@ onMounted(carregar)
 
 .destinos-grid {
   display: grid;
-  grid-template-columns: 1fr auto 220px;
+  grid-template-columns: 1fr auto auto 220px;
   column-gap: 16px;
   row-gap: 12px;
   align-items: center;
+}
+
+.switch-critico {
+  flex: none;
+}
+
+.switch-critico :deep(.v-label) {
+  font-size: 0.8rem;
+  opacity: 0.85;
 }
 
 .destinos-grid-full {

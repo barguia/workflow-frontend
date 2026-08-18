@@ -136,7 +136,7 @@
       class="pa-2"
     >
       <MenuNodeComponent
-        v-for="item in authStore.getMenus"
+        v-for="item in menus"
         :key="item.id"
         :node="item"
         :level="0"
@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore.js'
 
@@ -173,6 +173,8 @@ const drawer = ref(false)
 const openAtLevel = reactive({})
 const opened = ref([])
 const authStore = useAuthStore()
+
+const menus = computed(() => authStore.getMenus)
 
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
