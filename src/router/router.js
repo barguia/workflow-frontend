@@ -6,7 +6,8 @@ import appRoutes from "@/components/pages/aplicacao/routes/routes.js"
 import workflowRoutes from "@/components/pages/projeto/routes/routes.js"
 import formDinamicoRoutes from "@/components/pages/formulario-dinamico/routes/routes.js"
 import FormExemploPage from "@/components/form-dinamico/FormExemploPage.vue";
-import MobilidadeVueFlowGruposProcessoPage from "@/components/pages/mobilidade/MobilidadeVueFlowGruposProcessoPage.vue";
+import ExemploVueFlowGruposProcessoPage from "@/components/comuns/flow/ExemploVueFlowGruposProcessoPage.vue";
+import FlowMobilidadeComponent from "@/components/pages/projeto/tarefa/FlowMobilidadeComponent.vue";
 
 const routes = [
     ...controleAcessoRoutes,
@@ -20,9 +21,16 @@ const routes = [
         component: FormExemploPage,
     },
     {
-        path: '/mobilidade-vue-flow-grupos-processo',
+        path: '/exemplo-vue-flow-grupos-processo',
         name: 'Mobilidade Vue Flow Grupos de Processo',
-        component: MobilidadeVueFlowGruposProcessoPage,
+        component: ExemploVueFlowGruposProcessoPage,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/flow-mobilidade-preview/:ctrlWorkflowId',
+        name: 'Flow Mobilidade Preview',
+        component: FlowMobilidadeComponent,
+        props: true,
         meta: { requiresAuth: true },
     },
     {
@@ -38,7 +46,7 @@ const router = createRouter({
     routes,
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
     // Usa a instância de Pinia globalmente ativa (instalada em main.js via
     // app.use(pinia)), garantindo que o guard reflita o MESMO authStore usado
     // pelo restante da aplicação (api.js, MenuCompletoComponent, LoginPage).
@@ -49,9 +57,7 @@ router.beforeEach(async (to, from, next) => {
     await authStore.checkAuth();
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-        next('/login');
-    } else {
-        next();
+        return '/login';
     }
 });
 

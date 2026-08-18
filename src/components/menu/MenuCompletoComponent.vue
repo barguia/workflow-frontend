@@ -174,20 +174,7 @@ const openAtLevel = reactive({})
 const opened = ref([])
 const authStore = useAuthStore()
 
-// Menu hardcoded com os dashboards de mobilidade criados nesta branch,
-// já que ainda não existe cadastro de menu para eles no backend.
-const menusHardcoded = [
-  {
-    id: 'dashboards-mobilidade',
-    title: 'Dashboards',
-    icon: 'mdi-view-dashboard-outline',
-    children: [
-      { id: 'dash-mobilidade-vue-flow-grupos-processo', title: 'Mobilidade Vue Flow Grupos de Processo', icon: 'mdi-graph-outline', path: '/mobilidade-vue-flow-grupos-processo' },
-    ],
-  },
-]
-
-const menus = computed(() => [...authStore.getMenus, ...menusHardcoded])
+const menus = computed(() => authStore.getMenus)
 
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
