@@ -136,7 +136,7 @@
       class="pa-2"
     >
       <MenuNodeComponent
-        v-for="item in authStore.getMenus"
+        v-for="item in menus"
         :key="item.id"
         :node="item"
         :level="0"
@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore.js'
 
@@ -173,6 +173,33 @@ const drawer = ref(false)
 const openAtLevel = reactive({})
 const opened = ref([])
 const authStore = useAuthStore()
+
+// Menu hardcoded com os dashboards de mobilidade criados nesta branch,
+// já que ainda não existe cadastro de menu para eles no backend.
+const menusHardcoded = [
+  {
+    id: 'dashboards-mobilidade',
+    title: 'Dashboards',
+    icon: 'mdi-view-dashboard-outline',
+    children: [
+      { id: 'dash-mobilidade-exemplo', title: 'Mobilidade Exemplo', icon: 'mdi-graph-outline', path: '/mobilidade-exemplo' },
+      { id: 'dash-mobilidade-vue-flow', title: 'Mobilidade Vue Flow', icon: 'mdi-graph-outline', path: '/mobilidade-vue-flow' },
+      { id: 'dash-mobilidade-vue-flow-tipos-edge', title: 'Mobilidade Vue Flow Tipos de Edge', icon: 'mdi-graph-outline', path: '/mobilidade-vue-flow-tipos-edge' },
+      { id: 'dash-mobilidade-vue-flow-layout-dagre', title: 'Mobilidade Vue Flow Layout Dagre', icon: 'mdi-graph-outline', path: '/mobilidade-vue-flow-layout-dagre' },
+      { id: 'dash-mobilidade-vue-flow-nesting', title: 'Mobilidade Vue Flow Nesting', icon: 'mdi-graph-outline', path: '/mobilidade-vue-flow-nesting' },
+      { id: 'dash-mobilidade-vue-flow-grupos-processo', title: 'Mobilidade Vue Flow Grupos de Processo', icon: 'mdi-graph-outline', path: '/mobilidade-vue-flow-grupos-processo' },
+      { id: 'dash-mobilidade-vis-network-simples', title: 'Mobilidade Vis Network Simples', icon: 'mdi-graph-outline', path: '/mobilidade-vis-network-simples' },
+      { id: 'dash-mobilidade-vis-network', title: 'Mobilidade Vis Network', icon: 'mdi-graph-outline', path: '/mobilidade-vis-network' },
+      { id: 'dash-mobilidade-vis-network-livre', title: 'Mobilidade Vis Network Livre', icon: 'mdi-graph-outline', path: '/mobilidade-vis-network-livre' },
+      { id: 'dash-mobilidade-nomeada-vue-flow-simples', title: 'Mobilidade Nomeada Vue Flow Simples', icon: 'mdi-graph-outline', path: '/mobilidade-nomeada-vue-flow-simples' },
+      { id: 'dash-mobilidade-nomeada-vue-flow', title: 'Mobilidade Nomeada Vue Flow', icon: 'mdi-graph-outline', path: '/mobilidade-nomeada-vue-flow' },
+      { id: 'dash-mobilidade-nomeada-vis-network-simples', title: 'Mobilidade Nomeada Vis Network Simples', icon: 'mdi-graph-outline', path: '/mobilidade-nomeada-vis-network-simples' },
+      { id: 'dash-mobilidade-nomeada-vis-network', title: 'Mobilidade Nomeada Vis Network', icon: 'mdi-graph-outline', path: '/mobilidade-nomeada-vis-network' },
+    ],
+  },
+]
+
+const menus = computed(() => [...authStore.getMenus, ...menusHardcoded])
 
 function handleToggle({ level, id }) {
   openAtLevel[level] = id
