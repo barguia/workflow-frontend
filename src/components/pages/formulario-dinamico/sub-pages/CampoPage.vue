@@ -390,7 +390,7 @@ const fields = [
 const headers = [
   { title: '', value: 'preview', key: 'preview' },
   { title: 'Campo', value: 'campo', key: 'campo' },
-  { title: 'Tipo', value: 'tipo', key: 'tipo' },
+  { title: 'Tipo', value: 'tipo', key: 'tipo', format: 'upper' },
   { title: 'Máscara', value: 'mascara', key: 'mascara' },
   { title: 'Grupo', value: 'grupo', key: 'grupo' },
   { title: 'Valor Padrão', value: 'valor_default', key: 'valor_default' },

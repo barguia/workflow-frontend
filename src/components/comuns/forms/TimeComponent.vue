@@ -16,5 +16,5 @@ defineProps({
   required: Boolean,
 })
 
-const modelValue = defineModel({ type: String })
+const modelValue = defineModel({ type: String, default: null })
 </script>

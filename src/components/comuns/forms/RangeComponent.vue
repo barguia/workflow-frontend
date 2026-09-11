@@ -27,5 +27,5 @@ defineProps({
   showTicks: { type: [Boolean, String], default: false },
 })
 
-const modelValue = defineModel({ type: Number })
+const modelValue = defineModel({ type: Number, default: null })
 </script>

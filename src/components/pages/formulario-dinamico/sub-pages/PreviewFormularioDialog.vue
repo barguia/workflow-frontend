@@ -20,15 +20,31 @@
 
       <CardTextComponent class="pa-4">
         <FormularioDinamicoPorId
+          v-show="modo === 'editar'"
           ref="formularioRef"
           v-model="dadosForm"
           :formulario-id="formulario?.id"
         />
 
+        <FormularioDinamicoSnapshot
+          v-if="modo === 'readonly'"
+          :snapshot="dadosForm.snapshot"
+          :snapshot-version="dadosForm.snapshot_version"
+        />
+
         <template v-if="mostrarDados">
           <DividerComponent class="my-4" />
-          <div class="text-caption text-medium-emphasis mb-2">
-            Dados do Formulário (debug)
+          <div class="d-flex align-center justify-space-between mb-2">
+            <div class="text-caption text-medium-emphasis">
+              Dados do Formulário (debug)
+            </div>
+            <ButtonComponent
+              icon="mdi-content-copy"
+              variant="text"
+              size="small"
+              data-testid="preview-copiar-dados"
+              @click="copiarDados"
+            />
           </div>
           <pre>{{ dadosForm }}</pre>
         </template>
@@ -37,6 +53,18 @@
       <DividerComponent />
 
       <CardActionsComponent class="pa-3">
+        <ButtonComponent
+          v-if="formularioRef?.campos?.length"
+          variant="text"
+          color="secondary"
+          data-testid="preview-toggle-visualizacao"
+          @click="modo = modo === 'editar' ? 'readonly' : 'editar'"
+        >
+          <IconComponent start>
+            {{ modo === 'editar' ? 'mdi-eye-outline' : 'mdi-pencil-outline' }}
+          </IconComponent>
+          {{ modo === 'editar' ? 'Visualizar preenchido' : 'Editar' }}
+        </ButtonComponent>
         <ButtonComponent
           v-if="formularioRef?.campos?.length"
           variant="text"
@@ -58,7 +86,7 @@
           Fechar
         </ButtonComponent>
         <ButtonComponent
-          v-if="formularioRef?.campos?.length"
+          v-if="formularioRef?.campos?.length && modo === 'editar'"
           color="primary"
           data-testid="preview-validar"
           @click="validar"
@@ -82,6 +110,7 @@ import IconComponent from '@/components/comuns/icons/IconComponent.vue'
 import DividerComponent from '@/components/comuns/layout/DividerComponent.vue'
 import SpacerComponent from '@/components/comuns/layout/SpacerComponent.vue'
 import FormularioDinamicoPorId from '@/components/form-dinamico/FormularioDinamicoPorId.vue'
+import FormularioDinamicoSnapshot from '@/components/form-dinamico/FormularioDinamicoSnapshot.vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -95,6 +124,7 @@ const titulo = ref('')
 const formularioRef = ref(null)
 const dadosForm = ref({})
 const mostrarDados = ref(false)
+const modo = ref('editar') // 'editar' | 'readonly'
 
 watch(() => props.modelValue, (v) => { dialog.value = v })
 watch(dialog, (v) => emit('update:modelValue', v))
@@ -104,9 +134,23 @@ watch(() => props.formulario, (formulario) => {
   titulo.value = `Preview: ${formulario.formulario}`
   dadosForm.value = {}
   mostrarDados.value = false
+  modo.value = 'editar'
 }, { immediate: true })
 
 const validar = () => formularioRef.value?.validate?.()
+
+const copiarDados = async () => {
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(dadosForm.value, null, 2))
+    window.dispatchEvent(new CustomEvent('notification', {
+      detail: { type: 'success', message: 'Dados copiados para a área de transferência!' },
+    }))
+  } catch {
+    window.dispatchEvent(new CustomEvent('notification', {
+      detail: { type: 'error', message: 'Não foi possível copiar os dados.' },
+    }))
+  }
+}
 </script>
 
 <style scoped>

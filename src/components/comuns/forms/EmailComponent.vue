@@ -18,7 +18,7 @@ const props = defineProps({
   required: Boolean,
 })
 
-const modelValue = defineModel({ type: String })
+const modelValue = defineModel({ type: String, default: null })
 
 const emailRule = v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'E-mail inválido'
 

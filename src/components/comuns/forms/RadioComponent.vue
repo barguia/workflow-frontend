@@ -30,7 +30,7 @@ const props = defineProps({
   sorted: { type: Boolean, default: false },
 })
 
-const modelValue = defineModel({ type: null })
+const modelValue = defineModel({ type: null, default: null })
 
 const sortedItems = computed(() => {
   if (!props.sorted || !props.items) return props.items
