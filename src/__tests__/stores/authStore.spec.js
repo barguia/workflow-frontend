@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import CryptoJS from 'crypto-js'
+import { encryptToken as encryptTokenUtil } from '@/utils/tokenCrypto.js'
 
 // Mock do authService antes de importar a store
 vi.mock('@/services/authService.js', () => ({
@@ -17,7 +17,7 @@ import { authService } from '@/services/authService.js'
 const CRYPTO_KEY = import.meta.env.VITE_CRYPTO_KEY || 'sua-chave-secreta-aqui'
 
 function encryptToken(token) {
-  return CryptoJS.AES.encrypt(token, CRYPTO_KEY).toString()
+  return encryptTokenUtil(token, CRYPTO_KEY)
 }
 
 describe('authStore', () => {
@@ -57,68 +57,69 @@ describe('authStore', () => {
   })
 
   describe('setSessao', () => {
-    it('salva o token criptografado no localStorage', () => {
+    it('salva o token criptografado no localStorage', async () => {
       const store = useAuthStore()
-      store.setSessao('meu-token', [])
+      await store.setSessao('meu-token', [])
       expect(localStorage.getItem('authToken')).toBeTruthy()
     })
 
-    it('atualiza token e menus na store', () => {
+    it('atualiza token e menus na store', async () => {
       const store = useAuthStore()
       const menus = [{ id: 1, name: 'Dashboard' }]
-      store.setSessao('meu-token', menus)
+      await store.setSessao('meu-token', menus)
       expect(store.token).toBe('meu-token')
       expect(store.menus).toEqual(menus)
     })
 
-    it('marca loaded como true', () => {
+    it('marca loaded como true', async () => {
       const store = useAuthStore()
-      store.setSessao('meu-token', [])
+      await store.setSessao('meu-token', [])
       expect(store.loaded).toBe(true)
     })
 
-    it('não faz nada quando token é falsy', () => {
+    it('não faz nada quando token é falsy', async () => {
       const store = useAuthStore()
-      store.setSessao(null, [])
+      await store.setSessao(null, [])
       expect(store.token).toBeNull()
       expect(localStorage.getItem('authToken')).toBeNull()
     })
   })
 
   describe('loadToken', () => {
-    it('descriptografa e carrega o token do localStorage', () => {
-      localStorage.setItem('authToken', encryptToken('token-salvo'))
+    it('descriptografa e carrega o token do localStorage', async () => {
+      localStorage.setItem('authToken', await encryptToken('token-salvo'))
       localStorage.setItem('menus', JSON.stringify([]))
       const store = useAuthStore()
-      store.loadToken()
+      await store.loadToken()
       expect(store.token).toBe('token-salvo')
     })
 
-    it('carrega menus do localStorage', () => {
+    it('carrega menus do localStorage', async () => {
       const menus = [{ id: 1 }]
-      localStorage.setItem('authToken', encryptToken('t'))
+      localStorage.setItem('authToken', await encryptToken('t'))
       localStorage.setItem('menus', JSON.stringify(menus))
       const store = useAuthStore()
-      store.loadToken()
+      await store.loadToken()
       expect(store.menus).toEqual(menus)
     })
 
-    it('não lança exceção quando o dado no localStorage está corrompido', () => {
+    it('não lança exceção quando o dado no localStorage está corrompido', async () => {
       localStorage.setItem('authToken', 'dado-invalido-que-nao-e-aes')
       const store = useAuthStore()
-      // CryptoJS não lança exceção — retorna lixo ou string vazia dependendo da versão.
-      // O token inválido será rejeitado com 401 pela API, que chama limpaSessao().
-      expect(() => store.loadToken()).not.toThrow()
+      // O Web Crypto rejeita a Promise para ciphertext inválido — o try/catch interno
+      // do loadToken() trata isso e limpa a sessão, sem propagar erro pro caller.
+      await store.loadToken()
+      expect(store.token).toBeNull()
     })
 
-    it('não faz nada quando localStorage está vazio', () => {
+    it('não faz nada quando localStorage está vazio', async () => {
       const store = useAuthStore()
-      store.loadToken()
+      await store.loadToken()
       expect(store.token).toBeNull()
       expect(store.loaded).toBe(false)
     })
 
-    it('limpa o estado em memória quando o localStorage foi invalidado externamente (ex: 401 em outra aba)', () => {
+    it('limpa o estado em memória quando o localStorage foi invalidado externamente (ex: 401 em outra aba)', async () => {
       const store = useAuthStore()
       // Simula uma store com sessão "grudada" em memória, mas sem token no localStorage
       // (ex: outra aba/requisição já limpou a sessão).
@@ -126,7 +127,7 @@ describe('authStore', () => {
       store.menus = [{ id: 1 }]
       store.loaded = true
 
-      store.loadToken()
+      await store.loadToken()
 
       expect(store.token).toBeNull()
       expect(store.menus).toEqual([])
@@ -135,9 +136,9 @@ describe('authStore', () => {
   })
 
   describe('limpaSessao', () => {
-    it('zera token, menus, loaded e remove do localStorage', () => {
+    it('zera token, menus, loaded e remove do localStorage', async () => {
       const store = useAuthStore()
-      store.setSessao('token', [{ id: 1 }])
+      await store.setSessao('token', [{ id: 1 }])
       store.limpaSessao()
       expect(store.token).toBeNull()
       expect(store.menus).toEqual([])
@@ -155,7 +156,7 @@ describe('authStore', () => {
     })
 
     it('retorna true quando há token válido no localStorage', async () => {
-      localStorage.setItem('authToken', encryptToken('valid-token'))
+      localStorage.setItem('authToken', await encryptToken('valid-token'))
       const store = useAuthStore()
       const result = await store.checkAuth()
       expect(result).toBe(true)
@@ -181,7 +182,7 @@ describe('authStore', () => {
     })
 
     it('mantém autenticado em chamadas repetidas quando o token no localStorage continua válido', async () => {
-      localStorage.setItem('authToken', encryptToken('valid-token'))
+      localStorage.setItem('authToken', await encryptToken('valid-token'))
       const store = useAuthStore()
 
       await store.checkAuth()

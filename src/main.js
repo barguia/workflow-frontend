@@ -140,7 +140,7 @@ const pinia = createPinia();
 app.use(pinia);
 
 const authStore = useAuthStore();
-authStore.loadToken();
+await authStore.loadToken();
 
 app.use(router);
 app.use(vuetify);

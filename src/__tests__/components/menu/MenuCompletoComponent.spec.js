@@ -55,7 +55,7 @@ describe('MenuCompletoComponent — reatividade ao authStore', () => {
 
   it('exibe o toggle do menu, o drawer e os itens de menu quando autenticado', async () => {
     const authStore = useAuthStore()
-    authStore.setSessao('token-valido', [
+    await authStore.setSessao('token-valido', [
       { id: 1, label: 'Dashboard' },
       { id: 2, label: 'Configurações' },
     ])
@@ -70,7 +70,7 @@ describe('MenuCompletoComponent — reatividade ao authStore', () => {
 
   it('remove o toggle do menu, o drawer e os itens de menu assim que a sessão é limpa (ex: 401)', async () => {
     const authStore = useAuthStore()
-    authStore.setSessao('token-valido', [{ id: 1, label: 'Dashboard' }])
+    await authStore.setSessao('token-valido', [{ id: 1, label: 'Dashboard' }])
 
     const wrapper = montar()
     await wrapper.vm.$nextTick()
