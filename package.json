@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "scripts": {
     "dev": "vite",
@@ -31,7 +31,6 @@
     "@vue/devtools-api": "^8.1.5",
     "@vueuse/core": "^14.4.0",
     "axios": "^1.15.1",
-    "crypto-js": "^4.2.0",
     "lodash-es": "^4.17.21",
     "maska": "^3.2.0",
     "pinia": "^4.0.2",
@@ -39,7 +38,7 @@
     "vue-recaptcha-v3": "^2.0.1",
     "vue-router": "^5.2.0",
     "vuedraggable": "^4.1.0",
-    "vuetify": "^3.10.3"
+    "vuetify": "^4.2.1"
   },
   "overrides": {
     "flatted": "3.4.2"
@@ -48,16 +47,16 @@
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.58.2",
     "@vitejs/plugin-vue": "^6.0.1",
-    "@vitest/coverage-v8": "^4.0.18",
-    "@vitest/ui": "^4.0.18",
+    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/ui": "^5.0.0",
     "@vue/test-utils": "^2.4.6",
     "dotenv": "^17.3.1",
     "eslint": "^10.7.0",
     "eslint-plugin-vue": "^10.9.2",
     "globals": "^17.7.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "vite": "^8.1.5",
     "vite-plugin-vue-devtools": "^8.0.2",
-    "vitest": "^4.0.18"
+    "vitest": "^5.0.0"
   }
 }

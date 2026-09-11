@@ -121,9 +121,9 @@ describe('snapshot-versoes/v1.vue', () => {
     expect(desligado.text()).toContain('Não')
   })
 
-  it('aplica a classe de grid a partir de cols', () => {
+  it('aplica cols do grid a partir do snapshot', () => {
     const wrapper = montar({ snapshot: { processo: snapshot.processo } })
 
-    expect(wrapper.find('.v-col-3').exists()).toBe(true)
+    expect(wrapper.find('[cols="3"]').exists()).toBe(true)
   })
 })

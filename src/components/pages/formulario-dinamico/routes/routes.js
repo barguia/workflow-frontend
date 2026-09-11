@@ -11,11 +11,9 @@ const routes = [
         component: GestaoFormularioPage,
         icon: "mdi-text-box-multiple-outline",
         meta: { requiresAuth: true },
-        beforeEnter: (to, from, next) => {
+        beforeEnter: (to) => {
             if (to.hash && !HASHES_VALIDOS.includes(to.hash)) {
-                next({ path: '/adm/formularios', hash: '#visao-geral' })
-            } else {
-                next()
+                return { path: '/adm/formularios', hash: '#visao-geral' }
             }
         },
     },

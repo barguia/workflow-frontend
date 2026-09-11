@@ -63,9 +63,9 @@ const errorHandlers = {
     },
 };
 
-api.interceptors.request.use(config => {
+api.interceptors.request.use(async config => {
     const authStore = useAuthStore();
-    authStore.loadToken();
+    await authStore.loadToken();
     if (authStore.token) {
         config.headers.Authorization = `Bearer ${authStore.token}`;
     }

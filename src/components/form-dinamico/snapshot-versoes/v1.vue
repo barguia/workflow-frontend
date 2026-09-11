@@ -2,11 +2,11 @@
 <!-- Renderer do snapshot na versão 1 (SNAPSHOT_VERSION_ATUAL). Não alterar depois que uma v2 existir — -->
 <!-- registros antigos continuam sendo lidos por este arquivo; mudanças de shape viram uma nova versão. -->
 <template>
-  <RowComponent dense>
+  <RowComponent density="compact">
     <ColComponent
       v-for="(campo, key) in snapshot"
       :key="key"
-      :class="'v-col-' + (campo.cols ?? 12)"
+      :cols="campo.cols ?? 12"
       class="pb-3"
     >
       <div class="text-caption text-medium-emphasis">

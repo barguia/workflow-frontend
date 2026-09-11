@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import CryptoJS from 'crypto-js';
 import {authService} from "@/services/authService.js";
+import { encryptToken, decryptToken } from "@/utils/tokenCrypto.js";
 
 const CRYPTO_KEY = import.meta.env.VITE_CRYPTO_KEY || 'sua-chave-secreta-aqui';
 
@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', {
         async login({ email, password }) {
             try {
                 const { token, menus } = await authService.login({ email, password });
-                this.setSessao(token, menus);
+                await this.setSessao(token, menus);
 
                 return true;
             } catch (error) {
@@ -26,9 +26,9 @@ export const useAuthStore = defineStore('auth', {
                 throw error;
             }
         },
-        setSessao(newToken, menus) {
+        async setSessao(newToken, menus) {
             if (newToken) {
-                const encrypted = CryptoJS.AES.encrypt(newToken, CRYPTO_KEY).toString();
+                const encrypted = await encryptToken(newToken, CRYPTO_KEY);
                 localStorage.setItem('authToken', encrypted);
                 localStorage.setItem('menus', JSON.stringify(menus));
                 this.token = newToken;
@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('auth', {
         // mais token persistido (ex: removido por um 401 em outra aba, ou por
         // limpaSessao() já ter rodado), garante que o estado em memória não
         // fique "grudado" numa sessão que já não existe mais.
-        loadToken() {
+        async loadToken() {
             const encrypted = localStorage.getItem('authToken');
             if (!encrypted) {
                 if (this.token !== null || this.menus.length > 0) {
@@ -51,8 +51,7 @@ export const useAuthStore = defineStore('auth', {
             }
 
             try {
-                const bytes = CryptoJS.AES.decrypt(encrypted, CRYPTO_KEY);
-                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                const decrypted = await decryptToken(encrypted, CRYPTO_KEY);
                 const menusJson = localStorage.getItem('menus');
                 const menus = menusJson ? JSON.parse(menusJson) : [];
 
@@ -70,7 +69,7 @@ export const useAuthStore = defineStore('auth', {
         // (ex: localStorage limpo manualmente ou por outra aba) fosse detectada
         // em navegações subsequentes dentro da mesma sessão de SPA.
         async checkAuth() {
-            this.loadToken();
+            await this.loadToken();
             this.loaded = true;
             return this.isAuthenticated;
         },

@@ -105,7 +105,7 @@
           </IconComponent>
           Navegar para outra tarefa
         </div>
-        <RowComponent dense>
+        <RowComponent density="compact">
           <ColComponent
             cols="12"
             sm="4"

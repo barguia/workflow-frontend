@@ -8,7 +8,7 @@
       <div class="section-label mb-3">
         Detalhes da Tarefa
       </div>
-      <RowComponent dense>
+      <RowComponent density="compact">
         <ColComponent
           v-if="tarefa.descricao_tarefa"
           cols="12"

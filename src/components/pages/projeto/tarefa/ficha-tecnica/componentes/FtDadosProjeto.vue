@@ -8,7 +8,7 @@
       <div class="section-label mb-3">
         Dados do Projeto
       </div>
-      <RowComponent dense>
+      <RowComponent density="compact">
         <ColComponent
           cols="12"
           sm="6"
@@ -79,7 +79,7 @@
       <div class="section-label mb-3">
         Workflow
       </div>
-      <RowComponent dense>
+      <RowComponent density="compact">
         <ColComponent
           v-if="tarefa.descricao_workflow"
           cols="12"
