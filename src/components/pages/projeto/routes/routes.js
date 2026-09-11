@@ -16,11 +16,9 @@ const routes = [
         component: GestaoProjetoPage,
         icon: "mdi-briefcase-outline",
         meta: { requiresAuth: true },
-        beforeEnter: (to, from, next) => {
+        beforeEnter: (to) => {
             if (to.hash && !HASHES_VALIDOS.includes(to.hash)) {
-                next({ path: '/adm/projetos', hash: '#visao-geral' })
-            } else {
-                next()
+                return { path: '/adm/projetos', hash: '#visao-geral' }
             }
         },
     },
