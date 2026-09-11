@@ -63,7 +63,7 @@
           Filtros
         </div>
 
-        <RowComponent dense>
+        <RowComponent density="compact">
           <!-- Projetos -->
           <ColComponent
             cols="12"

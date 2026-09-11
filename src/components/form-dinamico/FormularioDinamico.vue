@@ -6,7 +6,7 @@
     lazy-validation
   >
     <!-- v-show = hidden, mas ainda no DOM -->
-    <RowComponent dense>
+    <RowComponent density="compact">
       <ColComponent
         v-for="field in visibleFields"
         v-show="resolveVisible(field)"

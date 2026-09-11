@@ -233,7 +233,7 @@
               </v-icon>
               <span class="text-caption font-weight-medium edit-label-upper">Limites do intervalo</span>
             </div>
-            <v-row dense>
+            <v-row density="compact">
               <v-col
                 cols="12"
                 md="3"
@@ -272,7 +272,7 @@
               </v-col>
             </v-row>
             <v-row
-              dense
+              density="compact"
               class="mt-2"
             >
               <v-col cols="12">
@@ -299,7 +299,7 @@
               </v-icon>
               <span class="text-caption font-weight-medium edit-label-upper">Rótulos e valores</span>
             </div>
-            <v-row dense>
+            <v-row density="compact">
               <v-col
                 cols="12"
                 md="3"
@@ -350,7 +350,7 @@
               </v-col>
             </v-row>
             <v-row
-              dense
+              density="compact"
               class="mt-2"
             >
               <v-col cols="12">

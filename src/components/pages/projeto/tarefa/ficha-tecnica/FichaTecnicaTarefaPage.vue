@@ -68,7 +68,7 @@
 
     <!-- Body 1: Dados complementares do projeto + Body 2: Detalhes da tarefa -->
     <RowComponent
-      dense
+      density="compact"
       class="mb-6"
     >
       <ColComponent

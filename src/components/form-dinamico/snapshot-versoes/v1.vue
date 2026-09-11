@@ -2,7 +2,7 @@
 <!-- Renderer do snapshot na versão 1 (SNAPSHOT_VERSION_ATUAL). Não alterar depois que uma v2 existir — -->
 <!-- registros antigos continuam sendo lidos por este arquivo; mudanças de shape viram uma nova versão. -->
 <template>
-  <RowComponent dense>
+  <RowComponent density="compact">
     <ColComponent
       v-for="(campo, key) in snapshot"
       :key="key"
