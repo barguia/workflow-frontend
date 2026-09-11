@@ -11,7 +11,7 @@
         v-for="field in visibleFields"
         v-show="resolveVisible(field)"
         :key="field.key"
-        :class="'v-col-'+(field.col ?? 12)"
+        :cols="field.col ?? 12"
         class="pb-0"
       >
         <!-- v-if = remove do DOM -->
