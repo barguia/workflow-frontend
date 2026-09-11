@@ -39,5 +39,5 @@ defineProps({
   },
 })
 
-const modelValue = defineModel({ type: null })
+const modelValue = defineModel({ type: null, default: null })
 </script>

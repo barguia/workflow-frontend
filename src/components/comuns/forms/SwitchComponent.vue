@@ -34,5 +34,5 @@ defineProps({
   falseValue: { type: [Boolean, String, Number], default: false },
 })
 
-const modelValue = defineModel({ type: [Boolean, String, Number] })
+const modelValue = defineModel({ type: [Boolean, String, Number], default: null })
 </script>
