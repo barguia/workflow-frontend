@@ -30,12 +30,10 @@ const routes = [
         component: ControleAcessoPage,
         icon: "mdi-shield-crown-outline",
         meta: { requiresAuth: true },
-        beforeEnter: (to, from, next) => {
+        beforeEnter: (to) => {
             const hashesValidos = ['#adm', '#organizacoes', '#usuarios', '#perfis', '#permissoes', '#menus']
             if (to.hash && !hashesValidos.includes(to.hash)) {
-                next({ path: '/adm/administracao', hash: '#adm' })
-            } else {
-                next()
+                return { path: '/adm/administracao', hash: '#adm' }
             }
         },
     },

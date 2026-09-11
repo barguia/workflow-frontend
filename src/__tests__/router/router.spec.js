@@ -50,12 +50,10 @@ vi.mock('@/components/pages/controle-acesso/routes/routes.js', () => ({
       name: 'Administracao',
       component: { template: '<div/>' },
       meta: { requiresAuth: true },
-      beforeEnter: (to, from, next) => {
+      beforeEnter: (to) => {
         const hashesValidos = ['#adm', '#organizacoes', '#usuarios', '#perfis', '#permissoes', '#menus']
         if (to.hash && !hashesValidos.includes(to.hash)) {
-          next({ path: '/adm/administracao', hash: '#adm' })
-        } else {
-          next()
+          return { path: '/adm/administracao', hash: '#adm' }
         }
       },
     },
@@ -80,15 +78,13 @@ vi.mock('@/components/pages/projeto/routes/routes.js', () => ({
       name: 'GestaoProjetoProjeto',
       component: { template: '<div/>' },
       meta: { requiresAuth: true },
-      beforeEnter: (to, from, next) => {
+      beforeEnter: (to) => {
         const HASHES_VALIDOS = [
           '#visao-geral', '#projetos', '#tarefas', '#processos',
           '#hierarquias', '#workflows', '#pesquisa', '#backlog',
         ]
         if (to.hash && !HASHES_VALIDOS.includes(to.hash)) {
-          next({ path: '/adm/projetos', hash: '#visao-geral' })
-        } else {
-          next()
+          return { path: '/adm/projetos', hash: '#visao-geral' }
         }
       },
     },
@@ -200,13 +196,12 @@ describe('guard beforeEnter — /adm/administracao', () => {
     },
   )
 
-  it('hash inválido: guard chama next com redirect para #adm', () => {
+  it('hash inválido: guard retorna redirect para #adm', () => {
     // Testado diretamente na função guard para evitar race condition
     // do redirect assíncrono no Vue Router 4
-    const next = vi.fn()
     const route = router.getRoutes().find(r => r.name === 'Administracao')
-    route.beforeEnter({ hash: '#invalido', path: '/adm/administracao' }, {}, next)
-    expect(next).toHaveBeenCalledWith({ path: '/adm/administracao', hash: '#adm' })
+    const resultado = route.beforeEnter({ hash: '#invalido', path: '/adm/administracao' })
+    expect(resultado).toEqual({ path: '/adm/administracao', hash: '#adm' })
   })
 })
 
@@ -233,11 +228,10 @@ describe('guard beforeEnter — /adm/projetos', () => {
     },
   )
 
-  it('hash inválido: guard chama next com redirect para #visao-geral', () => {
-    const next = vi.fn()
+  it('hash inválido: guard retorna redirect para #visao-geral', () => {
     const route = router.getRoutes().find(r => r.name === 'GestaoProjetoProjeto')
-    route.beforeEnter({ hash: '#invalido', path: '/adm/projetos' }, {}, next)
-    expect(next).toHaveBeenCalledWith({ path: '/adm/projetos', hash: '#visao-geral' })
+    const resultado = route.beforeEnter({ hash: '#invalido', path: '/adm/projetos' })
+    expect(resultado).toEqual({ path: '/adm/projetos', hash: '#visao-geral' })
   })
 })
 

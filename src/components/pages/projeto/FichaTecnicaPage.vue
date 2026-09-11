@@ -78,7 +78,7 @@
       </div>
     </div>
 
-    <RowComponent dense>
+    <RowComponent density="compact">
       <!-- Detalhes do Projeto + Workflow -->
       <ColComponent
         cols="12"
@@ -94,7 +94,7 @@
               Detalhes do Projeto
             </div>
 
-            <RowComponent dense>
+            <RowComponent density="compact">
               <ColComponent
                 cols="12"
                 sm="6"
@@ -176,7 +176,7 @@
             <div class="section-label mb-3">
               Workflow
             </div>
-            <RowComponent dense>
+            <RowComponent density="compact">
               <ColComponent
                 cols="12"
                 sm="6"

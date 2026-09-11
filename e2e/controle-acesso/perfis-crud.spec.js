@@ -28,6 +28,11 @@ async function buscarLinha(page, termo) {
 }
 
 async function selecionarGuardName(page, modal, valor) {
+  // force:true ignora a checagem de estabilidade do Playwright — se a modal ainda
+  // estiver no meio da transição de abertura, o clique pode cair no scrim (que ainda
+  // está entrando) em vez do campo, fechando a modal sem querer. Por isso esperamos a
+  // transição de entrada do dialog assentar antes de clicar.
+  await expect(page.locator('.v-overlay__scrim')).not.toHaveClass(/enter-active/, { timeout: 5000 })
   await modal.getByLabel('Guard Name', { exact: true }).click({ force: true })
   await page.getByRole('option', { name: valor }).click()
 }
